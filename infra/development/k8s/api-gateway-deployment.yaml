@@ -1,0 +1,45 @@
+apiVersion: apps/v1         # ระบุ API Group และเวอร์ชันสำหรับ Deployment Object
+kind: Deployment            # ชนิดของ Kubernetes Object
+metadata:
+  name: api-gateway         # กำหนดชื่อของ Deployment
+spec:
+  replicas: 1               # กำหนดจำนวนสำเนา (Replicas) ของ Pods ที่ต้องการรัน
+  selector:
+    matchLabels:
+      app: api-gateway      # กลไกการเลือก Pods Deployment นี้จะดูแลเฉพาะ Pods
+  template:
+    metadata:
+      labels:
+        app: api-gateway    # กำหนด Label ให้กับ Pod ที่สร้างขึ้น
+    spec:
+      containers:           # กำหนดรายละเอียดของ Container ภายใน Pod
+        - name: api-gateway
+          image: yaak-kaii/api-gateway
+          ports:
+            - containerPort: 8081
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "125m"
+            limits:
+              memory: "128Mi"
+              cpu: "125m"
+          env:
+            # Accessing an env variable from the app-config config map
+            - name: GATEWAY_HTTP_ADDR
+              valueFrom:
+                configMapKeyRef:
+                  key: GATEWAY_HTTP_ADDR
+                  name: app-config
+---
+apiVersion: v1            # เปิดเผยแอปพลิเคชัน
+kind: Service
+metadata:
+  name: api-gateway
+spec:
+  type: LoadBalancer      # ประเภทของ Service การตั้งค่าเป็น LoadBalancer จะแจ้งให้ Cloud Provider (เช่น AWS, GCP, Azure) สร้าง Load Balancer ภายนอก เพื่อเชื่อมโยงไปยัง Service นี้โดยอัตโนมัติ ทำให้แอปพลิเคชันสามารถเข้าถึงได้จากอินเทอร์เน็ตสาธารณะ
+  ports:
+    - port: 8081          # พอร์ตที่ Service เปิดให้เข้าถึง (พอร์ตที่ผู้ใช้ภายนอก/ภายในเรียกใช้)
+      targetPort: 8081    # พอร์ตเป้าหมายภายใน Pods ที่ Service จะส่ง Traffic เข้าไป (ต้องตรงกับ containerPort ใน Deployment)
+  selector:
+    app: api-gateway      # กลไกการเลือก Pods Service จะเลือกส่ง Traffic ไปยัง Pods ทั้งหมดที่มี Label ว่า app: api-gateway (ซึ่งเป็น Pods ที่สร้างโดย Deployment ด้านบน)
