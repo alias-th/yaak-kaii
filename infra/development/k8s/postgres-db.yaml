@@ -1,0 +1,63 @@
+# 1. ส่วนการจองพื้นที่เก็บข้อมูล (Persistent Volume Claim)
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: postgres-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi # ปรับขนาดได้ตามต้องการ
+---
+# 2. ส่วนการตั้งค่า Service (เหมือนเดิม)
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres-service
+spec:
+  selector:
+    app: postgres
+  ports:
+    - protocol: TCP
+      port: 5432
+      targetPort: 5432
+---
+# 3. ส่วนการตั้งค่า Deployment (เพิ่มการเชื่อมต่อกับ PVC)
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres-deployment
+spec:
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:16-alpine
+          env:
+            - name: POSTGRES_USER
+              value: "root"
+            - name: POSTGRES_PASSWORD
+              value: "password123"
+            - name: POSTGRES_DB
+              value: "yaak_kaii"
+            # แนะนำให้เพิ่ม PGDATA เพื่อความแน่นอนในการเก็บข้อมูล
+            - name: PGDATA
+              value: /var/lib/postgresql/data/pgdata
+          ports:
+            - containerPort: 5432
+          # ระบุจุดที่จะเอา Volume มาเสียบใน Container
+          volumeMounts:
+            - name: postgres-storage
+              mountPath: /var/lib/postgresql/data
+      # นิยาม Volume ว่าให้ไปดึงข้อมูลมาจาก PVC ที่สร้างไว้ด้านบน
+      volumes:
+        - name: postgres-storage
+          persistentVolumeClaim:
+            claimName: postgres-pvc

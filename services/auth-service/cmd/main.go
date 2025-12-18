@@ -3,34 +3,62 @@ package main
 import (
 	"context"
 	"log"
+	"net"
 	"os"
 	"os/signal"
 	"syscall"
 
 	db "yaak-kaii/services/auth-service/internal/db/sqlc"
+	"yaak-kaii/services/auth-service/internal/infrastructure/grpc"
+	"yaak-kaii/services/auth-service/internal/service"
 
 	"github.com/jackc/pgx/v5/pgxpool"
+	grpcserver "google.golang.org/grpc"
 )
-
-var interruptSignals = []os.Signal{
-	os.Interrupt,
-	syscall.SIGTERM,
-	syscall.SIGINT,
-}
 
 var (
 	connString = os.Getenv("PG_URI")
+	grpcAddr   = ":9090"
 )
 
 func main() {
-	ctx, stop := signal.NotifyContext(context.Background(), interruptSignals...)
-	defer stop()
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
 
+	// Initialize PG connection pool
 	connPool, err := pgxpool.New(ctx, connString)
 	if err != nil {
 		log.Fatal("cannot connect to db")
 	}
+	store := db.NewStore(connPool)
+	svc := service.NewService(store)
+	log.Println("connected to database", connString)
 
-	_ = db.NewStore(connPool)
+	// Graceful shutdown on interrupt signals
+	go func() {
+		sigCh := make(chan os.Signal, 1)
+		signal.Notify(sigCh, os.Interrupt, syscall.SIGTERM)
+		<-sigCh
+		cancel()
+	}()
 
+	lis, err := net.Listen("tcp", grpcAddr)
+	if err != nil {
+		log.Fatalf("failed to listen: %v", err)
+	}
+
+	grpcServer := grpcserver.NewServer()
+	grpc.NewGRPCHandler(grpcServer, svc)
+
+	log.Printf("Starting gRPC server Trip service on port %s", lis.Addr().String())
+	go func() {
+		if err := grpcServer.Serve(lis); err != nil {
+			log.Printf("failed to serve: %v", err)
+			cancel()
+		}
+	}()
+
+	<-ctx.Done()
+	log.Println("Shutting down the server...")
+	grpcServer.GracefulStop()
 }

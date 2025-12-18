@@ -1,0 +1,35 @@
+syntax = "proto3";
+
+package auth;
+
+import "google/protobuf/timestamp.proto";
+
+option go_package = "shared/proto/auth;auth";
+
+// UserService provides user-related RPCs such as creating a new user.
+service UserService {
+  // CreateUser creates a new user with the provided details.
+  rpc CreateUser(CreateUserRequest) returns (CreateUserResponse);
+}
+
+message CreateUserRequest{
+  string email        = 1;
+  string first_name   = 2;
+  string last_name    = 3;
+  string phone_number = 4;
+  string password     = 5;
+}
+
+
+message CreateUserResponse{
+  string                    id             = 1;
+  string                    email          = 2;
+  bool                      email_verified = 3;
+  string                    first_name     = 4;
+  string                    last_name      = 5;
+  string                    phone_number   = 6;
+  bool                      is_active      = 7;
+  string                    role_id        = 8;
+  google.protobuf.Timestamp created_at     = 9;
+  google.protobuf.Timestamp updated_at     = 10;
+}

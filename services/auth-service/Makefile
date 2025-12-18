@@ -1,4 +1,4 @@
-DB_URL=postgresql://root:1234@localhost:5432/yaak_kaii?sslmode=disable
+DB_URL=postgresql://root:password123@localhost:5432/yaak_kaii?sslmode=disable
 MIGRATION_DIR=internal/db/migration
 
 migrateup:

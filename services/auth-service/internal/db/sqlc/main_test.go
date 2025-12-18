@@ -7,14 +7,12 @@ import (
 	"testing"
 
 	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/joho/godotenv"
 )
 
 var testStore Store
 
 func TestMain(m *testing.M) {
-	godotenv.Load("../../../.env.local")
-	connString := os.Getenv("PG_URI")
+	connString := "postgres://root:password123@localhost:5432/yaak_kaii?sslmode=disable"
 
 	connPool, err := pgxpool.New(context.Background(), connString)
 	if err != nil {

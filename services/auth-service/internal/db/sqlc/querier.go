@@ -9,6 +9,7 @@ import (
 )
 
 type Querier interface {
+	CreateGuest(ctx context.Context, arg CreateGuestParams) (Guest, error)
 	CreateUser(ctx context.Context, arg CreateUserParams) (User, error)
 	GetRoleByName(ctx context.Context, name string) (Role, error)
 }

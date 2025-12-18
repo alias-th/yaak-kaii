@@ -8,6 +8,7 @@ import (
 	"os/signal"
 	"syscall"
 	"time"
+	"yaak-kaii/shared/contracts"
 
 	"github.com/gin-gonic/gin"
 )
@@ -55,7 +56,7 @@ func setupRouter() *gin.Engine {
 		})
 	})
 
-	// router.POST("/users", server.createUser)
+	router.POST("/users", HandleCreateUser)
 	// router.POST("/users/login", server.loginUser)
 	// router.POST("/tokens/renew_access", server.renewAccessToken)
 	// authRoutes := router.Group("/").Use(authMiddleware(server.tokenMaker))
@@ -65,4 +66,13 @@ func setupRouter() *gin.Engine {
 	// authRoutes.POST("/transfers", server.createTransfer)
 
 	return router
+}
+
+func errorResponse(err error, code int) gin.H {
+	return gin.H{
+		"error": contracts.APIError{
+			Code:    code,
+			Message: err.Error(),
+		},
+	}
 }

@@ -5,11 +5,31 @@
 package db
 
 import (
+	"net/netip"
 	"time"
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgtype"
 )
+
+type Guest struct {
+	ID        uuid.UUID          `json:"id"`
+	TokenHash string             `json:"token_hash"`
+	IpAddr    netip.Addr         `json:"ip_addr"`
+	UserAgent string             `json:"user_agent"`
+	CreatedAt time.Time          `json:"created_at"`
+	ExpiresAt pgtype.Timestamptz `json:"expires_at"`
+	Metadata  []byte             `json:"metadata"`
+}
+
+type RefreshToken struct {
+	ID        uuid.UUID          `json:"id"`
+	UserID    pgtype.UUID        `json:"user_id"`
+	TokenHash string             `json:"token_hash"`
+	CreatedAt time.Time          `json:"created_at"`
+	ExpiresAt pgtype.Timestamptz `json:"expires_at"`
+	RevokedAt pgtype.Timestamptz `json:"revoked_at"`
+}
 
 type Role struct {
 	ID          uuid.UUID `json:"id"`
