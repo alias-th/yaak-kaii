@@ -16,3 +16,7 @@ type CreateUserResponse struct {
 	PhoneNumber string `json:"phone_number"`
 	CreatedAt   string `json:"created_at"`
 }
+
+type CreateGuestResponse struct {
+	GuestToken string `json:"guest_token"`
+}

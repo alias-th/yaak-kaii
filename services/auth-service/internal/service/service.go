@@ -2,18 +2,66 @@ package service
 
 import (
 	"context"
+	"encoding/json"
+	"net/netip"
+	"time"
+
 	db "yaak-kaii/services/auth-service/internal/db/sqlc"
 	"yaak-kaii/services/auth-service/internal/domain"
 )
 
 type service struct {
-	store domain.UserRepository
+	store domain.AuthRepository
 }
 
 func NewService(store db.Store) *service {
 	return &service{
 		store: store,
 	}
+}
+
+func (s *service) CreateGuest(ctx context.Context, guest *domain.GuestModel) (*domain.GuestModel, error) {
+
+	// add expires date
+	now := time.Now().UTC()
+	expires30Day := now.AddDate(0, 0, 30)
+	guest.MetaData.LastActivityTime = expires30Day
+
+	byteData, err := json.Marshal(guest.MetaData)
+	if err != nil {
+		return nil, err
+	}
+
+	// parse IP address string into netip.Addr
+	ip, err := netip.ParseAddr(guest.IpAddress)
+	if err != nil {
+		return nil, err
+	}
+
+	// create guest
+	arg := db.CreateGuestParams{
+		TokenHash: guest.TokenHash,
+		IpAddr:    ip,
+		UserAgent: guest.UserAgent,
+		Metadata:  byteData,
+	}
+	res, err := s.store.CreateGuest(ctx, arg)
+	if err != nil {
+		return nil, err
+	}
+
+	// response
+	return &domain.GuestModel{
+		ID:        res.ID,
+		TokenHash: res.TokenHash,
+		IpAddress: res.IpAddr.String(),
+		UserAgent: res.UserAgent,
+		CreatedAt: res.CreatedAt.Unix(),
+		ExpiresAt: res.CreatedAt.Unix(),
+		MetaData: domain.MetaDataGuest{
+			LastActivityTime: guest.MetaData.LastActivityTime,
+		},
+	}, nil
 }
 
 func (s *service) CreateUser(ctx context.Context, user *domain.UserModel) (*domain.UserModel, error) {
@@ -25,7 +73,7 @@ func (s *service) CreateUser(ctx context.Context, user *domain.UserModel) (*doma
 
 	arg := db.CreateUserParams{
 		Email:        user.Email,
-		PasswordHash: string(user.Password.PasswordHash),
+		PasswordHash: user.PasswordHash,
 		FirstName:    user.FirstName,
 		LastName:     user.LastName,
 		PhoneNumber:  user.PhoneNumber,

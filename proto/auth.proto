@@ -10,6 +10,9 @@ option go_package = "shared/proto/auth;auth";
 service UserService {
   // CreateUser creates a new user with the provided details.
   rpc CreateUser(CreateUserRequest) returns (CreateUserResponse);
+
+  // CreateGuest creates a new guest with the provided details.
+  rpc CreateGuest(CreateGuestRequest) returns (CreateGuestResponse);
 }
 
 message CreateUserRequest{
@@ -32,4 +35,13 @@ message CreateUserResponse{
   string                    role_id        = 8;
   google.protobuf.Timestamp created_at     = 9;
   google.protobuf.Timestamp updated_at     = 10;
+}
+
+message CreateGuestRequest{
+  string ip_address = 1;
+  string user_agent = 2;
+}
+
+message CreateGuestResponse{
+  string guest_token = 1;
 }

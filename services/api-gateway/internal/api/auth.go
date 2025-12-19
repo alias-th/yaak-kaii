@@ -54,3 +54,26 @@ func HandleCreateUser(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusCreated, res)
 }
+
+func HandleCreateGuest(ctx *gin.Context) {
+	ipAddress := ctx.ClientIP()
+	userAgent := ctx.Request.UserAgent()
+
+	authSvc, err := grpcclients.NewAuthServiceClient()
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer authSvc.Close()
+
+	guest, err := authSvc.Client.CreateGuest(ctx, &auth.CreateGuestRequest{
+		IpAddress: ipAddress,
+		UserAgent: userAgent,
+	})
+
+	res := contracts.APIResponse{
+		Data: types.CreateGuestResponse{GuestToken: guest.GuestToken},
+	}
+
+	ctx.SetCookie("guest_token", guest.GuestToken, 3600*24*30, "/", "", false, true)
+	ctx.JSON(http.StatusCreated, res)
+}

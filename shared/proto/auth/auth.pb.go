@@ -214,6 +214,102 @@ func (x *CreateUserResponse) GetUpdatedAt() *timestamppb.Timestamp {
 	return nil
 }
 
+type CreateGuestRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	IpAddress     string                 `protobuf:"bytes,1,opt,name=ip_address,json=ipAddress,proto3" json:"ip_address,omitempty"`
+	UserAgent     string                 `protobuf:"bytes,2,opt,name=user_agent,json=userAgent,proto3" json:"user_agent,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CreateGuestRequest) Reset() {
+	*x = CreateGuestRequest{}
+	mi := &file_auth_proto_msgTypes[2]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CreateGuestRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreateGuestRequest) ProtoMessage() {}
+
+func (x *CreateGuestRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_auth_proto_msgTypes[2]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CreateGuestRequest.ProtoReflect.Descriptor instead.
+func (*CreateGuestRequest) Descriptor() ([]byte, []int) {
+	return file_auth_proto_rawDescGZIP(), []int{2}
+}
+
+func (x *CreateGuestRequest) GetIpAddress() string {
+	if x != nil {
+		return x.IpAddress
+	}
+	return ""
+}
+
+func (x *CreateGuestRequest) GetUserAgent() string {
+	if x != nil {
+		return x.UserAgent
+	}
+	return ""
+}
+
+type CreateGuestResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	GuestToken    string                 `protobuf:"bytes,1,opt,name=guest_token,json=guestToken,proto3" json:"guest_token,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CreateGuestResponse) Reset() {
+	*x = CreateGuestResponse{}
+	mi := &file_auth_proto_msgTypes[3]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CreateGuestResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreateGuestResponse) ProtoMessage() {}
+
+func (x *CreateGuestResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_auth_proto_msgTypes[3]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CreateGuestResponse.ProtoReflect.Descriptor instead.
+func (*CreateGuestResponse) Descriptor() ([]byte, []int) {
+	return file_auth_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *CreateGuestResponse) GetGuestToken() string {
+	if x != nil {
+		return x.GuestToken
+	}
+	return ""
+}
+
 var File_auth_proto protoreflect.FileDescriptor
 
 const file_auth_proto_rawDesc = "" +
@@ -241,10 +337,19 @@ const file_auth_proto_rawDesc = "" +
 	"created_at\x18\t \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\x129\n" +
 	"\n" +
 	"updated_at\x18\n" +
-	" \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAt2N\n" +
+	" \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAt\"R\n" +
+	"\x12CreateGuestRequest\x12\x1d\n" +
+	"\n" +
+	"ip_address\x18\x01 \x01(\tR\tipAddress\x12\x1d\n" +
+	"\n" +
+	"user_agent\x18\x02 \x01(\tR\tuserAgent\"6\n" +
+	"\x13CreateGuestResponse\x12\x1f\n" +
+	"\vguest_token\x18\x01 \x01(\tR\n" +
+	"guestToken2\x92\x01\n" +
 	"\vUserService\x12?\n" +
 	"\n" +
-	"CreateUser\x12\x17.auth.CreateUserRequest\x1a\x18.auth.CreateUserResponseB\x18Z\x16shared/proto/auth;authb\x06proto3"
+	"CreateUser\x12\x17.auth.CreateUserRequest\x1a\x18.auth.CreateUserResponse\x12B\n" +
+	"\vCreateGuest\x12\x18.auth.CreateGuestRequest\x1a\x19.auth.CreateGuestResponseB\x18Z\x16shared/proto/auth;authb\x06proto3"
 
 var (
 	file_auth_proto_rawDescOnce sync.Once
@@ -258,19 +363,23 @@ func file_auth_proto_rawDescGZIP() []byte {
 	return file_auth_proto_rawDescData
 }
 
-var file_auth_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
+var file_auth_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
 var file_auth_proto_goTypes = []any{
 	(*CreateUserRequest)(nil),     // 0: auth.CreateUserRequest
 	(*CreateUserResponse)(nil),    // 1: auth.CreateUserResponse
-	(*timestamppb.Timestamp)(nil), // 2: google.protobuf.Timestamp
+	(*CreateGuestRequest)(nil),    // 2: auth.CreateGuestRequest
+	(*CreateGuestResponse)(nil),   // 3: auth.CreateGuestResponse
+	(*timestamppb.Timestamp)(nil), // 4: google.protobuf.Timestamp
 }
 var file_auth_proto_depIdxs = []int32{
-	2, // 0: auth.CreateUserResponse.created_at:type_name -> google.protobuf.Timestamp
-	2, // 1: auth.CreateUserResponse.updated_at:type_name -> google.protobuf.Timestamp
+	4, // 0: auth.CreateUserResponse.created_at:type_name -> google.protobuf.Timestamp
+	4, // 1: auth.CreateUserResponse.updated_at:type_name -> google.protobuf.Timestamp
 	0, // 2: auth.UserService.CreateUser:input_type -> auth.CreateUserRequest
-	1, // 3: auth.UserService.CreateUser:output_type -> auth.CreateUserResponse
-	3, // [3:4] is the sub-list for method output_type
-	2, // [2:3] is the sub-list for method input_type
+	2, // 3: auth.UserService.CreateGuest:input_type -> auth.CreateGuestRequest
+	1, // 4: auth.UserService.CreateUser:output_type -> auth.CreateUserResponse
+	3, // 5: auth.UserService.CreateGuest:output_type -> auth.CreateGuestResponse
+	4, // [4:6] is the sub-list for method output_type
+	2, // [2:4] is the sub-list for method input_type
 	2, // [2:2] is the sub-list for extension type_name
 	2, // [2:2] is the sub-list for extension extendee
 	0, // [0:2] is the sub-list for field type_name
@@ -287,7 +396,7 @@ func file_auth_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_auth_proto_rawDesc), len(file_auth_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   2,
+			NumMessages:   4,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

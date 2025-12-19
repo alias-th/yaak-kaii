@@ -50,13 +50,21 @@ func RunGinServer(addr string) {
 func setupRouter() *gin.Engine {
 	router := gin.Default()
 
-	router.GET("/ping", func(c *gin.Context) {
-		c.JSON(200, gin.H{
-			"message": "pong",
+	{
+		v1 := router.Group("/v1")
+		v1.GET("/ping", func(c *gin.Context) {
+			c.JSON(200, gin.H{
+				"message": "pong",
+			})
 		})
-	})
 
-	router.POST("/users", HandleCreateUser)
+		auth := v1.Group("/authentication")
+		{
+			auth.POST("/user", HandleCreateUser)
+			auth.POST("/guest", HandleCreateGuest)
+		}
+	}
+
 	// router.POST("/users/login", server.loginUser)
 	// router.POST("/tokens/renew_access", server.renewAccessToken)
 	// authRoutes := router.Group("/").Use(authMiddleware(server.tokenMaker))
