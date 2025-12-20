@@ -3,3 +3,6 @@ INSERT INTO
     guests (token_hash, ip_addr, user_agent, metadata)
 VALUES
     ($1, $2, $3, $4) RETURNING *;
+
+-- name: GetGuestByToken :one
+SELECT * FROM guests g WHERE g.token_hash = $1 limit 1;

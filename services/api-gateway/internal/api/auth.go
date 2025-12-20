@@ -11,7 +11,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func (app *Application) HandleCreateUser(ctx *gin.Context) {
+func (app *Application) handleCreateUser(ctx *gin.Context) {
 	var reqBody types.CreateUserRequest
 	if err := ctx.ShouldBindJSON(&reqBody); err != nil {
 		log.Println(err.Error())
@@ -47,7 +47,7 @@ func (app *Application) HandleCreateUser(ctx *gin.Context) {
 	ctx.JSON(http.StatusCreated, res)
 }
 
-func (app *Application) HandleCreateGuest(ctx *gin.Context) {
+func (app *Application) handleCreateGuest(ctx *gin.Context) {
 	ipAddress := ctx.ClientIP()
 	userAgent := ctx.Request.UserAgent()
 
@@ -69,3 +69,5 @@ func (app *Application) HandleCreateGuest(ctx *gin.Context) {
 	ctx.SetCookie("guest_session", guest.GuestToken, 3600*24*30, "/", "", false, true)
 	ctx.JSON(http.StatusCreated, res)
 }
+
+func (app *Application) login(ctx *gin.Context) {}

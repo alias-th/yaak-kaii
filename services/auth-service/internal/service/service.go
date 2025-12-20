@@ -2,12 +2,16 @@ package service
 
 import (
 	"context"
+	"database/sql"
 	"encoding/json"
+	"errors"
+	"fmt"
 	"net/netip"
 	"time"
 
 	db "yaak-kaii/services/auth-service/internal/db/sqlc"
 	"yaak-kaii/services/auth-service/internal/domain"
+	"yaak-kaii/shared/util"
 )
 
 type service struct {
@@ -112,4 +116,83 @@ func (s *service) GetRoleByName(ctx context.Context, name string) (*domain.RoleM
 		Name:        result.Name,
 		Description: result.Description,
 	}, nil
+}
+
+func (s *service) VerifyGuestToken(ctx context.Context, token string) (*domain.GuestModel, error) {
+	// decode token
+	raw, err := util.DecodeBase64URL(token)
+	if err != nil {
+		return nil, err
+	}
+
+	// hash token
+	hashed := util.HashTokenBytes(raw)
+
+	guest, err := s.store.GetGuestByToken(ctx, hashed)
+	if err != nil {
+		return nil, err
+	}
+
+	// verify token
+	ok, err := util.VerifyToken(token, guest.TokenHash)
+	if err != nil || !ok {
+		return nil, err
+	}
+
+	return &domain.GuestModel{
+		ID:        guest.ID,
+		IpAddress: guest.IpAddr.String(),
+		UserAgent: guest.UserAgent,
+		CreatedAt: guest.CreatedAt.Unix(),
+		ExpiresAt: guest.CreatedAt.Unix(),
+	}, nil
+
+}
+
+func (s *service) VerifyRefreshToken(ctx context.Context, token string) (*domain.RefreshTokenModel, error) {
+	// decode token
+	raw, err := util.DecodeBase64URL(token)
+	if err != nil {
+		return nil, fmt.Errorf("invalid token format: %w", err)
+	}
+	// hash token
+	hashed := util.HashTokenBytes(raw)
+
+	// get token
+	refreshToken, err := s.store.GetRefreshTokenByTokenHash(ctx, hashed)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get token: %w", err)
+	}
+
+	// check if token expired
+	if time.Now().After(refreshToken.ExpiresAt.Time) {
+		return nil, util.ErrTokenExpired
+	}
+
+	// check if token revoked
+	if refreshToken.RevokedAt.Valid {
+		return nil, util.ErrTokenRevoked
+	}
+
+	// verify user
+	user, err := s.store.GetUserById(ctx, refreshToken.UserID.Bytes)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, util.ErrUserNotFound
+		}
+		return nil, fmt.Errorf("failed to get user: %w", err)
+	}
+
+	if !user.IsActive {
+		return nil, util.ErrUserInactive
+	}
+
+	return &domain.RefreshTokenModel{
+		ID:        refreshToken.ID,
+		User:      user,
+		CreatedAt: refreshToken.CreatedAt.Unix(),
+		ExpiresAt: refreshToken.ExpiresAt.Time.Unix(),
+		RevokedAt: refreshToken.RevokedAt.Time.Unix(),
+	}, nil
+
 }

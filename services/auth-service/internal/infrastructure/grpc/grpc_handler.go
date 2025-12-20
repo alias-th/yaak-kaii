@@ -2,6 +2,8 @@ package grpc
 
 import (
 	"context"
+	"fmt"
+	"log"
 	"time"
 	"yaak-kaii/services/auth-service/internal/domain"
 	pb "yaak-kaii/shared/proto/auth"
@@ -24,6 +26,46 @@ func NewGRPCHandler(server *grpc.Server, service domain.AuthService) {
 	}
 
 	pb.RegisterUserServiceServer(server, handler)
+}
+func (h *gRPCHandler) VerifyRefreshToken(ctx context.Context, req *pb.VerifyRefreshTokenRequest) (*pb.VerifyRefreshTokenResponse, error) {
+	reqRefreshToken := req.GetRefreshToken()
+
+	refreshToken, err := h.service.VerifyRefreshToken(ctx, reqRefreshToken)
+	if err != nil {
+		return &pb.VerifyRefreshTokenResponse{
+			Result: &pb.VerifyRefreshTokenResponse_Error{
+				Error: &pb.TokenError{
+					Code:    fmt.Sprintln(401),
+					Message: err.Error(),
+				},
+			},
+		}, nil
+	}
+
+	return &pb.VerifyRefreshTokenResponse{
+		Result: &pb.VerifyRefreshTokenResponse_Valid{
+			Valid: &pb.TokenValid{UserId: refreshToken.User.ID.String(), ExpiresAt: refreshToken.User.CreatedAt.Unix()},
+		},
+	}, nil
+
+}
+func (h *gRPCHandler) VerifyGuestToken(ctx context.Context, req *pb.VerifyGuestTokenRequest) (*pb.VerifyGuestTokenResponse, error) {
+	guestToken := req.GetGuestToken()
+
+	guest, err := h.service.VerifyGuestToken(ctx, guestToken)
+	if err != nil {
+		log.Println(err)
+		return &pb.VerifyGuestTokenResponse{
+			Result: &pb.VerifyGuestTokenResponse_Error{
+				Error: &pb.TokenError{Code: fmt.Sprint(401), Message: err.Error()},
+			},
+		}, nil
+	}
+
+	return &pb.VerifyGuestTokenResponse{
+		Result: &pb.VerifyGuestTokenResponse_Valid{Valid: &pb.TokenValid{UserId: guest.ID.String(), ExpiresAt: guest.ExpiresAt}},
+	}, nil
+
 }
 
 func (h *gRPCHandler) CreateGuest(ctx context.Context, req *pb.CreateGuestRequest) (*pb.CreateGuestResponse, error) {

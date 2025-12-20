@@ -35,8 +35,9 @@ func (app *Application) Run() {
 
 		auth := v1.Group("/authentication")
 		{
-			auth.POST("/user", app.HandleCreateUser)
-			auth.POST("/guest", app.HandleCreateGuest)
+			auth.POST("/user", app.handleCreateUser)
+			auth.POST("/guest", app.handleCreateGuest)
+			auth.POST("/login", app.login)
 		}
 	}
 

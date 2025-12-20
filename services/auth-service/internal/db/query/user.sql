@@ -10,3 +10,7 @@ INSERT INTO
     )
 VALUES
     ($1, $2, $3, $4, $5, $6) RETURNING *;
+
+
+-- name: GetUserById :one
+SELECT * FROM users u WHERE u.id = $1 LIMIT 1;

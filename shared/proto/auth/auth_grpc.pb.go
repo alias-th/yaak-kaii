@@ -19,9 +19,10 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	UserService_CreateUser_FullMethodName       = "/auth.UserService/CreateUser"
-	UserService_CreateGuest_FullMethodName      = "/auth.UserService/CreateGuest"
-	UserService_VerifyGuestToken_FullMethodName = "/auth.UserService/VerifyGuestToken"
+	UserService_CreateUser_FullMethodName         = "/auth.UserService/CreateUser"
+	UserService_CreateGuest_FullMethodName        = "/auth.UserService/CreateGuest"
+	UserService_VerifyGuestToken_FullMethodName   = "/auth.UserService/VerifyGuestToken"
+	UserService_VerifyRefreshToken_FullMethodName = "/auth.UserService/VerifyRefreshToken"
 )
 
 // UserServiceClient is the client API for UserService service.
@@ -35,6 +36,7 @@ type UserServiceClient interface {
 	// CreateGuest creates a new guest with the provided details.
 	CreateGuest(ctx context.Context, in *CreateGuestRequest, opts ...grpc.CallOption) (*CreateGuestResponse, error)
 	VerifyGuestToken(ctx context.Context, in *VerifyGuestTokenRequest, opts ...grpc.CallOption) (*VerifyGuestTokenResponse, error)
+	VerifyRefreshToken(ctx context.Context, in *VerifyRefreshTokenRequest, opts ...grpc.CallOption) (*VerifyRefreshTokenResponse, error)
 }
 
 type userServiceClient struct {
@@ -75,6 +77,16 @@ func (c *userServiceClient) VerifyGuestToken(ctx context.Context, in *VerifyGues
 	return out, nil
 }
 
+func (c *userServiceClient) VerifyRefreshToken(ctx context.Context, in *VerifyRefreshTokenRequest, opts ...grpc.CallOption) (*VerifyRefreshTokenResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(VerifyRefreshTokenResponse)
+	err := c.cc.Invoke(ctx, UserService_VerifyRefreshToken_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // UserServiceServer is the server API for UserService service.
 // All implementations must embed UnimplementedUserServiceServer
 // for forward compatibility.
@@ -86,6 +98,7 @@ type UserServiceServer interface {
 	// CreateGuest creates a new guest with the provided details.
 	CreateGuest(context.Context, *CreateGuestRequest) (*CreateGuestResponse, error)
 	VerifyGuestToken(context.Context, *VerifyGuestTokenRequest) (*VerifyGuestTokenResponse, error)
+	VerifyRefreshToken(context.Context, *VerifyRefreshTokenRequest) (*VerifyRefreshTokenResponse, error)
 	mustEmbedUnimplementedUserServiceServer()
 }
 
@@ -104,6 +117,9 @@ func (UnimplementedUserServiceServer) CreateGuest(context.Context, *CreateGuestR
 }
 func (UnimplementedUserServiceServer) VerifyGuestToken(context.Context, *VerifyGuestTokenRequest) (*VerifyGuestTokenResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method VerifyGuestToken not implemented")
+}
+func (UnimplementedUserServiceServer) VerifyRefreshToken(context.Context, *VerifyRefreshTokenRequest) (*VerifyRefreshTokenResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method VerifyRefreshToken not implemented")
 }
 func (UnimplementedUserServiceServer) mustEmbedUnimplementedUserServiceServer() {}
 func (UnimplementedUserServiceServer) testEmbeddedByValue()                     {}
@@ -180,6 +196,24 @@ func _UserService_VerifyGuestToken_Handler(srv interface{}, ctx context.Context,
 	return interceptor(ctx, in, info, handler)
 }
 
+func _UserService_VerifyRefreshToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(VerifyRefreshTokenRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).VerifyRefreshToken(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_VerifyRefreshToken_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).VerifyRefreshToken(ctx, req.(*VerifyRefreshTokenRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // UserService_ServiceDesc is the grpc.ServiceDesc for UserService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -198,6 +232,10 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "VerifyGuestToken",
 			Handler:    _UserService_VerifyGuestToken_Handler,
+		},
+		{
+			MethodName: "VerifyRefreshToken",
+			Handler:    _UserService_VerifyRefreshToken_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

@@ -26,10 +26,15 @@ type AuthRepository interface {
 	CreateUser(ctx context.Context, arg db.CreateUserParams) (db.User, error)
 	GetRoleByName(ctx context.Context, name string) (db.Role, error)
 	CreateGuest(ctx context.Context, arg db.CreateGuestParams) (db.Guest, error)
+	GetGuestByToken(ctx context.Context, token string) (db.Guest, error)
+	GetRefreshTokenByTokenHash(ctx context.Context, token string) (db.RefreshToken, error)
+	GetUserById(ctx context.Context, id uuid.UUID) (db.User, error)
 }
 
 type AuthService interface {
 	CreateUser(ctx context.Context, user *UserModel) (*UserModel, error)
 	GetRoleByName(ctx context.Context, name string) (*RoleModel, error)
 	CreateGuest(ctx context.Context, guest *GuestModel) (*GuestModel, error)
+	VerifyGuestToken(ctx context.Context, token string) (*GuestModel, error)
+	VerifyRefreshToken(ctx context.Context, token string) (*RefreshTokenModel, error)
 }
