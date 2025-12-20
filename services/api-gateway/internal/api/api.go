@@ -1,0 +1,72 @@
+package api
+
+import (
+	"context"
+	"log"
+	"net/http"
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
+	grpcclients "yaak-kaii/services/api-gateway/internal/grpc_clients"
+
+	"github.com/gin-gonic/gin"
+)
+
+type Application struct {
+	Config      Config
+	GrpcClients *grpcclients.GrpcClients
+}
+
+type Config struct {
+	Addr string
+}
+
+func (app *Application) Run() {
+	router := gin.Default()
+
+	{
+		v1 := router.Group("/v1")
+		v1.GET("/ping", func(c *gin.Context) {
+			c.JSON(200, gin.H{
+				"message": "pong",
+			})
+		})
+
+		auth := v1.Group("/authentication")
+		{
+			auth.POST("/user", app.HandleCreateUser)
+			auth.POST("/guest", app.HandleCreateGuest)
+		}
+	}
+
+	srv := &http.Server{
+		Addr:    app.Config.Addr,
+		Handler: router.Handler(),
+	}
+
+	go func() {
+		// service connections
+		log.Printf("Server listening on %s", app.Config.Addr)
+		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			log.Fatalf("listen: %s\n", err)
+		}
+	}()
+
+	// Wait for interrupt signal to gracefully shutdown the server with
+	// a timeout of 5 seconds.
+	quit := make(chan os.Signal, 1)
+	// kill (no params) by default sends syscall.SIGTERM
+	// kill -2 is syscall.SIGINT
+	// kill -9 is syscall.SIGKILL but can't be caught, so don't need add it
+	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
+	<-quit
+	log.Println("Shutdown Server ...")
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	if err := srv.Shutdown(ctx); err != nil {
+		log.Println("Server Shutdown:", err)
+	}
+	log.Println("Server exiting")
+}

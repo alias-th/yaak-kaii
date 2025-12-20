@@ -4,7 +4,6 @@ import (
 	"log"
 	"net/http"
 	"time"
-	grpcclients "yaak-kaii/services/api-gateway/internal/grpc_clients"
 	"yaak-kaii/services/api-gateway/pkg/types"
 	"yaak-kaii/shared/contracts"
 	"yaak-kaii/shared/proto/auth"
@@ -12,7 +11,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func HandleCreateUser(ctx *gin.Context) {
+func (app *Application) HandleCreateUser(ctx *gin.Context) {
 	var reqBody types.CreateUserRequest
 	if err := ctx.ShouldBindJSON(&reqBody); err != nil {
 		log.Println(err.Error())
@@ -21,14 +20,7 @@ func HandleCreateUser(ctx *gin.Context) {
 		return
 	}
 
-	authSvc, err := grpcclients.NewAuthServiceClient()
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	defer authSvc.Close()
-
-	user, err := authSvc.Client.CreateUser(ctx, &auth.CreateUserRequest{
+	user, err := app.GrpcClients.Auth.Client.CreateUser(ctx, &auth.CreateUserRequest{
 		Email:       reqBody.Email,
 		FirstName:   reqBody.FirstName,
 		LastName:    reqBody.LastName,
@@ -55,25 +47,25 @@ func HandleCreateUser(ctx *gin.Context) {
 	ctx.JSON(http.StatusCreated, res)
 }
 
-func HandleCreateGuest(ctx *gin.Context) {
+func (app *Application) HandleCreateGuest(ctx *gin.Context) {
 	ipAddress := ctx.ClientIP()
 	userAgent := ctx.Request.UserAgent()
 
-	authSvc, err := grpcclients.NewAuthServiceClient()
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer authSvc.Close()
-
-	guest, err := authSvc.Client.CreateGuest(ctx, &auth.CreateGuestRequest{
+	guest, err := app.GrpcClients.Auth.Client.CreateGuest(ctx, &auth.CreateGuestRequest{
 		IpAddress: ipAddress,
 		UserAgent: userAgent,
 	})
+
+	if err != nil {
+		code := http.StatusInternalServerError
+		ctx.JSON(code, errorResponse(err, code))
+		return
+	}
 
 	res := contracts.APIResponse{
 		Data: types.CreateGuestResponse{GuestToken: guest.GuestToken},
 	}
 
-	ctx.SetCookie("guest_token", guest.GuestToken, 3600*24*30, "/", "", false, true)
+	ctx.SetCookie("guest_session", guest.GuestToken, 3600*24*30, "/", "", false, true)
 	ctx.JSON(http.StatusCreated, res)
 }

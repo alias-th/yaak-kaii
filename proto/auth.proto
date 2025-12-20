@@ -13,6 +13,8 @@ service UserService {
 
   // CreateGuest creates a new guest with the provided details.
   rpc CreateGuest(CreateGuestRequest) returns (CreateGuestResponse);
+
+  rpc VerifyGuestToken(VerifyGuestTokenRequest) returns (VerifyGuestTokenResponse);
 }
 
 message CreateUserRequest{
@@ -44,4 +46,12 @@ message CreateGuestRequest{
 
 message CreateGuestResponse{
   string guest_token = 1;
+}
+
+message VerifyGuestTokenRequest{
+  string guest_token = 1;
+}
+
+message VerifyGuestTokenResponse{
+  bool ok = 1;
 }

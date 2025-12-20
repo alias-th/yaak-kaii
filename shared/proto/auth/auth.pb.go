@@ -310,6 +310,94 @@ func (x *CreateGuestResponse) GetGuestToken() string {
 	return ""
 }
 
+type VerifyGuestTokenRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	GuestToken    string                 `protobuf:"bytes,1,opt,name=guest_token,json=guestToken,proto3" json:"guest_token,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *VerifyGuestTokenRequest) Reset() {
+	*x = VerifyGuestTokenRequest{}
+	mi := &file_auth_proto_msgTypes[4]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *VerifyGuestTokenRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*VerifyGuestTokenRequest) ProtoMessage() {}
+
+func (x *VerifyGuestTokenRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_auth_proto_msgTypes[4]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use VerifyGuestTokenRequest.ProtoReflect.Descriptor instead.
+func (*VerifyGuestTokenRequest) Descriptor() ([]byte, []int) {
+	return file_auth_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *VerifyGuestTokenRequest) GetGuestToken() string {
+	if x != nil {
+		return x.GuestToken
+	}
+	return ""
+}
+
+type VerifyGuestTokenResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Ok            bool                   `protobuf:"varint,1,opt,name=ok,proto3" json:"ok,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *VerifyGuestTokenResponse) Reset() {
+	*x = VerifyGuestTokenResponse{}
+	mi := &file_auth_proto_msgTypes[5]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *VerifyGuestTokenResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*VerifyGuestTokenResponse) ProtoMessage() {}
+
+func (x *VerifyGuestTokenResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_auth_proto_msgTypes[5]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use VerifyGuestTokenResponse.ProtoReflect.Descriptor instead.
+func (*VerifyGuestTokenResponse) Descriptor() ([]byte, []int) {
+	return file_auth_proto_rawDescGZIP(), []int{5}
+}
+
+func (x *VerifyGuestTokenResponse) GetOk() bool {
+	if x != nil {
+		return x.Ok
+	}
+	return false
+}
+
 var File_auth_proto protoreflect.FileDescriptor
 
 const file_auth_proto_rawDesc = "" +
@@ -345,11 +433,17 @@ const file_auth_proto_rawDesc = "" +
 	"user_agent\x18\x02 \x01(\tR\tuserAgent\"6\n" +
 	"\x13CreateGuestResponse\x12\x1f\n" +
 	"\vguest_token\x18\x01 \x01(\tR\n" +
-	"guestToken2\x92\x01\n" +
+	"guestToken\":\n" +
+	"\x17VerifyGuestTokenRequest\x12\x1f\n" +
+	"\vguest_token\x18\x01 \x01(\tR\n" +
+	"guestToken\"*\n" +
+	"\x18VerifyGuestTokenResponse\x12\x0e\n" +
+	"\x02ok\x18\x01 \x01(\bR\x02ok2\xe5\x01\n" +
 	"\vUserService\x12?\n" +
 	"\n" +
 	"CreateUser\x12\x17.auth.CreateUserRequest\x1a\x18.auth.CreateUserResponse\x12B\n" +
-	"\vCreateGuest\x12\x18.auth.CreateGuestRequest\x1a\x19.auth.CreateGuestResponseB\x18Z\x16shared/proto/auth;authb\x06proto3"
+	"\vCreateGuest\x12\x18.auth.CreateGuestRequest\x1a\x19.auth.CreateGuestResponse\x12Q\n" +
+	"\x10VerifyGuestToken\x12\x1d.auth.VerifyGuestTokenRequest\x1a\x1e.auth.VerifyGuestTokenResponseB\x18Z\x16shared/proto/auth;authb\x06proto3"
 
 var (
 	file_auth_proto_rawDescOnce sync.Once
@@ -363,23 +457,27 @@ func file_auth_proto_rawDescGZIP() []byte {
 	return file_auth_proto_rawDescData
 }
 
-var file_auth_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
+var file_auth_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
 var file_auth_proto_goTypes = []any{
-	(*CreateUserRequest)(nil),     // 0: auth.CreateUserRequest
-	(*CreateUserResponse)(nil),    // 1: auth.CreateUserResponse
-	(*CreateGuestRequest)(nil),    // 2: auth.CreateGuestRequest
-	(*CreateGuestResponse)(nil),   // 3: auth.CreateGuestResponse
-	(*timestamppb.Timestamp)(nil), // 4: google.protobuf.Timestamp
+	(*CreateUserRequest)(nil),        // 0: auth.CreateUserRequest
+	(*CreateUserResponse)(nil),       // 1: auth.CreateUserResponse
+	(*CreateGuestRequest)(nil),       // 2: auth.CreateGuestRequest
+	(*CreateGuestResponse)(nil),      // 3: auth.CreateGuestResponse
+	(*VerifyGuestTokenRequest)(nil),  // 4: auth.VerifyGuestTokenRequest
+	(*VerifyGuestTokenResponse)(nil), // 5: auth.VerifyGuestTokenResponse
+	(*timestamppb.Timestamp)(nil),    // 6: google.protobuf.Timestamp
 }
 var file_auth_proto_depIdxs = []int32{
-	4, // 0: auth.CreateUserResponse.created_at:type_name -> google.protobuf.Timestamp
-	4, // 1: auth.CreateUserResponse.updated_at:type_name -> google.protobuf.Timestamp
+	6, // 0: auth.CreateUserResponse.created_at:type_name -> google.protobuf.Timestamp
+	6, // 1: auth.CreateUserResponse.updated_at:type_name -> google.protobuf.Timestamp
 	0, // 2: auth.UserService.CreateUser:input_type -> auth.CreateUserRequest
 	2, // 3: auth.UserService.CreateGuest:input_type -> auth.CreateGuestRequest
-	1, // 4: auth.UserService.CreateUser:output_type -> auth.CreateUserResponse
-	3, // 5: auth.UserService.CreateGuest:output_type -> auth.CreateGuestResponse
-	4, // [4:6] is the sub-list for method output_type
-	2, // [2:4] is the sub-list for method input_type
+	4, // 4: auth.UserService.VerifyGuestToken:input_type -> auth.VerifyGuestTokenRequest
+	1, // 5: auth.UserService.CreateUser:output_type -> auth.CreateUserResponse
+	3, // 6: auth.UserService.CreateGuest:output_type -> auth.CreateGuestResponse
+	5, // 7: auth.UserService.VerifyGuestToken:output_type -> auth.VerifyGuestTokenResponse
+	5, // [5:8] is the sub-list for method output_type
+	2, // [2:5] is the sub-list for method input_type
 	2, // [2:2] is the sub-list for extension type_name
 	2, // [2:2] is the sub-list for extension extendee
 	0, // [0:2] is the sub-list for field type_name
@@ -396,7 +494,7 @@ func file_auth_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_auth_proto_rawDesc), len(file_auth_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   4,
+			NumMessages:   6,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

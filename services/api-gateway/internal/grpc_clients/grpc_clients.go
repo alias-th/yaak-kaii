@@ -9,12 +9,16 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 )
 
-type authServiceClient struct {
+type AuthClient struct {
 	Client pb.UserServiceClient
-	conn   *grpc.ClientConn
+	Con    *grpc.ClientConn
 }
 
-func NewAuthServiceClient() (*authServiceClient, error) {
+type GrpcClients struct {
+	Auth AuthClient
+}
+
+func NewGrpcCLient() (*GrpcClients, error) {
 	authServiceUrl := os.Getenv("AUTH_SERVICE_URL")
 	if authServiceUrl == "" {
 		authServiceUrl = "auth-service:9090"
@@ -25,17 +29,20 @@ func NewAuthServiceClient() (*authServiceClient, error) {
 		return nil, err
 	}
 
-	client := pb.NewUserServiceClient(conn)
+	authClient := pb.NewUserServiceClient(conn)
 
-	return &authServiceClient{
-		Client: client,
-		conn:   conn,
+	return &GrpcClients{
+		Auth: AuthClient{
+			Client: authClient,
+			Con:    conn,
+		},
 	}, nil
 }
 
-func (c *authServiceClient) Close() {
-	if c.conn != nil {
-		if err := c.conn.Close(); err != nil {
+func (client *GrpcClients) Close() {
+	connAuth := client.Auth.Con
+	if connAuth != nil {
+		if err := connAuth.Close(); err != nil {
 			return
 		}
 	}
