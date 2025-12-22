@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+package auth;
+
+import "auth/messages.proto";
+
+option go_package = "shared/proto/auth;auth";
+
+// UserService provides user-related RPCs such as creating a new user.
+service UserService {
+  // CreateUser creates a new user with the provided details.
+  rpc CreateUser(CreateUserRequest) returns (CreateUserResponse);
+
+  // Login authenticates a user and returns access token and refresh token.
+  rpc Login(LoginRequest) returns (LoginResponse);
+
+  // CreateGuest creates a new guest with the provided details.
+  rpc CreateGuest(CreateGuestRequest) returns (CreateGuestResponse);
+
+  // VerifyGuestToken verifies if the guest token is valid.
+  rpc VerifyGuestToken(VerifyGuestTokenRequest) returns (VerifyTokenResponse);
+
+  // VerifyRefreshToken verifies if the refresh token is valid.
+  rpc VerifyRefreshToken(VerifyRefreshTokenRequest) returns (VerifyTokenResponse);
+}

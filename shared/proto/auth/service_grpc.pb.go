@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.6.0
 // - protoc             v6.33.2
-// source: auth.proto
+// source: auth/service.proto
 
 package auth
 
@@ -20,6 +20,7 @@ const _ = grpc.SupportPackageIsVersion9
 
 const (
 	UserService_CreateUser_FullMethodName         = "/auth.UserService/CreateUser"
+	UserService_Login_FullMethodName              = "/auth.UserService/Login"
 	UserService_CreateGuest_FullMethodName        = "/auth.UserService/CreateGuest"
 	UserService_VerifyGuestToken_FullMethodName   = "/auth.UserService/VerifyGuestToken"
 	UserService_VerifyRefreshToken_FullMethodName = "/auth.UserService/VerifyRefreshToken"
@@ -33,10 +34,14 @@ const (
 type UserServiceClient interface {
 	// CreateUser creates a new user with the provided details.
 	CreateUser(ctx context.Context, in *CreateUserRequest, opts ...grpc.CallOption) (*CreateUserResponse, error)
+	// Login authenticates a user and returns access token and refresh token.
+	Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginResponse, error)
 	// CreateGuest creates a new guest with the provided details.
 	CreateGuest(ctx context.Context, in *CreateGuestRequest, opts ...grpc.CallOption) (*CreateGuestResponse, error)
-	VerifyGuestToken(ctx context.Context, in *VerifyGuestTokenRequest, opts ...grpc.CallOption) (*VerifyGuestTokenResponse, error)
-	VerifyRefreshToken(ctx context.Context, in *VerifyRefreshTokenRequest, opts ...grpc.CallOption) (*VerifyRefreshTokenResponse, error)
+	// VerifyGuestToken verifies if the guest token is valid.
+	VerifyGuestToken(ctx context.Context, in *VerifyGuestTokenRequest, opts ...grpc.CallOption) (*VerifyTokenResponse, error)
+	// VerifyRefreshToken verifies if the refresh token is valid.
+	VerifyRefreshToken(ctx context.Context, in *VerifyRefreshTokenRequest, opts ...grpc.CallOption) (*VerifyTokenResponse, error)
 }
 
 type userServiceClient struct {
@@ -57,6 +62,16 @@ func (c *userServiceClient) CreateUser(ctx context.Context, in *CreateUserReques
 	return out, nil
 }
 
+func (c *userServiceClient) Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(LoginResponse)
+	err := c.cc.Invoke(ctx, UserService_Login_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *userServiceClient) CreateGuest(ctx context.Context, in *CreateGuestRequest, opts ...grpc.CallOption) (*CreateGuestResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(CreateGuestResponse)
@@ -67,9 +82,9 @@ func (c *userServiceClient) CreateGuest(ctx context.Context, in *CreateGuestRequ
 	return out, nil
 }
 
-func (c *userServiceClient) VerifyGuestToken(ctx context.Context, in *VerifyGuestTokenRequest, opts ...grpc.CallOption) (*VerifyGuestTokenResponse, error) {
+func (c *userServiceClient) VerifyGuestToken(ctx context.Context, in *VerifyGuestTokenRequest, opts ...grpc.CallOption) (*VerifyTokenResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(VerifyGuestTokenResponse)
+	out := new(VerifyTokenResponse)
 	err := c.cc.Invoke(ctx, UserService_VerifyGuestToken_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -77,9 +92,9 @@ func (c *userServiceClient) VerifyGuestToken(ctx context.Context, in *VerifyGues
 	return out, nil
 }
 
-func (c *userServiceClient) VerifyRefreshToken(ctx context.Context, in *VerifyRefreshTokenRequest, opts ...grpc.CallOption) (*VerifyRefreshTokenResponse, error) {
+func (c *userServiceClient) VerifyRefreshToken(ctx context.Context, in *VerifyRefreshTokenRequest, opts ...grpc.CallOption) (*VerifyTokenResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(VerifyRefreshTokenResponse)
+	out := new(VerifyTokenResponse)
 	err := c.cc.Invoke(ctx, UserService_VerifyRefreshToken_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -95,10 +110,14 @@ func (c *userServiceClient) VerifyRefreshToken(ctx context.Context, in *VerifyRe
 type UserServiceServer interface {
 	// CreateUser creates a new user with the provided details.
 	CreateUser(context.Context, *CreateUserRequest) (*CreateUserResponse, error)
+	// Login authenticates a user and returns access token and refresh token.
+	Login(context.Context, *LoginRequest) (*LoginResponse, error)
 	// CreateGuest creates a new guest with the provided details.
 	CreateGuest(context.Context, *CreateGuestRequest) (*CreateGuestResponse, error)
-	VerifyGuestToken(context.Context, *VerifyGuestTokenRequest) (*VerifyGuestTokenResponse, error)
-	VerifyRefreshToken(context.Context, *VerifyRefreshTokenRequest) (*VerifyRefreshTokenResponse, error)
+	// VerifyGuestToken verifies if the guest token is valid.
+	VerifyGuestToken(context.Context, *VerifyGuestTokenRequest) (*VerifyTokenResponse, error)
+	// VerifyRefreshToken verifies if the refresh token is valid.
+	VerifyRefreshToken(context.Context, *VerifyRefreshTokenRequest) (*VerifyTokenResponse, error)
 	mustEmbedUnimplementedUserServiceServer()
 }
 
@@ -112,13 +131,16 @@ type UnimplementedUserServiceServer struct{}
 func (UnimplementedUserServiceServer) CreateUser(context.Context, *CreateUserRequest) (*CreateUserResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method CreateUser not implemented")
 }
+func (UnimplementedUserServiceServer) Login(context.Context, *LoginRequest) (*LoginResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method Login not implemented")
+}
 func (UnimplementedUserServiceServer) CreateGuest(context.Context, *CreateGuestRequest) (*CreateGuestResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method CreateGuest not implemented")
 }
-func (UnimplementedUserServiceServer) VerifyGuestToken(context.Context, *VerifyGuestTokenRequest) (*VerifyGuestTokenResponse, error) {
+func (UnimplementedUserServiceServer) VerifyGuestToken(context.Context, *VerifyGuestTokenRequest) (*VerifyTokenResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method VerifyGuestToken not implemented")
 }
-func (UnimplementedUserServiceServer) VerifyRefreshToken(context.Context, *VerifyRefreshTokenRequest) (*VerifyRefreshTokenResponse, error) {
+func (UnimplementedUserServiceServer) VerifyRefreshToken(context.Context, *VerifyRefreshTokenRequest) (*VerifyTokenResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method VerifyRefreshToken not implemented")
 }
 func (UnimplementedUserServiceServer) mustEmbedUnimplementedUserServiceServer() {}
@@ -156,6 +178,24 @@ func _UserService_CreateUser_Handler(srv interface{}, ctx context.Context, dec f
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(UserServiceServer).CreateUser(ctx, req.(*CreateUserRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_Login_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(LoginRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).Login(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_Login_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).Login(ctx, req.(*LoginRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -226,6 +266,10 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _UserService_CreateUser_Handler,
 		},
 		{
+			MethodName: "Login",
+			Handler:    _UserService_Login_Handler,
+		},
+		{
 			MethodName: "CreateGuest",
 			Handler:    _UserService_CreateGuest_Handler,
 		},
@@ -239,5 +283,5 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "auth.proto",
+	Metadata: "auth/service.proto",
 }

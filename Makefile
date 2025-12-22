@@ -1,5 +1,5 @@
 PROTO_DIR := proto
-PROTO_SRC := $(wildcard $(PROTO_DIR)/*.proto)
+PROTO_SRC := $(wildcard $(PROTO_DIR)/**/*.proto)
 GO_OUT := .
 
 generate_proto:
@@ -9,4 +9,7 @@ generate_proto:
 		--go-grpc_out=$(GO_OUT) \
 		$(PROTO_SRC)
 
-.PHONY: generate_proto
+random_key:
+	openssl rand -base64 32
+
+.PHONY: generate_proto random_key

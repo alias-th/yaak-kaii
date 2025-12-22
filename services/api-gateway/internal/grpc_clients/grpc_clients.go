@@ -18,7 +18,7 @@ type GrpcClients struct {
 	Auth AuthClient
 }
 
-func NewGrpcCLient() (*GrpcClients, error) {
+func NewGrpcClient() (*GrpcClients, error) {
 	authServiceUrl := os.Getenv("AUTH_SERVICE_URL")
 	if authServiceUrl == "" {
 		authServiceUrl = "auth-service:9090"

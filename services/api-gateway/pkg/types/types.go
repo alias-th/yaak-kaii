@@ -20,3 +20,16 @@ type CreateUserResponse struct {
 type CreateGuestResponse struct {
 	GuestToken string `json:"guest_token"`
 }
+
+type LoginRequest struct {
+	Email    string `json:"email" binding:"required,email"`
+	Password string `json:"password" binding:"required"`
+}
+
+type LoginResponse struct {
+	UserId       string `json:"user_id"`
+	Token        string `json:"token"`
+	RefreshToken string `json:"refresh_token"`
+	ExpiresAt    string `json:"expires_at"`
+	ExpiresIn    int64  `json:"expires_in"`
+}

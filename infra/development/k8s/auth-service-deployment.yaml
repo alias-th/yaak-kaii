@@ -30,6 +30,16 @@ spec:
                 secretKeyRef:
                   name: pg
                   key: uri
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: jwt
+                  key: jwt-secret
+            - name: JWT_ISSUER
+              valueFrom:
+                secretKeyRef:
+                  name: jwt
+                  key: jwt-issuer
 ---
 apiVersion: v1
 kind: Service

@@ -1,9 +1,7 @@
 package api
 
 import (
-	"log"
 	"net/http"
-	"time"
 	"yaak-kaii/services/api-gateway/pkg/types"
 	"yaak-kaii/shared/contracts"
 	"yaak-kaii/shared/proto/auth"
@@ -11,12 +9,10 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func (app *Application) handleCreateUser(ctx *gin.Context) {
+func (app *Application) createUser(ctx *gin.Context) {
 	var reqBody types.CreateUserRequest
 	if err := ctx.ShouldBindJSON(&reqBody); err != nil {
-		log.Println(err.Error())
-		code := http.StatusBadRequest
-		ctx.JSON(http.StatusBadRequest, errorResponse(err, code))
+		app.responseWithError(ctx, http.StatusBadRequest, err)
 		return
 	}
 
@@ -28,9 +24,13 @@ func (app *Application) handleCreateUser(ctx *gin.Context) {
 		Password:    reqBody.Password,
 	})
 	if err != nil {
-		code := http.StatusInternalServerError
-		ctx.JSON(code, errorResponse(err, code))
+		app.responseWithError(ctx, http.StatusInternalServerError, err)
 		return
+	}
+
+	createdAt, _, err := app.formatDate(&user.CreatedAt)
+	if err != nil {
+		app.responseWithError(ctx, http.StatusInternalServerError, err)
 	}
 
 	res := contracts.APIResponse{
@@ -40,14 +40,14 @@ func (app *Application) handleCreateUser(ctx *gin.Context) {
 			FirstName:   user.FirstName,
 			LastName:    user.LastName,
 			PhoneNumber: user.PhoneNumber,
-			CreatedAt:   user.CreatedAt.AsTime().Format(time.RFC3339),
+			CreatedAt:   createdAt,
 		},
 	}
 
 	ctx.JSON(http.StatusCreated, res)
 }
 
-func (app *Application) handleCreateGuest(ctx *gin.Context) {
+func (app *Application) createGuest(ctx *gin.Context) {
 	ipAddress := ctx.ClientIP()
 	userAgent := ctx.Request.UserAgent()
 
@@ -57,8 +57,7 @@ func (app *Application) handleCreateGuest(ctx *gin.Context) {
 	})
 
 	if err != nil {
-		code := http.StatusInternalServerError
-		ctx.JSON(code, errorResponse(err, code))
+		app.responseWithError(ctx, http.StatusInternalServerError, err)
 		return
 	}
 
@@ -70,4 +69,38 @@ func (app *Application) handleCreateGuest(ctx *gin.Context) {
 	ctx.JSON(http.StatusCreated, res)
 }
 
-func (app *Application) login(ctx *gin.Context) {}
+func (app *Application) login(ctx *gin.Context) {
+	// bind json
+	var reqBody types.LoginRequest
+	if err := ctx.ShouldBindJSON(&reqBody); err != nil {
+		app.responseWithError(ctx, http.StatusBadRequest, err)
+		return
+	}
+
+	// login
+	loginRes, err := app.GrpcClients.Auth.Client.Login(ctx, &auth.LoginRequest{
+		Email:    reqBody.Email,
+		Password: reqBody.Password,
+	})
+	if err != nil {
+		app.responseWithError(ctx, http.StatusInternalServerError, err)
+		return
+	}
+
+	// response
+	expiresAt, expiresIn, err := app.formatDate(&loginRes.ExpiresAt)
+	if err != nil {
+		app.responseWithError(ctx, http.StatusInternalServerError, err)
+		return
+	}
+	res := contracts.APIResponse{
+		Data: types.LoginResponse{
+			UserId:       loginRes.UserId,
+			Token:        loginRes.Token,
+			RefreshToken: loginRes.RefreshToken,
+			ExpiresAt:    expiresAt,
+			ExpiresIn:    expiresIn,
+		},
+	}
+	ctx.JSON(http.StatusOK, res)
+}

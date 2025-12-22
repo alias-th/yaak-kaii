@@ -8,31 +8,40 @@ import (
 	"os/signal"
 	"syscall"
 
+	"yaak-kaii/services/auth-service/internal/auth"
+	"yaak-kaii/services/auth-service/internal/config"
 	db "yaak-kaii/services/auth-service/internal/db/sqlc"
-	"yaak-kaii/services/auth-service/internal/infrastructure/grpc"
+	"yaak-kaii/services/auth-service/internal/grpc"
+	"yaak-kaii/services/auth-service/internal/repository"
 	"yaak-kaii/services/auth-service/internal/service"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 	grpcserver "google.golang.org/grpc"
 )
 
-var (
-	connString = os.Getenv("PG_URI")
-	grpcAddr   = ":9090"
-)
-
 func main() {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
+	// Load Config
+	appConfig := config.LoadConfig()
+
 	// Initialize PG connection pool
-	connPool, err := pgxpool.New(ctx, connString)
+	connPool, err := pgxpool.New(ctx, appConfig.ConnString)
 	if err != nil {
 		log.Fatal("cannot connect to db")
 	}
 	store := db.NewStore(connPool)
-	svc := service.NewService(store)
-	log.Println("connected to database", connString)
+
+	// Initialize repositories
+	userRepo := repository.NewUserRepository(store)
+	guestRepo := repository.NewGuestRepository(store)
+	tokenRepo := repository.NewRefreshTokenRepository(store)
+	roleRepo := repository.NewRoleRepository(store)
+
+	// Initialize service
+	svc := service.NewService(userRepo, guestRepo, tokenRepo, roleRepo)
+	log.Println("connected to database", appConfig.ConnString)
 
 	// Graceful shutdown on interrupt signals
 	go func() {
@@ -42,13 +51,16 @@ func main() {
 		cancel()
 	}()
 
-	lis, err := net.Listen("tcp", grpcAddr)
+	lis, err := net.Listen("tcp", appConfig.GrpcAddr)
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
 
 	grpcServer := grpcserver.NewServer()
-	grpc.NewGRPCHandler(grpcServer, svc)
+
+	jwtAuth := auth.NewJWTAuthenticator(appConfig.JwtSecret, appConfig.JwtISS, appConfig.JwtISS)
+
+	grpc.NewGRPCHandler(grpcServer, svc, jwtAuth)
 
 	log.Printf("Starting gRPC server Trip service on port %s", lis.Addr().String())
 	go func() {

@@ -1,0 +1,90 @@
+syntax = "proto3";
+
+package auth;
+
+option go_package = "shared/proto/auth;auth";
+
+// ===== User Messages =====
+
+message CreateUserRequest {
+  string email        = 1; // User email address
+  string first_name   = 2; // User's first name
+  string last_name    = 3; // User's last name
+  string phone_number = 4; // User's phone number
+  string password     = 5; // User's password (hashed on server)
+}
+
+message CreateUserResponse {
+  string id             = 1; // User ID
+  string email          = 2; // User email
+  bool   email_verified = 3; // Whether email is verified
+  string first_name     = 4; // User's first name
+  string last_name      = 5; // User's last name
+  string phone_number   = 6; // User's phone number
+  bool   is_active      = 7; // Whether user is active
+  string role_id        = 8; // User's role ID
+  int64  created_at     = 9; // Account creation timestamp
+  int64  updated_at     = 10; // Last update timestamp
+}
+
+// ===== Login Messages =====
+
+message LoginRequest {
+  string email    = 1; // User email address
+  string password = 2; // User password
+}
+
+message LoginResponse {
+  string user_id       = 1; // User ID
+  string token         = 2; // JWT access token (expires in 1 hour)
+  string refresh_token = 3; // Refresh token (expires in 30 days)
+  int64  expires_at    = 4; // Unix timestamp when access token expires
+}
+
+// ===== Guest Messages =====
+
+message CreateGuestRequest {
+  string ip_address = 1; // Guest IP address
+  string user_agent = 2; // Guest user agent
+}
+
+message CreateGuestResponse {
+  string guest_token = 1; // Guest session token
+}
+
+// ===== Token Verification Messages =====
+
+message VerifyGuestTokenRequest {
+  string guest_token = 1; // Guest token to verify
+}
+
+message VerifyRefreshTokenRequest {
+  string refresh_token = 1; // Refresh token to verify
+}
+
+message VerifyTokenResponse {
+  oneof result {
+    TokenValid    valid = 1; // Token is valid
+    ErrorResponse error = 2; // Token verification failed
+  }
+}
+
+message TokenValid {
+  string user_id    = 1; // User ID from token
+  int64  expires_at = 2; // Unix timestamp when token expires
+}
+
+// ===== Utility Messages =====
+
+enum ErrorCode {
+  ERROR_CODE_UNSPECIFIED = 0; // Unspecified error (default)
+  INVALID_CREDENTIALS    = 1; // Email or password is incorrect
+  USER_NOT_FOUND         = 2; // User does not exist
+  TOKEN_EXPIRED          = 3; // Token has expired
+  TOKEN_INVALID          = 4; // Token is invalid or corrupted
+}
+
+message ErrorResponse {
+  ErrorCode code    = 1; // Error code enum
+  string    message = 2; // Error message
+}

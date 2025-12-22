@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 	"time"
-	"yaak-kaii/shared/util"
+	"yaak-kaii/shared/utils"
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
@@ -12,7 +12,7 @@ import (
 )
 
 func createRandomUser(t *testing.T) User {
-	passwordHash, err := util.HashPassword(util.RandomString(8))
+	passwordHash, err := utils.HashPassword(utils.RandomString(8))
 	require.NoError(t, err)
 	ctx := context.Background()
 
@@ -22,11 +22,11 @@ func createRandomUser(t *testing.T) User {
 	assert.Equal(t, "user", role.Name)
 
 	arg := CreateUserParams{
-		Email:        util.RandomEmail(),
+		Email:        utils.RandomEmail(),
 		PasswordHash: passwordHash,
-		FirstName:    util.RandomString(6),
-		LastName:     util.RandomString(6),
-		PhoneNumber:  util.RandomString(10),
+		FirstName:    utils.RandomString(6),
+		LastName:     utils.RandomString(6),
+		PhoneNumber:  utils.RandomString(10),
 		RoleID:       role.ID,
 	}
 

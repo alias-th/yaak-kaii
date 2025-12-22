@@ -6,13 +6,13 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func guestMiddleware() gin.HandlerFunc {
+func (app *Application) guestMiddleware() gin.HandlerFunc {
 
 	return func(c *gin.Context) {
 
 		_, err := c.Cookie("guest_session")
 		if err != nil {
-			c.AbortWithStatusJSON(http.StatusUnauthorized, errorResponse(err, http.StatusUnauthorized))
+			app.responseWithError(c, http.StatusUnauthorized, err)
 			return
 		}
 

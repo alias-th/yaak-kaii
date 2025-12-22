@@ -8,6 +8,7 @@ import (
 	"os/signal"
 	"syscall"
 	"time"
+	"yaak-kaii/services/api-gateway/internal/auth"
 	grpcclients "yaak-kaii/services/api-gateway/internal/grpc_clients"
 
 	"github.com/gin-gonic/gin"
@@ -16,6 +17,7 @@ import (
 type Application struct {
 	Config      Config
 	GrpcClients *grpcclients.GrpcClients
+	JwtAuth     *auth.JWTAuthenticator
 }
 
 type Config struct {
@@ -35,8 +37,8 @@ func (app *Application) Run() {
 
 		auth := v1.Group("/authentication")
 		{
-			auth.POST("/user", app.handleCreateUser)
-			auth.POST("/guest", app.handleCreateGuest)
+			auth.POST("/user", app.createUser)
+			auth.POST("/guest", app.createGuest)
 			auth.POST("/login", app.login)
 		}
 	}

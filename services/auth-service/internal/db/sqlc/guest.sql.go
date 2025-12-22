@@ -8,20 +8,23 @@ package db
 import (
 	"context"
 	"net/netip"
+
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 const createGuest = `-- name: CreateGuest :one
 INSERT INTO
-    guests (token_hash, ip_addr, user_agent, metadata)
+    guests (token_hash, ip_addr, user_agent, expires_at, metadata)
 VALUES
-    ($1, $2, $3, $4) RETURNING id, token_hash, ip_addr, user_agent, created_at, expires_at, metadata
+    ($1, $2, $3, $4, $5) RETURNING id, token_hash, ip_addr, user_agent, created_at, expires_at, metadata
 `
 
 type CreateGuestParams struct {
-	TokenHash string     `json:"token_hash"`
-	IpAddr    netip.Addr `json:"ip_addr"`
-	UserAgent string     `json:"user_agent"`
-	Metadata  []byte     `json:"metadata"`
+	TokenHash string             `json:"token_hash"`
+	IpAddr    netip.Addr         `json:"ip_addr"`
+	UserAgent string             `json:"user_agent"`
+	ExpiresAt pgtype.Timestamptz `json:"expires_at"`
+	Metadata  []byte             `json:"metadata"`
 }
 
 func (q *Queries) CreateGuest(ctx context.Context, arg CreateGuestParams) (Guest, error) {
@@ -29,6 +32,7 @@ func (q *Queries) CreateGuest(ctx context.Context, arg CreateGuestParams) (Guest
 		arg.TokenHash,
 		arg.IpAddr,
 		arg.UserAgent,
+		arg.ExpiresAt,
 		arg.Metadata,
 	)
 	var i Guest
