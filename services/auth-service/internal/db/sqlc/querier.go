@@ -8,15 +8,20 @@ import (
 	"context"
 
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 type Querier interface {
 	CreateGuest(ctx context.Context, arg CreateGuestParams) (Guest, error)
+	CreateRefreshToken(ctx context.Context, arg CreateRefreshTokenParams) (RefreshToken, error)
 	CreateUser(ctx context.Context, arg CreateUserParams) (User, error)
 	GetGuestByToken(ctx context.Context, tokenHash string) (Guest, error)
 	GetRefreshTokenByTokenHash(ctx context.Context, tokenHash string) (RefreshToken, error)
 	GetRoleByName(ctx context.Context, name string) (Role, error)
+	GetUserByEmail(ctx context.Context, email string) (User, error)
 	GetUserById(ctx context.Context, id uuid.UUID) (User, error)
+	InvalidateUserTokens(ctx context.Context, userID pgtype.UUID) error
+	RevokeRefreshToken(ctx context.Context, id uuid.UUID) error
 }
 
 var _ Querier = (*Queries)(nil)

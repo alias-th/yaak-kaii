@@ -7,7 +7,35 @@ package db
 
 import (
 	"context"
+
+	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5/pgtype"
 )
+
+const createRefreshToken = `-- name: CreateRefreshToken :one
+INSERT INTO refresh_tokens (user_id, token_hash, expires_at) 
+VALUES ($1, $2, $3) RETURNING id, user_id, token_hash, created_at, expires_at, revoked_at
+`
+
+type CreateRefreshTokenParams struct {
+	UserID    pgtype.UUID        `json:"user_id"`
+	TokenHash string             `json:"token_hash"`
+	ExpiresAt pgtype.Timestamptz `json:"expires_at"`
+}
+
+func (q *Queries) CreateRefreshToken(ctx context.Context, arg CreateRefreshTokenParams) (RefreshToken, error) {
+	row := q.db.QueryRow(ctx, createRefreshToken, arg.UserID, arg.TokenHash, arg.ExpiresAt)
+	var i RefreshToken
+	err := row.Scan(
+		&i.ID,
+		&i.UserID,
+		&i.TokenHash,
+		&i.CreatedAt,
+		&i.ExpiresAt,
+		&i.RevokedAt,
+	)
+	return i, err
+}
 
 const getRefreshTokenByTokenHash = `-- name: GetRefreshTokenByTokenHash :one
 SELECT id, user_id, token_hash, created_at, expires_at, revoked_at FROM refresh_tokens WHERE token_hash = $1 limit 1
@@ -25,4 +53,26 @@ func (q *Queries) GetRefreshTokenByTokenHash(ctx context.Context, tokenHash stri
 		&i.RevokedAt,
 	)
 	return i, err
+}
+
+const invalidateUserTokens = `-- name: InvalidateUserTokens :exec
+UPDATE refresh_tokens
+SET revoked_at = NOW() 
+WHERE user_id = $1 AND revoked_at IS NULL
+`
+
+func (q *Queries) InvalidateUserTokens(ctx context.Context, userID pgtype.UUID) error {
+	_, err := q.db.Exec(ctx, invalidateUserTokens, userID)
+	return err
+}
+
+const revokeRefreshToken = `-- name: RevokeRefreshToken :exec
+UPDATE refresh_tokens
+SET revoked_at = NOW() 
+WHERE id = $1
+`
+
+func (q *Queries) RevokeRefreshToken(ctx context.Context, id uuid.UUID) error {
+	_, err := q.db.Exec(ctx, revokeRefreshToken, id)
+	return err
 }

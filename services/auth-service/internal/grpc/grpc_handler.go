@@ -3,7 +3,6 @@ package grpc
 import (
 	"context"
 	"log"
-	"yaak-kaii/services/auth-service/internal/auth"
 	"yaak-kaii/services/auth-service/internal/domain"
 	pb "yaak-kaii/shared/proto/auth"
 	"yaak-kaii/shared/utils"
@@ -16,13 +15,11 @@ import (
 type gRPCHandler struct {
 	pb.UnimplementedUserServiceServer
 	service domain.AuthService
-	jwtAuth *auth.JWTAuthenticator
 }
 
-func NewGRPCHandler(server *grpc.Server, service domain.AuthService, jwtAuth *auth.JWTAuthenticator) {
+func NewGRPCHandler(server *grpc.Server, service domain.AuthService) {
 	handler := &gRPCHandler{
 		service: service,
-		jwtAuth: jwtAuth,
 	}
 
 	pb.RegisterUserServiceServer(server, handler)
@@ -142,6 +139,34 @@ func (h *gRPCHandler) CreateUser(ctx context.Context, req *pb.CreateUserRequest)
 
 }
 
-// func (h *gRPCHandler) Login(context.Context, *pb.LoginRequest) (*pb.LoginResponse, error) {
-// 	h.service
-// }
+func (h *gRPCHandler) Login(ctx context.Context, req *pb.LoginRequest) (*pb.LoginResponse, error) {
+	email := req.GetEmail()
+	password := req.GetPassword()
+
+	arg := &domain.LoginRequest{
+		Email:    email,
+		Password: password,
+	}
+
+	resp, err := h.service.Login(ctx, arg)
+	if err != nil {
+		if customErr, ok := err.(*utils.CustomError); ok {
+			switch customErr.Code {
+			case utils.ErrCodeInvalidCredentials:
+				return nil, status.Error(codes.Unauthenticated, customErr.Message)
+			case utils.ErrCodeUserInactive:
+				return nil, status.Error(codes.Unauthenticated, customErr.Message)
+			default:
+				return nil, status.Error(codes.Internal, customErr.Message)
+			}
+		}
+		return nil, status.Error(codes.Internal, "failed to login")
+	}
+
+	return &pb.LoginResponse{
+		UserId:       resp.UserID,
+		Token:        resp.Token,
+		RefreshToken: resp.RefreshToken,
+		ExpiresAt:    resp.ExpiresAt,
+	}, nil
+}

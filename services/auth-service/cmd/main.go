@@ -39,8 +39,11 @@ func main() {
 	tokenRepo := repository.NewRefreshTokenRepository(store)
 	roleRepo := repository.NewRoleRepository(store)
 
+	// Initialize jwt
+	jwtAuth := auth.NewJWTAuthenticator(appConfig.JwtSecret, appConfig.JwtISS, appConfig.JwtISS)
+
 	// Initialize service
-	svc := service.NewService(userRepo, guestRepo, tokenRepo, roleRepo)
+	svc := service.NewService(userRepo, guestRepo, tokenRepo, roleRepo, jwtAuth)
 	log.Println("connected to database", appConfig.ConnString)
 
 	// Graceful shutdown on interrupt signals
@@ -58,9 +61,7 @@ func main() {
 
 	grpcServer := grpcserver.NewServer()
 
-	jwtAuth := auth.NewJWTAuthenticator(appConfig.JwtSecret, appConfig.JwtISS, appConfig.JwtISS)
-
-	grpc.NewGRPCHandler(grpcServer, svc, jwtAuth)
+	grpc.NewGRPCHandler(grpcServer, svc)
 
 	log.Printf("Starting gRPC server Trip service on port %s", lis.Addr().String())
 	go func() {

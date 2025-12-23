@@ -2,8 +2,10 @@ package auth
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/google/uuid"
 )
 
 type JWTAuthenticator struct {
@@ -20,7 +22,16 @@ func NewJWTAuthenticator(secret, aud, iss string) *JWTAuthenticator {
 	}
 }
 
-func (a *JWTAuthenticator) GenerateToken(claims jwt.Claims) (string, error) {
+func (a *JWTAuthenticator) GenerateToken(userID uuid.UUID) (string, error) {
+
+	claims := jwt.RegisteredClaims{
+		Subject:   userID.String(),
+		ExpiresAt: jwt.NewNumericDate(time.Now().Add(1 * time.Hour)),
+		IssuedAt:  jwt.NewNumericDate(time.Now()),
+		Issuer:    a.iss,
+		Audience:  jwt.ClaimStrings{a.iss},
+	}
+
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	tokenString, err := token.SignedString([]byte(a.secret))
 	if err != nil {

@@ -1,6 +1,7 @@
 package service
 
 import (
+	"yaak-kaii/services/auth-service/internal/auth"
 	"yaak-kaii/services/auth-service/internal/domain"
 )
 
@@ -9,6 +10,7 @@ type service struct {
 	guestRepo        domain.GuestRepository
 	refreshTokenRepo domain.RefreshTokenRepository
 	roleRepo         domain.RoleRepository
+	jwtAuth          *auth.JWTAuthenticator
 }
 
 func NewService(
@@ -16,11 +18,14 @@ func NewService(
 	guestRepo domain.GuestRepository,
 	refreshTokenRepo domain.RefreshTokenRepository,
 	roleRepo domain.RoleRepository,
+	jwtAuth *auth.JWTAuthenticator,
+
 ) domain.AuthService {
 	return &service{
 		userRepo:         userRepo,
 		guestRepo:        guestRepo,
 		refreshTokenRepo: refreshTokenRepo,
 		roleRepo:         roleRepo,
+		jwtAuth:          jwtAuth,
 	}
 }

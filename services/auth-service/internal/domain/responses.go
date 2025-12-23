@@ -1,7 +1,7 @@
 package domain
 
 type LoginResponse struct {
-	User         *UserModel
+	UserID       string
 	Token        string
 	RefreshToken string
 	ExpiresAt    int64

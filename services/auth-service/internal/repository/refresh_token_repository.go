@@ -2,9 +2,12 @@ package repository
 
 import (
 	"context"
+	"time"
 
 	db "yaak-kaii/services/auth-service/internal/db/sqlc"
 	"yaak-kaii/services/auth-service/internal/domain"
+
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 type refreshTokenRepository struct {
@@ -15,8 +18,18 @@ func NewRefreshTokenRepository(store db.Store) domain.RefreshTokenRepository {
 	return &refreshTokenRepository{store: store}
 }
 
-func (r *refreshTokenRepository) CreateRefreshToken(ctx context.Context, token *domain.RefreshTokenModel) error {
-	// TODO: Implement
+func (r *refreshTokenRepository) CreateRefreshToken(
+	ctx context.Context,
+	token *domain.RefreshTokenModel) error {
+	arg := db.CreateRefreshTokenParams{
+		UserID:    pgtype.UUID{Bytes: token.User.ID, Valid: true},
+		TokenHash: token.TokenHash,
+		ExpiresAt: pgtype.Timestamptz{Time: time.Unix(token.ExpiresAt, 0), Valid: true},
+	}
+	_, err := r.store.CreateRefreshToken(ctx, arg)
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
