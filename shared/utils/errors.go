@@ -5,13 +5,15 @@ import "strings"
 type ErrorCode string
 
 const (
-	ErrCodeUserNotFound ErrorCode = "USER_NOT_FOUND"
-	ErrCodeUserExists   ErrorCode = "USER_ALREADY_EXISTS"
-	ErrCodeTokenExpired ErrorCode = "TOKEN_EXPIRED"
-	ErrCodeTokenRevoked ErrorCode = "TOKEN_REVOKED"
-	ErrCodeUserInactive ErrorCode = "USER_INACTIVE"
-	ErrCodeInvalidToken ErrorCode = "INVALID_TOKEN"
-	ErrCodeRoleNotFound ErrorCode = "ROLE_NOT_FOUND"
+	ErrCodeUserNotFound       ErrorCode = "USER_NOT_FOUND"
+	ErrCodeUserExists         ErrorCode = "USER_ALREADY_EXISTS"
+	ErrCodeTokenExpired       ErrorCode = "TOKEN_EXPIRED"
+	ErrCodeTokenRevoked       ErrorCode = "TOKEN_REVOKED"
+	ErrCodeUserInactive       ErrorCode = "USER_INACTIVE"
+	ErrCodeInvalidToken       ErrorCode = "INVALID_TOKEN"
+	ErrCodeRoleNotFound       ErrorCode = "ROLE_NOT_FOUND"
+	ErrCodeInvalidPassword    ErrorCode = "INVALID_PASSWORD"
+	ErrCodeInvalidCredentials ErrorCode = "INVALID_CREDENTIALS"
 )
 
 type CustomError struct {
@@ -70,6 +72,22 @@ func NewUserInactiveError() *CustomError {
 		Code:       ErrCodeUserInactive,
 		Message:    "user is inactive",
 		HTTPStatus: 403,
+	}
+}
+
+func NewInvalidPasswordError() *CustomError {
+	return &CustomError{
+		Code:       ErrCodeInvalidPassword,
+		Message:    "password is incorrect",
+		HTTPStatus: 401,
+	}
+}
+
+func NewInvalidCredentialsError() *CustomError {
+	return &CustomError{
+		Code:       ErrCodeInvalidCredentials,
+		Message:    "invalid email or password",
+		HTTPStatus: 401,
 	}
 }
 
