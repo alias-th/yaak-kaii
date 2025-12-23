@@ -1,7 +1,5 @@
 package utils
 
-import "strings"
-
 type ErrorCode string
 
 const (
@@ -14,6 +12,8 @@ const (
 	ErrCodeRoleNotFound       ErrorCode = "ROLE_NOT_FOUND"
 	ErrCodeInvalidPassword    ErrorCode = "INVALID_PASSWORD"
 	ErrCodeInvalidCredentials ErrorCode = "INVALID_CREDENTIALS"
+	ErrCodeInternalError      ErrorCode = "INTERNAL_ERROR"
+	ErrCodeTokenNotFound      ErrorCode = "TOKEN_NOT_FOUND"
 )
 
 type CustomError struct {
@@ -91,8 +91,61 @@ func NewInvalidCredentialsError() *CustomError {
 	}
 }
 
-// sql
+func NewInternalServerError() *CustomError {
+	return &CustomError{
+		Code:       ErrCodeInternalError,
+		Message:    "internal server error",
+		HTTPStatus: 500,
+	}
+}
+
+func NewTokenNotFoundError() *CustomError {
+	return &CustomError{
+		Code:       ErrCodeTokenNotFound,
+		Message:    "token not found",
+		HTTPStatus: 404,
+	}
+}
+
+// Error type checkers - Helper functions to check error types
+func hasErrorCode(err error, code ErrorCode) bool {
+	if customErr, ok := err.(*CustomError); ok {
+		return customErr.Code == code
+	}
+	return false
+}
+
+// IsUserAlreadyExistsError checks if error is due to user already exists (duplicate email)
 func IsUserAlreadyExistsError(err error) bool {
-	return strings.Contains(err.Error(), "duplicate key") ||
-		strings.Contains(err.Error(), "email")
+	return hasErrorCode(err, ErrCodeUserExists)
+}
+
+// IsTokenNotFoundError checks if error is due to token not found
+func IsTokenNotFoundError(err error) bool {
+	return hasErrorCode(err, ErrCodeTokenNotFound)
+}
+
+// IsTokenExpiredError checks if error is due to token expiration
+func IsTokenExpiredError(err error) bool {
+	return hasErrorCode(err, ErrCodeTokenExpired)
+}
+
+// IsTokenRevokedError checks if error is due to token being revoked
+func IsTokenRevokedError(err error) bool {
+	return hasErrorCode(err, ErrCodeTokenRevoked)
+}
+
+// IsUserNotFoundError checks if error is due to user not found
+func IsUserNotFoundError(err error) bool {
+	return hasErrorCode(err, ErrCodeUserNotFound)
+}
+
+// IsUserInactiveError checks if error is due to user being inactive
+func IsUserInactiveError(err error) bool {
+	return hasErrorCode(err, ErrCodeUserInactive)
+}
+
+// IsRoleNotFoundError checks if error is due to role not found
+func IsRoleNotFoundError(err error) bool {
+	return hasErrorCode(err, ErrCodeRoleNotFound)
 }

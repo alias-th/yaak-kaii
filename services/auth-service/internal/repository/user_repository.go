@@ -2,15 +2,15 @@ package repository
 
 import (
 	"context"
-	"database/sql"
 	"log"
 	"strings"
+
+	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5"
 
 	db "yaak-kaii/services/auth-service/internal/db/sqlc"
 	"yaak-kaii/services/auth-service/internal/domain"
 	"yaak-kaii/shared/utils"
-
-	"github.com/google/uuid"
 )
 
 type userRepository struct {
@@ -32,14 +32,13 @@ func (r *userRepository) CreateUser(ctx context.Context, user *domain.UserModel)
 	}
 	result, err := r.store.CreateUser(ctx, arg)
 	if err != nil {
-		if utils.IsUserAlreadyExistsError(err) {
-			log.Printf("duplicate email: %s", user.Email)
-			return nil, err
+		if strings.Contains(err.Error(), "duplicate key") {
+			log.Printf("user already exists: email=%s", user.Email)
+			return nil, utils.NewUserAlreadyExistsError()
 		}
-
 		if strings.Contains(err.Error(), "fk_role") {
-			log.Printf("role not found: %s", user.Role.ID)
-			return nil, err
+			log.Printf("role not found: roleId=%s", user.Role.ID)
+			return nil, utils.NewRoleNotFoundError()
 		}
 
 		log.Printf("failed to create user: error=%v", err)
@@ -51,10 +50,10 @@ func (r *userRepository) CreateUser(ctx context.Context, user *domain.UserModel)
 func (r *userRepository) GetUserByID(ctx context.Context, id uuid.UUID) (*domain.UserModel, error) {
 	result, err := r.store.GetUserById(ctx, id)
 	if err != nil {
-		log.Printf("failed to get user: id=%s, error=%v", id, err)
-		if err == sql.ErrNoRows {
-			return nil, nil
+		if err == pgx.ErrNoRows {
+			return nil, utils.NewUserNotFoundError()
 		}
+		log.Printf("failed to get user: error=%v", err)
 		return nil, err
 	}
 	return mapDBUserToDomain(result), nil
@@ -63,10 +62,10 @@ func (r *userRepository) GetUserByID(ctx context.Context, id uuid.UUID) (*domain
 func (r *userRepository) GetUserByEmail(ctx context.Context, email string) (*domain.UserModel, error) {
 	result, err := r.store.GetUserByEmail(ctx, email)
 	if err != nil {
-		log.Printf("failed to get user: email=%s, error=%v", email, err)
-		if err == sql.ErrNoRows {
-			return nil, nil
+		if err == pgx.ErrNoRows {
+			return nil, utils.NewUserNotFoundError()
 		}
+		log.Printf("failed to get user: error=%v", err)
 		return nil, err
 	}
 

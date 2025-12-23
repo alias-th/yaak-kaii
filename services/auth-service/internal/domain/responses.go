@@ -10,3 +10,8 @@ type LoginResponse struct {
 type CreateUserResponse struct {
 	User *UserModel
 }
+
+type RotateRefreshTokenResponse struct {
+	Token        string
+	RefreshToken string
+}

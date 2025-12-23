@@ -74,6 +74,19 @@ message TokenValid {
   int64  expires_at = 2; // Unix timestamp when token expires
 }
 
+// ===== Token Rotation Messages =====
+
+message RotateRefreshTokenRequest {
+  string refresh_token = 1; // Old/current refresh token to rotate
+}
+
+message RotateRefreshTokenResponse {
+  string user_id       = 1; // User ID
+  string token         = 2; // New JWT access token (expires in 1 hour)
+  string refresh_token = 3; // New refresh token (expires in 30 days)
+  int64  expires_at    = 4; // Unix timestamp when access token expires
+}
+
 // ===== Utility Messages =====
 
 enum ErrorCode {

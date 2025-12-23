@@ -2,37 +2,36 @@ package service
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"time"
-	db "yaak-kaii/services/auth-service/internal/db/sqlc"
 	"yaak-kaii/services/auth-service/internal/domain"
 	"yaak-kaii/shared/utils"
 )
 
 func (s *service) CreateUser(ctx context.Context, req *domain.CreateUserRequest) (*domain.CreateUserResponse, error) {
 	// 1. Checking already exist email
-	user, err := s.userRepo.GetUserByEmail(ctx, req.Email)
-	if err != nil {
-		return nil, fmt.Errorf("failed to get user: %w", err)
-	}
-	if user != nil {
+	_, err := s.userRepo.GetUserByEmail(ctx, req.Email)
+	if err == nil {
 		return nil, utils.NewUserAlreadyExistsError()
+	}
+
+	if !utils.IsUserNotFoundError(err) {
+		return nil, utils.NewInternalServerError()
 	}
 
 	// 2. Get role user
 	role, err := s.roleRepo.GetRoleByName(ctx, "user")
 	if err != nil {
-		return nil, fmt.Errorf("failed to get role: %w", err)
-	}
-	if role == nil {
-		return nil, utils.NewRoleNotFoundError()
+		if utils.IsRoleNotFoundError(err) {
+			return nil, err
+		}
+		return nil, utils.NewInternalServerError()
 	}
 
 	// 3. Hash password
 	hashedPassword, err := utils.HashPassword(req.Password)
 	if err != nil {
-		return nil, fmt.Errorf("failed to hash password: %w", err)
+		return nil, utils.NewInternalServerError()
 	}
 
 	// 4. Map domain
@@ -49,9 +48,9 @@ func (s *service) CreateUser(ctx context.Context, req *domain.CreateUserRequest)
 	result, err := s.userRepo.CreateUser(ctx, arg)
 	if err != nil {
 		if utils.IsUserAlreadyExistsError(err) {
-			return nil, utils.NewUserAlreadyExistsError()
+			return nil, err
 		}
-		return nil, fmt.Errorf("failed to create user: %w", err)
+		return nil, utils.NewInternalServerError()
 	}
 
 	// 6. Response
@@ -77,14 +76,13 @@ func (s *service) Login(ctx context.Context, req *domain.LoginRequest) (*domain.
 	// 1. Get user by email
 	user, err := s.userRepo.GetUserByEmail(ctx, req.Email)
 	if err != nil {
-		return nil, utils.NewInvalidCredentialsError()
-	}
-	if user == nil {
-		return nil, utils.NewInvalidCredentialsError()
+		if utils.IsUserNotFoundError(err) {
+			return nil, utils.NewInvalidCredentialsError()
+		}
+		return nil, utils.NewInternalServerError()
 	}
 	if !user.IsActive {
 		return nil, utils.NewUserInactiveError()
-
 	}
 
 	// 2. Verify password
@@ -97,25 +95,30 @@ func (s *service) Login(ctx context.Context, req *domain.LoginRequest) (*domain.
 	// 3. Generate access token
 	token, err := s.jwtAuth.GenerateToken(user.ID)
 	if err != nil {
-		return nil, fmt.Errorf("failed to generate token: %w", err)
+		log.Printf("failed to generate token: error=%v", err)
+		return nil, utils.NewInternalServerError()
 	}
 
 	// 4. Generate refresh token
 	refreshToken, refreshTokenHashed, err := utils.GenerateTokenPair(32)
 	if err != nil {
-		return nil, fmt.Errorf("failed to generate refresh token: %w", err)
+		log.Printf("failed to generate refresh token: error=%v", err)
+		return nil, utils.NewInternalServerError()
 	}
 
 	// 5. Save refresh token hashed
 	expiresAt := time.Now().Add(time.Hour * 24 * 30).Unix()
 	arg := &domain.RefreshTokenModel{
-		User:      db.User{ID: user.ID},
+		User: domain.UserModel{
+			ID: user.ID,
+		},
 		TokenHash: refreshTokenHashed,
 		ExpiresAt: expiresAt,
 	}
 	err = s.refreshTokenRepo.CreateRefreshToken(ctx, arg)
 	if err != nil {
-		return nil, fmt.Errorf("failed to save refresh token: %w", err)
+		log.Printf("failed to save refresh token: error=%v", err)
+		return nil, utils.NewInternalServerError()
 	}
 
 	// 6. Return response

@@ -2,9 +2,11 @@ package repository
 
 import (
 	"context"
+	"database/sql"
 	"log"
 	db "yaak-kaii/services/auth-service/internal/db/sqlc"
 	"yaak-kaii/services/auth-service/internal/domain"
+	"yaak-kaii/shared/utils"
 )
 
 type roleRepository struct {
@@ -19,6 +21,9 @@ func (r *roleRepository) GetRoleByName(ctx context.Context, name string) (*domai
 	role, err := r.store.GetRoleByName(ctx, name)
 	if err != nil {
 		log.Printf("Error: %v", err)
+		if err == sql.ErrNoRows {
+			return nil, utils.NewRoleNotFoundError()
+		}
 		return nil, err
 	}
 	return mapDBRoleToDomain(role), nil

@@ -22,4 +22,7 @@ service UserService {
 
   // VerifyRefreshToken verifies if the refresh token is valid.
   rpc VerifyRefreshToken(VerifyRefreshTokenRequest) returns (VerifyTokenResponse);
+
+  // RotateRefreshToken rotates if the refresh token is valid.
+  rpc RotateRefreshToken(RotateRefreshTokenRequest) returns (RotateRefreshTokenResponse);
 }

@@ -2,10 +2,13 @@ package repository
 
 import (
 	"context"
+	"database/sql"
+	"log"
 	"time"
 
 	db "yaak-kaii/services/auth-service/internal/db/sqlc"
 	"yaak-kaii/services/auth-service/internal/domain"
+	"yaak-kaii/shared/utils"
 
 	"github.com/jackc/pgx/v5/pgtype"
 )
@@ -36,6 +39,11 @@ func (r *refreshTokenRepository) CreateRefreshToken(
 func (r *refreshTokenRepository) GetRefreshTokenByHash(ctx context.Context, hash string) (*domain.RefreshTokenModel, error) {
 	result, err := r.store.GetRefreshTokenByTokenHash(ctx, hash)
 	if err != nil {
+		log.Printf("failed to get refresh token: error=%v", err)
+		if err == sql.ErrNoRows {
+			return nil, utils.NewTokenNotFoundError()
+		}
+
 		return nil, err
 	}
 	return mapDBRefreshTokenToDomain(result), nil
