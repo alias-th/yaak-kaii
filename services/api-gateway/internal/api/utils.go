@@ -3,16 +3,77 @@ package api
 import (
 	"errors"
 	"log"
+	"net/http"
 	"time"
+	"yaak-kaii/shared/contracts"
 
 	"github.com/gin-gonic/gin"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 func (app *Application) responseWithError(ctx *gin.Context, code int, err error) {
 	log.Printf("Error: %v", err)
-	ctx.JSON(code, gin.H{
-		"error": err.Error(),
+
+	if st, ok := status.FromError(err); ok {
+		httpCode := mapGrpcCodeToHTTP(st.Code())
+		ctx.JSON(httpCode, contracts.APIResponse{
+			Error: &contracts.APIError{
+				Code:    st.Code().String(),
+				Message: st.Message(),
+			},
+		})
+		return
+	}
+
+	// Fallback
+	ctx.JSON(code, contracts.APIResponse{
+		Error: &contracts.APIError{
+			Code:    "INTERNAL_ERROR",
+			Message: err.Error(),
+		},
 	})
+}
+
+func mapGrpcCodeToHTTP(code codes.Code) int {
+	switch code {
+	case codes.OK:
+		return http.StatusOK
+	case codes.Canceled:
+		return http.StatusRequestTimeout
+	case codes.Unknown:
+		return http.StatusInternalServerError
+	case codes.InvalidArgument:
+		return http.StatusBadRequest
+	case codes.DeadlineExceeded:
+		return http.StatusRequestTimeout
+	case codes.NotFound:
+		return http.StatusNotFound
+	case codes.AlreadyExists:
+		return http.StatusConflict // 409
+	case codes.PermissionDenied:
+		return http.StatusForbidden
+	case codes.ResourceExhausted:
+		return http.StatusTooManyRequests
+	case codes.FailedPrecondition:
+		return http.StatusBadRequest
+	case codes.Aborted:
+		return http.StatusConflict
+	case codes.OutOfRange:
+		return http.StatusBadRequest
+	case codes.Unimplemented:
+		return http.StatusNotImplemented
+	case codes.Internal:
+		return http.StatusInternalServerError
+	case codes.Unavailable:
+		return http.StatusServiceUnavailable
+	case codes.DataLoss:
+		return http.StatusInternalServerError
+	case codes.Unauthenticated:
+		return http.StatusUnauthorized
+	default:
+		return http.StatusInternalServerError
+	}
 }
 
 func (app *Application) formatDate(timestamp *int64) (at string, in int64, err error) {

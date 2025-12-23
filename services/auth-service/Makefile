@@ -22,4 +22,10 @@ new_migration:
 sqlc:
 	sqlc generate
 
-.PHONY: test migrateup migrateup1 migratedown migratedown1 new_migration sqlc
+mockgen:
+	mockgen -source=./internal/domain/domain.go \
+		-destination=mocks/mock_repository.go \
+		-package=mocks \
+		-mock_names UserRepository=MockUserRepository
+		
+.PHONY: test migrateup migrateup1 migratedown migratedown1 new_migration sqlc mockgen

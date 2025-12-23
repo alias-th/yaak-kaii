@@ -6,6 +6,7 @@ import (
 	"yaak-kaii/services/auth-service/internal/auth"
 	"yaak-kaii/services/auth-service/internal/domain"
 	pb "yaak-kaii/shared/proto/auth"
+	"yaak-kaii/shared/utils"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -98,6 +99,7 @@ func (h *gRPCHandler) CreateUser(ctx context.Context, req *pb.CreateUserRequest)
 	phoneNumber := req.GetPhoneNumber()
 	password := req.GetPassword()
 
+	// 1. Map data
 	arg := &domain.CreateUserRequest{
 		Email:       email,
 		FirstName:   firstName,
@@ -106,11 +108,25 @@ func (h *gRPCHandler) CreateUser(ctx context.Context, req *pb.CreateUserRequest)
 		Password:    password,
 	}
 
+	// 2. Create user
 	user, err := h.service.CreateUser(ctx, arg)
+
+	// 3. Check errors
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to create the user: %v", err)
+		if customErr, ok := err.(*utils.CustomError); ok {
+			switch customErr.Code {
+			case utils.ErrCodeUserExists:
+				return nil, status.Error(codes.AlreadyExists, customErr.Message)
+			case utils.ErrCodeRoleNotFound:
+				return nil, status.Error(codes.Internal, customErr.Message)
+			default:
+				return nil, status.Error(codes.Internal, customErr.Message)
+			}
+		}
+		return nil, status.Error(codes.Internal, "failed to create user")
 	}
 
+	// 4. response
 	return &pb.CreateUserResponse{
 		Id:            user.User.ID.String(),
 		Email:         user.User.Email,

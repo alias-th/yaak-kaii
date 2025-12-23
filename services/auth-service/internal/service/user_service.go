@@ -3,7 +3,7 @@ package service
 import (
 	"context"
 	"errors"
-	"log"
+	"fmt"
 	"yaak-kaii/services/auth-service/internal/domain"
 	"yaak-kaii/shared/utils"
 )
@@ -12,28 +12,25 @@ func (s *service) CreateUser(ctx context.Context, req *domain.CreateUserRequest)
 	// 1. Checking already exist email
 	user, err := s.userRepo.GetUserByEmail(ctx, req.Email)
 	if err != nil {
-		log.Printf("Error: %v", err)
-		return nil, err
+		return nil, fmt.Errorf("failed to get user: %w", err)
 	}
 	if user != nil {
-		return nil, errors.New("user already exists")
+		return nil, utils.NewUserAlreadyExistsError()
 	}
 
 	// 2. Get role user
 	role, err := s.roleRepo.GetRoleByName(ctx, "user")
 	if err != nil {
-		log.Printf("Error: %v", err)
-		return nil, err
+		return nil, fmt.Errorf("failed to get role: %w", err)
 	}
 	if role == nil {
-		return nil, errors.New("user role not found")
+		return nil, utils.NewRoleNotFoundError()
 	}
 
 	// 3. Hash password
 	hashedPassword, err := utils.HashPassword(req.Password)
 	if err != nil {
-		log.Printf("Error: %v", err)
-		return nil, err
+		return nil, fmt.Errorf("failed to hash password: %w", err)
 	}
 
 	// 4. Map domain
@@ -49,8 +46,10 @@ func (s *service) CreateUser(ctx context.Context, req *domain.CreateUserRequest)
 	// 5. Create user
 	result, err := s.userRepo.CreateUser(ctx, arg)
 	if err != nil {
-		log.Printf("Error: %v", err)
-		return nil, err
+		if utils.IsUserAlreadyExistsError(err) {
+			return nil, utils.NewUserAlreadyExistsError()
+		}
+		return nil, fmt.Errorf("failed to create user: %w", err)
 	}
 
 	// 6. Response
@@ -73,8 +72,11 @@ func (s *service) CreateUser(ctx context.Context, req *domain.CreateUserRequest)
 }
 
 func (s *service) Login(ctx context.Context, req *domain.LoginRequest) (*domain.LoginResponse, error) {
-	// TODO: Implement login logic
 	// 1. Get user by email
+	// user, err := s.userRepo.GetUserByEmail(ctx, req.Email)
+	// if err != nil {
+	// 	return nil, errors.New("user role not found")
+	// }
 	// 2. Verify password
 	// 3. Generate access token
 	// 4. Generate refresh token

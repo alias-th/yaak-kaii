@@ -2,7 +2,6 @@ package repository
 
 import (
 	"context"
-	"log"
 
 	db "yaak-kaii/services/auth-service/internal/db/sqlc"
 	"yaak-kaii/services/auth-service/internal/domain"
@@ -29,7 +28,6 @@ func (r *userRepository) CreateUser(ctx context.Context, user *domain.UserModel)
 	}
 	result, err := r.store.CreateUser(ctx, arg)
 	if err != nil {
-		log.Printf("Error: %v", err)
 		return nil, err
 	}
 	return mapDBUserToDomain(result), nil

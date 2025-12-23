@@ -8,6 +8,6 @@ type APIResponse struct {
 
 // APIError is the error structure for the API.
 type APIError struct {
-	Code    int    `json:"code"`
+	Code    string `json:"code"`
 	Message string `json:"message"`
 }
