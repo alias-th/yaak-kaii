@@ -706,6 +706,118 @@ func (x *TokenValid) GetExpiresAt() int64 {
 	return 0
 }
 
+type RotateRefreshTokenRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	RefreshToken  string                 `protobuf:"bytes,1,opt,name=refresh_token,json=refreshToken,proto3" json:"refresh_token,omitempty"` // Old/current refresh token to rotate
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *RotateRefreshTokenRequest) Reset() {
+	*x = RotateRefreshTokenRequest{}
+	mi := &file_auth_messages_proto_msgTypes[10]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RotateRefreshTokenRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RotateRefreshTokenRequest) ProtoMessage() {}
+
+func (x *RotateRefreshTokenRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_auth_messages_proto_msgTypes[10]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RotateRefreshTokenRequest.ProtoReflect.Descriptor instead.
+func (*RotateRefreshTokenRequest) Descriptor() ([]byte, []int) {
+	return file_auth_messages_proto_rawDescGZIP(), []int{10}
+}
+
+func (x *RotateRefreshTokenRequest) GetRefreshToken() string {
+	if x != nil {
+		return x.RefreshToken
+	}
+	return ""
+}
+
+type RotateRefreshTokenResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	UserId        string                 `protobuf:"bytes,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`                   // User ID
+	Token         string                 `protobuf:"bytes,2,opt,name=token,proto3" json:"token,omitempty"`                                   // New JWT access token (expires in 1 hour)
+	RefreshToken  string                 `protobuf:"bytes,3,opt,name=refresh_token,json=refreshToken,proto3" json:"refresh_token,omitempty"` // New refresh token (expires in 30 days)
+	ExpiresAt     int64                  `protobuf:"varint,4,opt,name=expires_at,json=expiresAt,proto3" json:"expires_at,omitempty"`         // Unix timestamp when access token expires
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *RotateRefreshTokenResponse) Reset() {
+	*x = RotateRefreshTokenResponse{}
+	mi := &file_auth_messages_proto_msgTypes[11]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RotateRefreshTokenResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RotateRefreshTokenResponse) ProtoMessage() {}
+
+func (x *RotateRefreshTokenResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_auth_messages_proto_msgTypes[11]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RotateRefreshTokenResponse.ProtoReflect.Descriptor instead.
+func (*RotateRefreshTokenResponse) Descriptor() ([]byte, []int) {
+	return file_auth_messages_proto_rawDescGZIP(), []int{11}
+}
+
+func (x *RotateRefreshTokenResponse) GetUserId() string {
+	if x != nil {
+		return x.UserId
+	}
+	return ""
+}
+
+func (x *RotateRefreshTokenResponse) GetToken() string {
+	if x != nil {
+		return x.Token
+	}
+	return ""
+}
+
+func (x *RotateRefreshTokenResponse) GetRefreshToken() string {
+	if x != nil {
+		return x.RefreshToken
+	}
+	return ""
+}
+
+func (x *RotateRefreshTokenResponse) GetExpiresAt() int64 {
+	if x != nil {
+		return x.ExpiresAt
+	}
+	return 0
+}
+
 type ErrorResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Code          ErrorCode              `protobuf:"varint,1,opt,name=code,proto3,enum=auth.ErrorCode" json:"code,omitempty"` // Error code enum
@@ -716,7 +828,7 @@ type ErrorResponse struct {
 
 func (x *ErrorResponse) Reset() {
 	*x = ErrorResponse{}
-	mi := &file_auth_messages_proto_msgTypes[10]
+	mi := &file_auth_messages_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -728,7 +840,7 @@ func (x *ErrorResponse) String() string {
 func (*ErrorResponse) ProtoMessage() {}
 
 func (x *ErrorResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_auth_messages_proto_msgTypes[10]
+	mi := &file_auth_messages_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -741,7 +853,7 @@ func (x *ErrorResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ErrorResponse.ProtoReflect.Descriptor instead.
 func (*ErrorResponse) Descriptor() ([]byte, []int) {
-	return file_auth_messages_proto_rawDescGZIP(), []int{10}
+	return file_auth_messages_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *ErrorResponse) GetCode() ErrorCode {
@@ -815,7 +927,15 @@ const file_auth_messages_proto_rawDesc = "" +
 	"TokenValid\x12\x17\n" +
 	"\auser_id\x18\x01 \x01(\tR\x06userId\x12\x1d\n" +
 	"\n" +
-	"expires_at\x18\x02 \x01(\x03R\texpiresAt\"N\n" +
+	"expires_at\x18\x02 \x01(\x03R\texpiresAt\"@\n" +
+	"\x19RotateRefreshTokenRequest\x12#\n" +
+	"\rrefresh_token\x18\x01 \x01(\tR\frefreshToken\"\x8f\x01\n" +
+	"\x1aRotateRefreshTokenResponse\x12\x17\n" +
+	"\auser_id\x18\x01 \x01(\tR\x06userId\x12\x14\n" +
+	"\x05token\x18\x02 \x01(\tR\x05token\x12#\n" +
+	"\rrefresh_token\x18\x03 \x01(\tR\frefreshToken\x12\x1d\n" +
+	"\n" +
+	"expires_at\x18\x04 \x01(\x03R\texpiresAt\"N\n" +
 	"\rErrorResponse\x12#\n" +
 	"\x04code\x18\x01 \x01(\x0e2\x0f.auth.ErrorCodeR\x04code\x12\x18\n" +
 	"\amessage\x18\x02 \x01(\tR\amessage*z\n" +
@@ -839,24 +959,26 @@ func file_auth_messages_proto_rawDescGZIP() []byte {
 }
 
 var file_auth_messages_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_auth_messages_proto_msgTypes = make([]protoimpl.MessageInfo, 11)
+var file_auth_messages_proto_msgTypes = make([]protoimpl.MessageInfo, 13)
 var file_auth_messages_proto_goTypes = []any{
-	(ErrorCode)(0),                    // 0: auth.ErrorCode
-	(*CreateUserRequest)(nil),         // 1: auth.CreateUserRequest
-	(*CreateUserResponse)(nil),        // 2: auth.CreateUserResponse
-	(*LoginRequest)(nil),              // 3: auth.LoginRequest
-	(*LoginResponse)(nil),             // 4: auth.LoginResponse
-	(*CreateGuestRequest)(nil),        // 5: auth.CreateGuestRequest
-	(*CreateGuestResponse)(nil),       // 6: auth.CreateGuestResponse
-	(*VerifyGuestTokenRequest)(nil),   // 7: auth.VerifyGuestTokenRequest
-	(*VerifyRefreshTokenRequest)(nil), // 8: auth.VerifyRefreshTokenRequest
-	(*VerifyTokenResponse)(nil),       // 9: auth.VerifyTokenResponse
-	(*TokenValid)(nil),                // 10: auth.TokenValid
-	(*ErrorResponse)(nil),             // 11: auth.ErrorResponse
+	(ErrorCode)(0),                     // 0: auth.ErrorCode
+	(*CreateUserRequest)(nil),          // 1: auth.CreateUserRequest
+	(*CreateUserResponse)(nil),         // 2: auth.CreateUserResponse
+	(*LoginRequest)(nil),               // 3: auth.LoginRequest
+	(*LoginResponse)(nil),              // 4: auth.LoginResponse
+	(*CreateGuestRequest)(nil),         // 5: auth.CreateGuestRequest
+	(*CreateGuestResponse)(nil),        // 6: auth.CreateGuestResponse
+	(*VerifyGuestTokenRequest)(nil),    // 7: auth.VerifyGuestTokenRequest
+	(*VerifyRefreshTokenRequest)(nil),  // 8: auth.VerifyRefreshTokenRequest
+	(*VerifyTokenResponse)(nil),        // 9: auth.VerifyTokenResponse
+	(*TokenValid)(nil),                 // 10: auth.TokenValid
+	(*RotateRefreshTokenRequest)(nil),  // 11: auth.RotateRefreshTokenRequest
+	(*RotateRefreshTokenResponse)(nil), // 12: auth.RotateRefreshTokenResponse
+	(*ErrorResponse)(nil),              // 13: auth.ErrorResponse
 }
 var file_auth_messages_proto_depIdxs = []int32{
 	10, // 0: auth.VerifyTokenResponse.valid:type_name -> auth.TokenValid
-	11, // 1: auth.VerifyTokenResponse.error:type_name -> auth.ErrorResponse
+	13, // 1: auth.VerifyTokenResponse.error:type_name -> auth.ErrorResponse
 	0,  // 2: auth.ErrorResponse.code:type_name -> auth.ErrorCode
 	3,  // [3:3] is the sub-list for method output_type
 	3,  // [3:3] is the sub-list for method input_type
@@ -880,7 +1002,7 @@ func file_auth_messages_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_auth_messages_proto_rawDesc), len(file_auth_messages_proto_rawDesc)),
 			NumEnums:      1,
-			NumMessages:   11,
+			NumMessages:   13,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

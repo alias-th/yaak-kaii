@@ -8,8 +8,6 @@ import (
 	"yaak-kaii/shared/utils"
 
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
 )
 
 type gRPCHandler struct {
@@ -81,7 +79,7 @@ func (h *gRPCHandler) CreateGuest(ctx context.Context, req *pb.CreateGuestReques
 	})
 
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to create the guest: %v", err)
+		return nil, utils.ToGRPCError(err)
 	}
 
 	return &pb.CreateGuestResponse{
@@ -110,17 +108,7 @@ func (h *gRPCHandler) CreateUser(ctx context.Context, req *pb.CreateUserRequest)
 
 	// 3. Check errors
 	if err != nil {
-		if customErr, ok := err.(*utils.CustomError); ok {
-			switch customErr.Code {
-			case utils.ErrCodeUserExists:
-				return nil, status.Error(codes.AlreadyExists, customErr.Message)
-			case utils.ErrCodeRoleNotFound:
-				return nil, status.Error(codes.Internal, customErr.Message)
-			default:
-				return nil, status.Error(codes.Internal, customErr.Message)
-			}
-		}
-		return nil, status.Error(codes.Internal, "failed to create user")
+		return nil, utils.ToGRPCError(err)
 	}
 
 	// 4. response
@@ -150,21 +138,28 @@ func (h *gRPCHandler) Login(ctx context.Context, req *pb.LoginRequest) (*pb.Logi
 
 	resp, err := h.service.Login(ctx, arg)
 	if err != nil {
-		if customErr, ok := err.(*utils.CustomError); ok {
-			switch customErr.Code {
-			case utils.ErrCodeInvalidCredentials:
-				return nil, status.Error(codes.Unauthenticated, customErr.Message)
-			case utils.ErrCodeUserInactive:
-				return nil, status.Error(codes.Unauthenticated, customErr.Message)
-			default:
-				return nil, status.Error(codes.Internal, customErr.Message)
-			}
-		}
-		return nil, status.Error(codes.Internal, "failed to login")
+		return nil, utils.ToGRPCError(err)
 	}
 
 	return &pb.LoginResponse{
 		UserId:       resp.UserID,
+		Token:        resp.Token,
+		RefreshToken: resp.RefreshToken,
+		ExpiresAt:    resp.ExpiresAt,
+	}, nil
+}
+
+func (h *gRPCHandler) RotateRefreshToken(
+	ctx context.Context, req *pb.RotateRefreshTokenRequest,
+) (*pb.RotateRefreshTokenResponse, error) {
+	refreshToken := req.GetRefreshToken()
+
+	resp, err := h.service.RotateRefreshToken(ctx, refreshToken)
+	if err != nil {
+		return nil, utils.ToGRPCError(err)
+	}
+
+	return &pb.RotateRefreshTokenResponse{
 		Token:        resp.Token,
 		RefreshToken: resp.RefreshToken,
 		ExpiresAt:    resp.ExpiresAt,

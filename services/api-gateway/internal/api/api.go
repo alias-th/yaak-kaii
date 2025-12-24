@@ -40,6 +40,7 @@ func (app *Application) Run() {
 			auth.POST("/user", app.createUser)
 			auth.POST("/guest", app.createGuest)
 			auth.POST("/login", app.login)
+			auth.POST("/rotate-token", app.rotateToken)
 		}
 	}
 

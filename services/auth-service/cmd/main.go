@@ -63,7 +63,7 @@ func main() {
 
 	grpc.NewGRPCHandler(grpcServer, svc)
 
-	log.Printf("Starting gRPC server Trip service on port %s", lis.Addr().String())
+	log.Printf("Starting gRPC server Auth service on port %s", lis.Addr().String())
 	go func() {
 		if err := grpcServer.Serve(lis); err != nil {
 			log.Printf("failed to serve: %v", err)

@@ -24,6 +24,7 @@ const (
 	UserService_CreateGuest_FullMethodName        = "/auth.UserService/CreateGuest"
 	UserService_VerifyGuestToken_FullMethodName   = "/auth.UserService/VerifyGuestToken"
 	UserService_VerifyRefreshToken_FullMethodName = "/auth.UserService/VerifyRefreshToken"
+	UserService_RotateRefreshToken_FullMethodName = "/auth.UserService/RotateRefreshToken"
 )
 
 // UserServiceClient is the client API for UserService service.
@@ -42,6 +43,8 @@ type UserServiceClient interface {
 	VerifyGuestToken(ctx context.Context, in *VerifyGuestTokenRequest, opts ...grpc.CallOption) (*VerifyTokenResponse, error)
 	// VerifyRefreshToken verifies if the refresh token is valid.
 	VerifyRefreshToken(ctx context.Context, in *VerifyRefreshTokenRequest, opts ...grpc.CallOption) (*VerifyTokenResponse, error)
+	// RotateRefreshToken rotates if the refresh token is valid.
+	RotateRefreshToken(ctx context.Context, in *RotateRefreshTokenRequest, opts ...grpc.CallOption) (*RotateRefreshTokenResponse, error)
 }
 
 type userServiceClient struct {
@@ -102,6 +105,16 @@ func (c *userServiceClient) VerifyRefreshToken(ctx context.Context, in *VerifyRe
 	return out, nil
 }
 
+func (c *userServiceClient) RotateRefreshToken(ctx context.Context, in *RotateRefreshTokenRequest, opts ...grpc.CallOption) (*RotateRefreshTokenResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(RotateRefreshTokenResponse)
+	err := c.cc.Invoke(ctx, UserService_RotateRefreshToken_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // UserServiceServer is the server API for UserService service.
 // All implementations must embed UnimplementedUserServiceServer
 // for forward compatibility.
@@ -118,6 +131,8 @@ type UserServiceServer interface {
 	VerifyGuestToken(context.Context, *VerifyGuestTokenRequest) (*VerifyTokenResponse, error)
 	// VerifyRefreshToken verifies if the refresh token is valid.
 	VerifyRefreshToken(context.Context, *VerifyRefreshTokenRequest) (*VerifyTokenResponse, error)
+	// RotateRefreshToken rotates if the refresh token is valid.
+	RotateRefreshToken(context.Context, *RotateRefreshTokenRequest) (*RotateRefreshTokenResponse, error)
 	mustEmbedUnimplementedUserServiceServer()
 }
 
@@ -142,6 +157,9 @@ func (UnimplementedUserServiceServer) VerifyGuestToken(context.Context, *VerifyG
 }
 func (UnimplementedUserServiceServer) VerifyRefreshToken(context.Context, *VerifyRefreshTokenRequest) (*VerifyTokenResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method VerifyRefreshToken not implemented")
+}
+func (UnimplementedUserServiceServer) RotateRefreshToken(context.Context, *RotateRefreshTokenRequest) (*RotateRefreshTokenResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method RotateRefreshToken not implemented")
 }
 func (UnimplementedUserServiceServer) mustEmbedUnimplementedUserServiceServer() {}
 func (UnimplementedUserServiceServer) testEmbeddedByValue()                     {}
@@ -254,6 +272,24 @@ func _UserService_VerifyRefreshToken_Handler(srv interface{}, ctx context.Contex
 	return interceptor(ctx, in, info, handler)
 }
 
+func _UserService_RotateRefreshToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RotateRefreshTokenRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).RotateRefreshToken(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_RotateRefreshToken_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).RotateRefreshToken(ctx, req.(*RotateRefreshTokenRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // UserService_ServiceDesc is the grpc.ServiceDesc for UserService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -280,6 +316,10 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "VerifyRefreshToken",
 			Handler:    _UserService_VerifyRefreshToken_Handler,
+		},
+		{
+			MethodName: "RotateRefreshToken",
+			Handler:    _UserService_RotateRefreshToken_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

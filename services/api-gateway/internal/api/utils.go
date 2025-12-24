@@ -15,6 +15,7 @@ import (
 func (app *Application) responseWithError(ctx *gin.Context, code int, err error) {
 	log.Printf("Error: %v", err)
 
+	// function จาก gRPC package ที่ใช้แยกข้อมูล gRPC status จาก error
 	if st, ok := status.FromError(err); ok {
 		httpCode := mapGrpcCodeToHTTP(st.Code())
 		ctx.JSON(httpCode, contracts.APIResponse{

@@ -12,6 +12,8 @@ type CreateUserResponse struct {
 }
 
 type RotateRefreshTokenResponse struct {
+	UserID       string
 	Token        string
 	RefreshToken string
+	ExpiresAt    int64
 }

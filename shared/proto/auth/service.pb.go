@@ -24,42 +24,47 @@ var File_auth_service_proto protoreflect.FileDescriptor
 
 const file_auth_service_proto_rawDesc = "" +
 	"\n" +
-	"\x12auth/service.proto\x12\x04auth\x1a\x13auth/messages.proto2\xe4\x02\n" +
+	"\x12auth/service.proto\x12\x04auth\x1a\x13auth/messages.proto2\xbd\x03\n" +
 	"\vUserService\x12?\n" +
 	"\n" +
 	"CreateUser\x12\x17.auth.CreateUserRequest\x1a\x18.auth.CreateUserResponse\x120\n" +
 	"\x05Login\x12\x12.auth.LoginRequest\x1a\x13.auth.LoginResponse\x12B\n" +
 	"\vCreateGuest\x12\x18.auth.CreateGuestRequest\x1a\x19.auth.CreateGuestResponse\x12L\n" +
 	"\x10VerifyGuestToken\x12\x1d.auth.VerifyGuestTokenRequest\x1a\x19.auth.VerifyTokenResponse\x12P\n" +
-	"\x12VerifyRefreshToken\x12\x1f.auth.VerifyRefreshTokenRequest\x1a\x19.auth.VerifyTokenResponseB\x18Z\x16shared/proto/auth;authb\x06proto3"
+	"\x12VerifyRefreshToken\x12\x1f.auth.VerifyRefreshTokenRequest\x1a\x19.auth.VerifyTokenResponse\x12W\n" +
+	"\x12RotateRefreshToken\x12\x1f.auth.RotateRefreshTokenRequest\x1a .auth.RotateRefreshTokenResponseB\x18Z\x16shared/proto/auth;authb\x06proto3"
 
 var file_auth_service_proto_goTypes = []any{
-	(*CreateUserRequest)(nil),         // 0: auth.CreateUserRequest
-	(*LoginRequest)(nil),              // 1: auth.LoginRequest
-	(*CreateGuestRequest)(nil),        // 2: auth.CreateGuestRequest
-	(*VerifyGuestTokenRequest)(nil),   // 3: auth.VerifyGuestTokenRequest
-	(*VerifyRefreshTokenRequest)(nil), // 4: auth.VerifyRefreshTokenRequest
-	(*CreateUserResponse)(nil),        // 5: auth.CreateUserResponse
-	(*LoginResponse)(nil),             // 6: auth.LoginResponse
-	(*CreateGuestResponse)(nil),       // 7: auth.CreateGuestResponse
-	(*VerifyTokenResponse)(nil),       // 8: auth.VerifyTokenResponse
+	(*CreateUserRequest)(nil),          // 0: auth.CreateUserRequest
+	(*LoginRequest)(nil),               // 1: auth.LoginRequest
+	(*CreateGuestRequest)(nil),         // 2: auth.CreateGuestRequest
+	(*VerifyGuestTokenRequest)(nil),    // 3: auth.VerifyGuestTokenRequest
+	(*VerifyRefreshTokenRequest)(nil),  // 4: auth.VerifyRefreshTokenRequest
+	(*RotateRefreshTokenRequest)(nil),  // 5: auth.RotateRefreshTokenRequest
+	(*CreateUserResponse)(nil),         // 6: auth.CreateUserResponse
+	(*LoginResponse)(nil),              // 7: auth.LoginResponse
+	(*CreateGuestResponse)(nil),        // 8: auth.CreateGuestResponse
+	(*VerifyTokenResponse)(nil),        // 9: auth.VerifyTokenResponse
+	(*RotateRefreshTokenResponse)(nil), // 10: auth.RotateRefreshTokenResponse
 }
 var file_auth_service_proto_depIdxs = []int32{
-	0, // 0: auth.UserService.CreateUser:input_type -> auth.CreateUserRequest
-	1, // 1: auth.UserService.Login:input_type -> auth.LoginRequest
-	2, // 2: auth.UserService.CreateGuest:input_type -> auth.CreateGuestRequest
-	3, // 3: auth.UserService.VerifyGuestToken:input_type -> auth.VerifyGuestTokenRequest
-	4, // 4: auth.UserService.VerifyRefreshToken:input_type -> auth.VerifyRefreshTokenRequest
-	5, // 5: auth.UserService.CreateUser:output_type -> auth.CreateUserResponse
-	6, // 6: auth.UserService.Login:output_type -> auth.LoginResponse
-	7, // 7: auth.UserService.CreateGuest:output_type -> auth.CreateGuestResponse
-	8, // 8: auth.UserService.VerifyGuestToken:output_type -> auth.VerifyTokenResponse
-	8, // 9: auth.UserService.VerifyRefreshToken:output_type -> auth.VerifyTokenResponse
-	5, // [5:10] is the sub-list for method output_type
-	0, // [0:5] is the sub-list for method input_type
-	0, // [0:0] is the sub-list for extension type_name
-	0, // [0:0] is the sub-list for extension extendee
-	0, // [0:0] is the sub-list for field type_name
+	0,  // 0: auth.UserService.CreateUser:input_type -> auth.CreateUserRequest
+	1,  // 1: auth.UserService.Login:input_type -> auth.LoginRequest
+	2,  // 2: auth.UserService.CreateGuest:input_type -> auth.CreateGuestRequest
+	3,  // 3: auth.UserService.VerifyGuestToken:input_type -> auth.VerifyGuestTokenRequest
+	4,  // 4: auth.UserService.VerifyRefreshToken:input_type -> auth.VerifyRefreshTokenRequest
+	5,  // 5: auth.UserService.RotateRefreshToken:input_type -> auth.RotateRefreshTokenRequest
+	6,  // 6: auth.UserService.CreateUser:output_type -> auth.CreateUserResponse
+	7,  // 7: auth.UserService.Login:output_type -> auth.LoginResponse
+	8,  // 8: auth.UserService.CreateGuest:output_type -> auth.CreateGuestResponse
+	9,  // 9: auth.UserService.VerifyGuestToken:output_type -> auth.VerifyTokenResponse
+	9,  // 10: auth.UserService.VerifyRefreshToken:output_type -> auth.VerifyTokenResponse
+	10, // 11: auth.UserService.RotateRefreshToken:output_type -> auth.RotateRefreshTokenResponse
+	6,  // [6:12] is the sub-list for method output_type
+	0,  // [0:6] is the sub-list for method input_type
+	0,  // [0:0] is the sub-list for extension type_name
+	0,  // [0:0] is the sub-list for extension extendee
+	0,  // [0:0] is the sub-list for field type_name
 }
 
 func init() { file_auth_service_proto_init() }

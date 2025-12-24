@@ -26,7 +26,11 @@ type LoginRequest struct {
 	Password string `json:"password" binding:"required"`
 }
 
-type LoginResponse struct {
+type RotateTokenRequest struct {
+	RefreshToken string `json:"refresh_token" binding:"required"`
+}
+
+type TokenResponse struct {
 	UserId       string `json:"user_id"`
 	Token        string `json:"token"`
 	RefreshToken string `json:"refresh_token"`

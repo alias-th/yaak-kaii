@@ -2,7 +2,6 @@ package repository
 
 import (
 	"context"
-	"database/sql"
 	"log"
 	"time"
 
@@ -10,6 +9,8 @@ import (
 	"yaak-kaii/services/auth-service/internal/domain"
 	"yaak-kaii/shared/utils"
 
+	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
@@ -40,7 +41,7 @@ func (r *refreshTokenRepository) GetRefreshTokenByHash(ctx context.Context, hash
 	result, err := r.store.GetRefreshTokenByTokenHash(ctx, hash)
 	if err != nil {
 		log.Printf("failed to get refresh token: error=%v", err)
-		if err == sql.ErrNoRows {
+		if err == pgx.ErrNoRows {
 			return nil, utils.NewTokenNotFoundError()
 		}
 
@@ -49,11 +50,28 @@ func (r *refreshTokenRepository) GetRefreshTokenByHash(ctx context.Context, hash
 	return mapDBRefreshTokenToDomain(result), nil
 }
 
+func (r *refreshTokenRepository) RevokedRefreshToken(ctx context.Context, id uuid.UUID) error {
+	err := r.store.RevokeRefreshToken(ctx, id)
+	if err != nil {
+		log.Printf("failed to revokes refresh token: error=%v", err)
+		return err
+	}
+	return nil
+}
+
 func mapDBRefreshTokenToDomain(dbToken db.RefreshToken) *domain.RefreshTokenModel {
+	var revokedAt int64 = 0
+	if dbToken.RevokedAt.Valid {
+		revokedAt = dbToken.RevokedAt.Time.Unix()
+	}
+
 	return &domain.RefreshTokenModel{
-		ID:        dbToken.ID,
+		ID: dbToken.ID,
+		User: domain.UserModel{
+			ID: dbToken.UserID.Bytes,
+		},
 		CreatedAt: dbToken.CreatedAt.Unix(),
 		ExpiresAt: dbToken.ExpiresAt.Time.Unix(),
-		RevokedAt: dbToken.RevokedAt.Time.Unix(),
+		RevokedAt: revokedAt,
 	}
 }

@@ -94,10 +94,44 @@ func (app *Application) login(ctx *gin.Context) {
 		return
 	}
 	res := contracts.APIResponse{
-		Data: types.LoginResponse{
+		Data: types.TokenResponse{
 			UserId:       loginRes.UserId,
 			Token:        loginRes.Token,
 			RefreshToken: loginRes.RefreshToken,
+			ExpiresAt:    expiresAt,
+			ExpiresIn:    expiresIn,
+		},
+	}
+	ctx.JSON(http.StatusOK, res)
+}
+
+func (app *Application) rotateToken(ctx *gin.Context) {
+	// 1. Validate json
+	var reqBody types.RotateTokenRequest
+	if err := ctx.ShouldBindJSON(&reqBody); err != nil {
+		app.responseWithError(ctx, http.StatusBadRequest, err)
+		return
+	}
+
+	// 2. Call Grpc
+	arg := &auth.RotateRefreshTokenRequest{RefreshToken: reqBody.RefreshToken}
+	resp, err := app.GrpcClients.Auth.Client.RotateRefreshToken(ctx, arg)
+	if err != nil {
+		app.responseWithError(ctx, http.StatusInternalServerError, err)
+		return
+	}
+
+	// 3. Response
+	expiresAt, expiresIn, err := app.formatDate(&resp.ExpiresAt)
+	if err != nil {
+		app.responseWithError(ctx, http.StatusInternalServerError, err)
+		return
+	}
+	res := contracts.APIResponse{
+		Data: types.TokenResponse{
+			UserId:       resp.UserId,
+			Token:        resp.Token,
+			RefreshToken: resp.RefreshToken,
 			ExpiresAt:    expiresAt,
 			ExpiresIn:    expiresIn,
 		},

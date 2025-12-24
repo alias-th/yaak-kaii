@@ -1,5 +1,10 @@
 package utils
 
+import (
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
+)
+
 type ErrorCode string
 
 const (
@@ -16,6 +21,28 @@ const (
 	ErrCodeTokenNotFound      ErrorCode = "TOKEN_NOT_FOUND"
 )
 
+type GRPCErrorCode int
+
+const (
+	OK                 GRPCErrorCode = 0
+	Cancelled          GRPCErrorCode = 1
+	Unknown            GRPCErrorCode = 2
+	InvalidArg         GRPCErrorCode = 3
+	DeadlineExceeded   GRPCErrorCode = 4
+	NotFound           GRPCErrorCode = 5
+	AlreadyExists      GRPCErrorCode = 6
+	PermissionDenied   GRPCErrorCode = 7
+	ResourceExhausted  GRPCErrorCode = 8
+	FailedPrecondition GRPCErrorCode = 9
+	Aborted            GRPCErrorCode = 10
+	OutOfRange         GRPCErrorCode = 11
+	Unimplemented      GRPCErrorCode = 12
+	Internal           GRPCErrorCode = 13
+	Unavailable        GRPCErrorCode = 14
+	DataLoss           GRPCErrorCode = 15
+	Unauthenticated    GRPCErrorCode = 16
+)
+
 type CustomError struct {
 	Code       ErrorCode
 	Message    string
@@ -24,6 +51,11 @@ type CustomError struct {
 
 func (e *CustomError) Error() string {
 	return e.Message
+}
+
+// NewGRPCError creates a gRPC status error from code and message
+func NewGRPCError(code GRPCErrorCode, message string) error {
+	return status.Error(codes.Code(code), message)
 }
 
 // Helper functions
@@ -148,4 +180,36 @@ func IsUserInactiveError(err error) bool {
 // IsRoleNotFoundError checks if error is due to role not found
 func IsRoleNotFoundError(err error) bool {
 	return hasErrorCode(err, ErrCodeRoleNotFound)
+}
+
+// ToGRPCError converts a CustomError to a gRPC status error
+// Returns nil if error is not a CustomError
+func ToGRPCError(err error) error {
+	if err == nil {
+		return nil
+	}
+
+	customErr, ok := err.(*CustomError)
+	if !ok {
+		return err
+	}
+
+	// Map CustomError codes to gRPC codes
+	var grpcCode GRPCErrorCode
+	switch customErr.Code {
+	case ErrCodeUserNotFound, ErrCodeTokenNotFound, ErrCodeRoleNotFound:
+		grpcCode = NotFound
+	case ErrCodeUserExists:
+		grpcCode = AlreadyExists
+	case ErrCodeTokenExpired, ErrCodeTokenRevoked, ErrCodeInvalidToken:
+		grpcCode = Unauthenticated
+	case ErrCodeInvalidPassword, ErrCodeInvalidCredentials:
+		grpcCode = Unauthenticated
+	case ErrCodeUserInactive:
+		grpcCode = PermissionDenied
+	default:
+		grpcCode = Internal
+	}
+
+	return NewGRPCError(grpcCode, customErr.Message)
 }
