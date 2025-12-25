@@ -78,6 +78,7 @@ func (s *service) RotateRefreshToken(
 	}
 
 	//   4. Save new token to DB
+	//   5. Revoke old token
 	expiresAt := time.Now().Add(time.Hour * 24 * 30).Unix()
 	arg := &domain.RefreshTokenModel{
 		User: domain.UserModel{
@@ -86,15 +87,9 @@ func (s *service) RotateRefreshToken(
 		TokenHash: newRefreshTokenHashed,
 		ExpiresAt: expiresAt,
 	}
-	err = s.refreshTokenRepo.CreateRefreshToken(ctx, arg)
+	err = s.refreshTokenRepo.RotateRefreshTokenTx(ctx, refreshToken.ID, arg)
 	if err != nil {
-		log.Printf("failed to save refresh token: error=%v", err)
-		return nil, utils.NewInternalServerError()
-	}
-
-	//   5. Revoke old token
-	err = s.refreshTokenRepo.RevokedRefreshToken(ctx, refreshToken.ID)
-	if err != nil {
+		log.Printf("failed to rotate refresh token: error=%v", err)
 		return nil, utils.NewInternalServerError()
 	}
 

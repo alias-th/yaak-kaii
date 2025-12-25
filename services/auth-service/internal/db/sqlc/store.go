@@ -1,9 +1,14 @@
 package db
 
-import "github.com/jackc/pgx/v5/pgxpool"
+import (
+	"context"
+
+	"github.com/jackc/pgx/v5/pgxpool"
+)
 
 type Store interface {
 	Querier
+	WithTx(ctx context.Context, fn func(*Queries) error) error
 }
 
 type SQLStore struct {
@@ -16,4 +21,20 @@ func NewStore(connPool *pgxpool.Pool) Store {
 		connPool: connPool,
 		Queries:  New(connPool),
 	}
+}
+
+// Transaction wrapper
+func (s *SQLStore) WithTx(ctx context.Context, fn func(*Queries) error) error {
+	tx, err := s.connPool.Begin(ctx)
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback(ctx)
+
+	err = fn(New(tx))
+	if err != nil {
+		return err
+	}
+
+	return tx.Commit(ctx)
 }

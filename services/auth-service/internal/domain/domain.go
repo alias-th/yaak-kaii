@@ -21,6 +21,7 @@ type RefreshTokenRepository interface {
 	CreateRefreshToken(ctx context.Context, token *RefreshTokenModel) error
 	GetRefreshTokenByHash(ctx context.Context, hash string) (*RefreshTokenModel, error)
 	RevokedRefreshToken(ctx context.Context, id uuid.UUID) error
+	RotateRefreshTokenTx(ctx context.Context, oldTokenID uuid.UUID, newToken *RefreshTokenModel) error
 }
 
 type RoleRepository interface {

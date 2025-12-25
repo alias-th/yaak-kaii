@@ -59,6 +59,30 @@ func (r *refreshTokenRepository) RevokedRefreshToken(ctx context.Context, id uui
 	return nil
 }
 
+func (r *refreshTokenRepository) RotateRefreshTokenTx(
+	ctx context.Context, oldTokenID uuid.UUID, newToken *domain.RefreshTokenModel) error {
+	return r.store.WithTx(ctx, func(q *db.Queries) error {
+		// 1. Revoked old token
+		err := q.RevokeRefreshToken(ctx, oldTokenID)
+		if err != nil {
+			return err
+		}
+
+		// 2. Create new token
+		arg := db.CreateRefreshTokenParams{
+			UserID:    pgtype.UUID{Bytes: newToken.User.ID, Valid: true},
+			TokenHash: newToken.TokenHash,
+			ExpiresAt: pgtype.Timestamptz{Time: time.Unix(newToken.ExpiresAt, 0), Valid: true},
+		}
+		_, err = q.CreateRefreshToken(ctx, arg)
+		if err != nil {
+			return err
+		}
+
+		return nil
+	})
+}
+
 func mapDBRefreshTokenToDomain(dbToken db.RefreshToken) *domain.RefreshTokenModel {
 	var revokedAt int64 = 0
 	if dbToken.RevokedAt.Valid {
