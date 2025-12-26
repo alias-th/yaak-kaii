@@ -42,9 +42,15 @@ spec:
           image: postgres:16-alpine
           env:
             - name: POSTGRES_USER
-              value: "root"
+              valueFrom:
+                secretKeyRef:
+                  name: pg
+                  key: PG_USERNAME
             - name: POSTGRES_PASSWORD
-              value: "password123"
+              valueFrom:
+                secretKeyRef:
+                  name: pg
+                  key: PG_PASSWORD
             - name: POSTGRES_DB
               value: "yaak_kaii"
             # แนะนำให้เพิ่ม PGDATA เพื่อความแน่นอนในการเก็บข้อมูล

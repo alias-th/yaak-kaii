@@ -20,7 +20,7 @@ func NewService(
 	roleRepo domain.RoleRepository,
 	jwtAuth *auth.JWTAuthenticator,
 
-) domain.AuthService {
+) *service {
 	return &service{
 		userRepo:         userRepo,
 		guestRepo:        guestRepo,

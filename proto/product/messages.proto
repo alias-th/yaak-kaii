@@ -1,0 +1,49 @@
+syntax = "proto3";
+
+package product;
+
+option go_package = "shared/proto/product;product";
+
+// ===== Product Messages =====
+message CreateProductRequest {
+  string              name           = 1; // Product name
+  string              slug           = 2; // Product slug (URL-friendly identifier)
+  string              description    = 3; // Product description
+  double              price          = 4; // Product price
+  string              category       = 5; // Product category
+  string              brand          = 6; // Product brand
+  int32               stock_quantity = 7; // Available stock quantity
+  map<string, string> attributes     = 8; // Additional product attributes
+  map<string,string>  variants       = 9; // Product variants (e.g., size, color)
+  repeated string     images         = 10; // URLs of product images
+  ProductStatus       status         = 11; // Product status (e.g., active, inactive)
+  int64               expires_at     = 12; // Product expiration timestamp (Unix time)
+  int64               created_at     = 13; // Product creation timestamp (Unix time)
+  int64               updated_at     = 14; // Product last update timestamp (Unix time
+}
+
+message CreateProductResponse {
+  string              id             = 1; // Product ID
+  string              name           = 2; // Product name
+  string              slug           = 3; // Product slug (URL-friendly identifier)
+  string              description    = 4; // Product description
+  double              price          = 5; // Product price
+  string              category       = 6; // Product category
+  string              brand          = 7; // Product brand
+  int32               stock_quantity = 8; // Available stock quantity
+  map<string, string> attributes     = 9; // Additional product attributes
+  map<string,string>  variants       = 10; // Product variants (e.g., size, color)
+  repeated string     images         = 11; // URLs of product images
+  ProductStatus       status         = 12; // Product status (e.g., active, inactive)
+  int64               expires_at     = 13; // Product expiration timestamp (Unix time)
+  int64               created_at     = 14; // Product creation timestamp (Unix time)
+  int64               updated_at     = 15; // Product last update timestamp (Unix time)
+}
+
+
+
+enum ProductStatus {
+  PRODUCT_STATUS_UNSPECIFIED = 0; // Unspecified status (default)
+  ACTIVE                     = 1; // Product is active and available
+  INACTIVE                   = 2; // Product is inactive and unavailable
+}

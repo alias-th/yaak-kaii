@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package product;
+
+import "product/messages.proto";
+
+option go_package = "shared/proto/product;product";
+
+// ProductService provides product-related RPCs such as creating a new product.
+service ProductService {
+  // CreateProduct creates a new product with the provided details.
+  rpc CreateProduct(CreateProductRequest) returns (CreateProductResponse);
+}

@@ -8,8 +8,15 @@ k8s_yaml('./infra/development/k8s/secrets.yaml')
 k8s_yaml('./infra/development/k8s/app-config.yaml')
 k8s_yaml('./infra/development/k8s/postgres-db.yaml')
 
+# MongoDB
+k8s_yaml('./infra/development/k8s/mongo-db.yaml')
+
 # PG
 k8s_resource('postgres-deployment', labels=['database'], port_forwards='5432:5432')
+
+# Mongo resources (DB + admin UI)
+k8s_resource('mongo', labels=['database'], port_forwards='27017:27017')
+k8s_resource('mongo-express', labels=['database'], port_forwards='8082:8081')
 
 ### API GATEWAY ###
 gateway_compile_cmd = 'CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o build/api-gateway ./services/api-gateway/cmd/main.go'
