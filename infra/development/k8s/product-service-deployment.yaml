@@ -1,22 +1,22 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: auth-service
+  name: product-service
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: auth-service
+      app: product-service
   template:
     metadata:
       labels:
-        app: auth-service
+        app: product-service
     spec:
       containers:
-        - name: auth-service
-          image: yaak-kaii/auth-service
+        - name: product-service
+          image: yaak-kaii/product-service
           ports:
-            - containerPort: 9090
+            - containerPort: 9091
           resources:
             requests:
               memory: "64Mi"
@@ -25,31 +25,31 @@ spec:
               memory: "128Mi"
               cpu: "200m"
           env:
-            - name: PG_URI
+            - name: MONGODB_USERNAME
               valueFrom:
                 secretKeyRef:
-                  name: pg
-                  key: PG_URI
-            - name: JWT_SECRET
+                  name: mongo-creds
+                  key: MONGODB_USERNAME
+            - name: MONGODB_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: jwt
-                  key: jwt-secret
-            - name: JWT_ISSUER
+                  name: mongo-creds
+                  key: MONGODB_PASSWORD
+            - name: MONGODB_DATABASE
               valueFrom:
                 secretKeyRef:
-                  name: jwt
-                  key: jwt-issuer
+                  name: mongo-creds
+                  key: MONGODB_DATABASE
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: auth-service
+  name: product-service
 spec:
   selector:
-    app: auth-service
+    app: product-service
   ports:
-    - port: 9090
+    - port: 9091
       name: grpc
-      targetPort: 9090
+      targetPort: 9091
   type: ClusterIP

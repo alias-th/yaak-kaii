@@ -1,0 +1,58 @@
+syntax = "proto3";
+
+package order;
+
+option go_package = "shared/proto/order;order";
+
+// ===== Order Messages =====
+message CreateOrderRequest {
+  string          user_id          = 1; // User ID
+  string          guest_id         = 2; // Guest ID, optional
+  string          total_amount     = 3; // Total amount
+  string          currency         = 4; // Currency
+  string          status           = 5; // Order status
+  ShippingAddress shipping_address = 6; // Shipping address
+  int64           created_at       = 7; // Order creation timestamp
+  int64           updated_at       = 8; // Last update timestamp
+}
+
+message CreateOrderResponse {
+  string          order_id         = 1; // Order ID
+  string          user_id          = 2; // User ID
+  string          guest_id         = 3; // Guest ID, optional
+  string          total_amount     = 4; // Total amount
+  string          currency         = 5; // Currency
+  string          status           = 6; // Order status
+  ShippingAddress shipping_address = 7; // Shipping address
+  int64           created_at       = 8; // Order creation timestamp
+  int64           updated_at       = 9; // Last update timestamp
+}
+
+message ShippingAddress {
+  string street      = 1; // Street address
+  string city        = 2; // City
+  string state       = 3; // State or province
+  string postal_code = 4; // Postal or ZIP code
+  string country     = 5; // Country
+}
+
+// ===== Order Items Messages =====
+message CreateOrderItemsRequest {
+  string             order_id = 1; // Order ID
+  repeated OrderItem items    = 2; // List of order items
+}
+
+// OrderItem represents a single item in an order.
+message CreateOrderItemsResponse {
+  string             order_id = 1; // Order ID
+  repeated OrderItem items    = 2; // List of order items
+}
+
+// OrderItem represents a single item in an order.
+message OrderItem {
+  string product_id        = 1; // Product ID
+  int32  quantity          = 2; // Quantity of the product
+  string sku               = 3; // SKU of the product
+  string name_at_purchase  = 4; // Name at the time of purchase
+  string price_at_purchase = 5; // Price at the time of purchase
+}

@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package order;
+
+import "order/messages.proto";
+
+option go_package = "shared/proto/order;order";
+
+// OrderService provides order-related RPCs such as creating a new order.
+service OrderService {
+  // CreateOrder creates a new order with the provided details.
+  rpc CreateOrder(CreateOrderRequest) returns (CreateOrderResponse);
+  
+  // CreateOrderItems creates order items for a specific order.
+  rpc CreateOrderItems(CreateOrderItemsRequest) returns (CreateOrderItemsResponse);
+}

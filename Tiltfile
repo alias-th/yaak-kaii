@@ -76,3 +76,60 @@ docker_build_with_restart(
 k8s_yaml('./infra/development/k8s/auth-service-deployment.yaml')
 k8s_resource('auth-service', resource_deps=['auth-service-compile'], labels="services")
 ### End of AUTH SERVICE ###
+
+### START OF PRODUCT SERVICE ###
+auth_compile_cmd = 'CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o build/product-service ./services/product-service/cmd/main.go'
+if os.name == 'nt':
+  auth_compile_cmd = './infra/development/docker/product-service-build.bat'
+
+local_resource(
+  'product-service-compile',
+  auth_compile_cmd,
+  deps=['./services/product-service', './shared'], labels="compiles")
+
+docker_build_with_restart(
+  'yaak-kaii/product-service',
+  '.',
+  entrypoint=['/app/build/product-service'],
+  dockerfile='./infra/development/docker/product-service.Dockerfile',
+  only=[
+    './build/product-service',
+    './shared',
+  ],
+  live_update=[
+    sync('./build', '/app/build'),
+    sync('./shared', '/app/shared'),
+  ],
+)
+k8s_yaml('./infra/development/k8s/product-service-deployment.yaml')
+k8s_resource('product-service', resource_deps=['product-service-compile'], labels="services")
+### End OF PRODUCT SERVICE ###
+
+
+### START OF ORDER SERVICE ###
+auth_compile_cmd = 'CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o build/order-service ./services/order-service/cmd/main.go'
+if os.name == 'nt':
+  auth_compile_cmd = './infra/development/docker/order-service-build.bat'
+
+local_resource(
+  'order-service-compile',
+  auth_compile_cmd,
+  deps=['./services/order-service', './shared'], labels="compiles")
+
+docker_build_with_restart(
+  'yaak-kaii/order-service',
+  '.',
+  entrypoint=['/app/build/order-service'],
+  dockerfile='./infra/development/docker/order-service.Dockerfile',
+  only=[
+    './build/order-service',
+    './shared',
+  ],
+  live_update=[
+    sync('./build', '/app/build'),
+    sync('./shared', '/app/shared'),
+  ],
+)
+k8s_yaml('./infra/development/k8s/order-service-deployment.yaml')
+k8s_resource('order-service', resource_deps=['order-service-compile'], labels="services")
+### End OF ORDER SERVICE ###

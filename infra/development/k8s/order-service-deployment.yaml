@@ -1,0 +1,70 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: order-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: order-service
+  template:
+    metadata:
+      labels:
+        app: order-service
+    spec:
+      containers:
+        - name: order-service
+          image: yaak-kaii/order-service
+          ports:
+            - containerPort: 9092
+          resources:
+            requests:
+              memory: "64Mi"
+              cpu: "100m"
+            limits:
+              memory: "128Mi"
+              cpu: "200m"
+          env:
+            - name: PG_URI
+              valueFrom:
+                secretKeyRef:
+                  name: pg
+                  key: PG_URI
+            - name: PG_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: pg
+                  key: PG_USERNAME
+            - name: PG_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: pg
+                  key: PG_PASSWORD
+            - name: PG_DATABASE
+              valueFrom:
+                secretKeyRef:
+                  name: pg
+                  key: PG_DATABASE
+            - name: PG_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: pg
+                  key: PG_PORT
+            - name: PG_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: pg
+                  key: PG_HOST
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: order-service
+spec:
+  selector:
+    app: order-service
+  ports:
+    - port: 9092
+      name: grpc
+      targetPort: 9092
+  type: ClusterIP

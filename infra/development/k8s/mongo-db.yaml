@@ -31,16 +31,16 @@ spec:
         - name: mongo
           image: mongo:8.0 # แนะนำเวอร์ชัน stable
           env:
-            - name: MONGO_INITDB_ROOT_USERNAME
+            - name: MONGODB_USERNAME
               valueFrom:
                 secretKeyRef:
                   name: mongo-creds
-                  key: MONGO_INITDB_ROOT_USERNAME
-            - name: MONGO_INITDB_ROOT_PASSWORD
+                  key: MONGODB_USERNAME
+            - name: MONGODB_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: mongo-creds
-                  key: MONGO_INITDB_ROOT_PASSWORD
+                  key: MONGODB_PASSWORD
           ports:
             - containerPort: 27017
               name: mongodb
@@ -80,12 +80,12 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: mongo-creds
-                  key: MONGO_INITDB_ROOT_USERNAME
+                  key: MONGODB_USERNAME
             - name: ME_CONFIG_MONGODB_ADMINPASSWORD
               valueFrom:
                 secretKeyRef:
                   name: mongo-creds
-                  key: MONGO_INITDB_ROOT_PASSWORD
+                  key: MONGODB_PASSWORD
             - name: ME_CONFIG_MONGODB_SERVER
               value: "mongo-headless"
             - name: ME_CONFIG_BASICAUTH_ENABLED
