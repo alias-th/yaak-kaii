@@ -27,3 +27,7 @@ type RefreshTokenRepository interface {
 type RoleRepository interface {
 	GetRoleByName(ctx context.Context, name string) (*RoleModel, error)
 }
+
+type ShopRepository interface {
+	GetShopByUserID(ctx context.Context, userId uuid.UUID) (*ShopModel, error)
+}

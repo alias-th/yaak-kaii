@@ -2,20 +2,71 @@ package services
 
 import (
 	"context"
-	"yaak-kaii/services/product-service/internal/models"
+	grpcclients "yaak-kaii/services/product-service/internal/grpc_clients"
 	"yaak-kaii/services/product-service/internal/repositories"
+	"yaak-kaii/services/product-service/internal/utils"
+	"yaak-kaii/shared/proto/auth"
+
+	"github.com/google/uuid"
+	"github.com/gosimple/slug"
 )
 
 type ProductService struct {
-	repo repositories.ProductRepository
+	repo        repositories.ProductRepository
+	grpcClients *grpcclients.GrpcClients
 }
 
-func NewProductService(repo repositories.ProductRepository) *ProductService {
-	return &ProductService{repo: repo}
+type CreateProductPayload struct {
+	UserId       string  // ID of the user creating the product
+	Name         string  // Product name
+	Description  string  // Product description
+	Price        float64 // Product price
+	CategoryId   string  // Product category
+	Stock        int32   // Available stock quantity
+	Attributes   map[string]string
+	CategoryName string
 }
 
-func (s *ProductService) CreateProduct(ctx context.Context, product *models.Product) error {
-	payload := models.Product{}
-	err := s.repo.Create(ctx, &payload)
-	return err
+func NewProductService(repo repositories.ProductRepository, grpcClients *grpcclients.GrpcClients) *ProductService {
+	return &ProductService{repo: repo, grpcClients: grpcClients}
+}
+
+func (s *ProductService) CreateProduct(ctx context.Context, product *CreateProductPayload) error {
+	shop, err := s.grpcClients.Auth.Client.GetShopUser(ctx, &auth.GetShopRequest{UserId: product.UserId})
+	if err != nil {
+		return err
+	}
+	shopID, err := uuid.Parse(shop.Id)
+	if err != nil {
+		return err
+	}
+	categoryID, err := uuid.Parse(product.CategoryId)
+	if err != nil {
+		return err
+	}
+
+	slugValue := slug.Make(product.Name)
+
+	catName := product.CategoryName
+	colorVal := product.Attributes["color"]
+	sizeVal := product.Attributes["size"]
+
+	sku := utils.GenerateSKU(catName, colorVal, sizeVal)
+
+	err = s.repo.CreateProductTx(ctx, &repositories.CreateProductPayload{
+		ShopID:      shopID,
+		UserID:      product.UserId,
+		Name:        product.Name,
+		Description: product.Description,
+		Price:       product.Price,
+		CategoryID:  categoryID,
+		Stock:       product.Stock,
+		Slug:        slugValue,
+		Sku:         sku,
+		Attributes:  product.Attributes,
+	})
+	if err != nil {
+		return err
+	}
+	return nil
 }

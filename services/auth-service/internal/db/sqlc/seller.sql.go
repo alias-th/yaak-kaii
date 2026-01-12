@@ -38,3 +38,25 @@ func (q *Queries) CreateSeller(ctx context.Context, arg CreateSellerParams) (Sel
 	)
 	return i, err
 }
+
+const getSellerByUserID = `-- name: GetSellerByUserID :one
+SELECT
+    id, user_id, name, created_at, updated_at
+FROM
+    sellers
+WHERE
+    user_id = $1
+`
+
+func (q *Queries) GetSellerByUserID(ctx context.Context, userID uuid.UUID) (Seller, error) {
+	row := q.db.QueryRow(ctx, getSellerByUserID, userID)
+	var i Seller
+	err := row.Scan(
+		&i.ID,
+		&i.UserID,
+		&i.Name,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}

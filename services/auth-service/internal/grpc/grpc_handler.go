@@ -166,3 +166,21 @@ func (h *gRPCHandler) RotateRefreshToken(
 		ExpiresAt:    resp.ExpiresAt,
 	}, nil
 }
+
+func (h *gRPCHandler) GetShopUser(ctx context.Context, req *pb.GetShopRequest) (*pb.GetShopResponse, error) {
+	userId := req.GetUserId()
+
+	shop, err := h.service.GetShopUser(ctx, userId)
+	if err != nil {
+		return nil, utils.ToGRPCError(err)
+	}
+
+	return &pb.GetShopResponse{
+		Id:          shop.ID,
+		OwnerUserId: userId,
+		Name:        shop.Name,
+		Slug:        shop.Slug,
+		Description: shop.Description,
+		IsActive:    shop.IsActive,
+	}, nil
+}

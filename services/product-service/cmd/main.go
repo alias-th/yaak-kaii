@@ -8,7 +8,8 @@ import (
 	"syscall"
 
 	database "yaak-kaii/services/product-service/internal/db"
-	grpcserver "yaak-kaii/services/product-service/internal/grpc"
+	grpcclients "yaak-kaii/services/product-service/internal/grpc_clients"
+	grpcserver "yaak-kaii/services/product-service/internal/grpc_server"
 	"yaak-kaii/services/product-service/internal/repositories"
 	"yaak-kaii/services/product-service/internal/services"
 
@@ -27,13 +28,19 @@ func NewApp() *App {
 
 	db := database.InitDB()
 
+	// init grpc clients
+	grpcClients, err := grpcclients.NewGrpcClient()
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	// Run migrations for models
 	database.Migrate(db)
 
 	productRepo := repositories.NewProductRepository(db)
 	categoryRepo := repositories.NewCategoryRepository(db)
 
-	productService := services.NewProductService(productRepo)
+	productService := services.NewProductService(productRepo, grpcClients)
 	categoryService := services.NewCategoryService(categoryRepo)
 	server := grpc.NewServer()
 	productGrpc := grpcserver.NewProductGRPCServer(productService, categoryService)

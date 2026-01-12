@@ -2,7 +2,6 @@ package grpcserver
 
 import (
 	"context"
-	"log"
 	"yaak-kaii/services/product-service/internal/services"
 	pb "yaak-kaii/shared/proto/product"
 )
@@ -21,7 +20,7 @@ func NewProductGRPCServer(product *services.ProductService, category *services.C
 }
 
 func (s *ProductGRPCServer) CreateProduct(ctx context.Context, req *pb.CreateProductRequest) (*pb.CreateProductResponse, error) {
-	payload := &pb.CreateProductRequest{
+	payload := &services.CreateProductPayload{
 		Name:        req.GetName(),
 		UserId:      req.GetUserId(),
 		Description: req.GetDescription(),
@@ -31,7 +30,18 @@ func (s *ProductGRPCServer) CreateProduct(ctx context.Context, req *pb.CreatePro
 		Attributes:  req.GetAttributes(),
 	}
 
-	log.Println(payload)
+	category, err := s.categoryService.GetCategoryByID(ctx, req.GetCategoryId())
+	if err != nil {
+		return nil, err
+	}
+	categoryName := category.Name
+	payload.CategoryName = categoryName
+
+	err = s.productService.CreateProduct(ctx, payload)
+	if err != nil {
+		return nil, err
+	}
+
 	return &pb.CreateProductResponse{
 		ProductId: "new-product-id",
 	}, nil

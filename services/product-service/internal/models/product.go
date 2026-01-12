@@ -29,11 +29,12 @@ type ProductImage struct {
 }
 
 type ProductVariant struct {
-	ID        uuid.UUID `gorm:"type:uuid;default:gen_random_uuid();primaryKey"`
-	ProductID uuid.UUID `gorm:"column:product_id;type:uuid;not null"`
-	Sku       string    `gorm:"column:sku;type:varchar(100);not null;uniqueIndex"`
-	Price     float64   `gorm:"type:numeric(12,2);not null"`
-	Stock     int       `gorm:"column:stock;type:int;not null"`
-	CreatedAt time.Time `gorm:"autoCreateTime"`
-	UpdatedAt time.Time `gorm:"autoUpdateTime"`
+	ID         uuid.UUID `gorm:"type:uuid;default:gen_random_uuid();primaryKey"`
+	ProductID  uuid.UUID `gorm:"column:product_id;type:uuid;not null"`
+	Sku        string    `gorm:"column:sku;type:varchar(100);not null;uniqueIndex"`
+	Price      float64   `gorm:"type:numeric(12,2);not null"`
+	Stock      int       `gorm:"column:stock;type:int;not null"`
+	Attributes []byte    `gorm:"column:attributes;type:jsonb;default:'{}'"`
+	CreatedAt  time.Time `gorm:"autoCreateTime"`
+	UpdatedAt  time.Time `gorm:"autoUpdateTime"`
 }

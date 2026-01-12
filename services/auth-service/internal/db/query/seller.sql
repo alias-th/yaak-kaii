@@ -6,3 +6,11 @@ INSERT INTO
     )
 VALUES
     ($1, $2) RETURNING *;
+
+-- name: GetSellerByUserID :one
+SELECT
+    *
+FROM
+    sellers
+WHERE
+    user_id = $1;

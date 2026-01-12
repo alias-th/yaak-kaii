@@ -10,6 +10,8 @@ import (
 )
 
 func (app *Application) createProduct(ctx *gin.Context) {
+	userID := ctx.GetString("user_id")
+
 	var reqBody types.CreateProductRequest
 
 	err := ctx.ShouldBindJSON(&reqBody)
@@ -18,7 +20,15 @@ func (app *Application) createProduct(ctx *gin.Context) {
 		return
 	}
 
-	productRes, err := app.GrpcClients.Product.Client.CreateProduct(ctx, &product.CreateProductRequest{})
+	productRes, err := app.GrpcClients.Product.Client.CreateProduct(ctx, &product.CreateProductRequest{
+		UserId:      userID,
+		Name:        reqBody.Name,
+		Description: reqBody.Description,
+		Price:       reqBody.Price,
+		CategoryId:  reqBody.CategoryID,
+		Stock:       int32(reqBody.Stock),
+		Attributes:  reqBody.Attributes,
+	})
 	if err != nil {
 		app.responseWithError(ctx, http.StatusInternalServerError, err)
 		return

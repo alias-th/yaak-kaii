@@ -11,4 +11,5 @@ type AuthService interface {
 	VerifyGuestToken(ctx context.Context, token string) (*GuestModel, error)
 	VerifyRefreshToken(ctx context.Context, token string) (*RefreshTokenModel, error)
 	RotateRefreshToken(ctx context.Context, token string) (*RotateRefreshTokenResponse, error)
+	GetShopUser(ctx context.Context, userId string) (*ShopModel, error)
 }

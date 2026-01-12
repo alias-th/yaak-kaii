@@ -10,6 +10,7 @@ type service struct {
 	guestRepo        domain.GuestRepository
 	refreshTokenRepo domain.RefreshTokenRepository
 	roleRepo         domain.RoleRepository
+	shopRepo         domain.ShopRepository
 	jwtAuth          *auth.JWTAuthenticator
 }
 
@@ -18,6 +19,7 @@ func NewService(
 	guestRepo domain.GuestRepository,
 	refreshTokenRepo domain.RefreshTokenRepository,
 	roleRepo domain.RoleRepository,
+	shopRepo domain.ShopRepository,
 	jwtAuth *auth.JWTAuthenticator,
 
 ) *service {
@@ -26,6 +28,7 @@ func NewService(
 		guestRepo:        guestRepo,
 		refreshTokenRepo: refreshTokenRepo,
 		roleRepo:         roleRepo,
+		shopRepo:         shopRepo,
 		jwtAuth:          jwtAuth,
 	}
 }

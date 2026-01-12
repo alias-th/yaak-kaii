@@ -38,12 +38,13 @@ func main() {
 	guestRepo := repository.NewGuestRepository(store)
 	tokenRepo := repository.NewRefreshTokenRepository(store)
 	roleRepo := repository.NewRoleRepository(store)
+	shopRepo := repository.NewShopRepository(store)
 
 	// Initialize jwt
 	jwtAuth := auth.NewJWTAuthenticator(appConfig.JwtSecret, appConfig.JwtISS, appConfig.JwtISS)
 
 	// Initialize service
-	svc := service.NewService(userRepo, guestRepo, tokenRepo, roleRepo, jwtAuth)
+	svc := service.NewService(userRepo, guestRepo, tokenRepo, roleRepo, shopRepo, jwtAuth)
 	log.Println("connected to database", appConfig.ConnString)
 
 	// Graceful shutdown on interrupt signals

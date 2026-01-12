@@ -54,3 +54,55 @@ func (q *Queries) CreateShop(ctx context.Context, arg CreateShopParams) (Shop, e
 	)
 	return i, err
 }
+
+const getShopBySellerID = `-- name: GetShopBySellerID :one
+SELECT
+    id, seller_id, name, slug, description, is_active, created_at, updated_at
+FROM
+    shops
+WHERE
+    seller_id = $1
+`
+
+func (q *Queries) GetShopBySellerID(ctx context.Context, sellerID uuid.UUID) (Shop, error) {
+	row := q.db.QueryRow(ctx, getShopBySellerID, sellerID)
+	var i Shop
+	err := row.Scan(
+		&i.ID,
+		&i.SellerID,
+		&i.Name,
+		&i.Slug,
+		&i.Description,
+		&i.IsActive,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const getShopByUserID = `-- name: GetShopByUserID :one
+SELECT 
+    s.id, s.seller_id, s.name, s.slug, s.description, s.is_active, s.created_at, s.updated_at
+FROM
+    shops s
+LEFT JOIN
+    sellers se ON s.seller_id = se.id
+WHERE
+    se.user_id = $1
+`
+
+func (q *Queries) GetShopByUserID(ctx context.Context, userID uuid.UUID) (Shop, error) {
+	row := q.db.QueryRow(ctx, getShopByUserID, userID)
+	var i Shop
+	err := row.Scan(
+		&i.ID,
+		&i.SellerID,
+		&i.Name,
+		&i.Slug,
+		&i.Description,
+		&i.IsActive,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}

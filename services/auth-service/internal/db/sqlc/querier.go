@@ -21,6 +21,9 @@ type Querier interface {
 	GetGuestByToken(ctx context.Context, tokenHash string) (Guest, error)
 	GetRefreshTokenByTokenHash(ctx context.Context, tokenHash string) (RefreshToken, error)
 	GetRoleByName(ctx context.Context, name string) (Role, error)
+	GetSellerByUserID(ctx context.Context, userID uuid.UUID) (Seller, error)
+	GetShopBySellerID(ctx context.Context, sellerID uuid.UUID) (Shop, error)
+	GetShopByUserID(ctx context.Context, userID uuid.UUID) (Shop, error)
 	GetUserByEmail(ctx context.Context, email string) (User, error)
 	GetUserById(ctx context.Context, id uuid.UUID) (User, error)
 	InvalidateUserTokens(ctx context.Context, userID pgtype.UUID) error
