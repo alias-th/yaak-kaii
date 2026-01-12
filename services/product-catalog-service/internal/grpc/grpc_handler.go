@@ -2,7 +2,7 @@ package grpc
 
 import (
 	"context"
-	"yaak-kaii/services/product-service/internal/domain"
+	"yaak-kaii/services/product-catalog-service/internal/domain"
 	pb "yaak-kaii/shared/proto/product"
 
 	"google.golang.org/grpc"

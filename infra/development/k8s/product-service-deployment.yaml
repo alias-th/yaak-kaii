@@ -25,21 +25,36 @@ spec:
               memory: "128Mi"
               cpu: "200m"
           env:
-            - name: MONGODB_USERNAME
+            - name: PG_URI
               valueFrom:
                 secretKeyRef:
-                  name: mongo-creds
-                  key: MONGODB_USERNAME
-            - name: MONGODB_PASSWORD
+                  name: pg
+                  key: PG_URI
+            - name: PG_USERNAME
               valueFrom:
                 secretKeyRef:
-                  name: mongo-creds
-                  key: MONGODB_PASSWORD
-            - name: MONGODB_DATABASE
+                  name: pg
+                  key: PG_USERNAME
+            - name: PG_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: mongo-creds
-                  key: MONGODB_DATABASE
+                  name: pg
+                  key: PG_PASSWORD
+            - name: PG_DATABASE
+              valueFrom:
+                secretKeyRef:
+                  name: pg
+                  key: PG_DATABASE
+            - name: PG_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: pg
+                  key: PG_PORT
+            - name: PG_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: pg
+                  key: PG_HOST
 ---
 apiVersion: v1
 kind: Service

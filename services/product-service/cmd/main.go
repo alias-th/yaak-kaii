@@ -1,61 +1,53 @@
 package main
 
 import (
-	"context"
-	"fmt"
 	"log"
 	"net"
 	"os"
 	"os/signal"
 	"syscall"
-	"yaak-kaii/services/product-service/internal/db/mongodb"
-	grpc_server "yaak-kaii/services/product-service/internal/grpc"
-	"yaak-kaii/services/product-service/internal/repository"
-	"yaak-kaii/services/product-service/internal/service"
+
+	"yaak-kaii/services/product-service/internal/database"
+	grpcserver "yaak-kaii/services/product-service/internal/grpc_server"
+	"yaak-kaii/services/product-service/internal/repositories"
+	"yaak-kaii/services/product-service/internal/services"
+
+	pb "yaak-kaii/shared/proto/product"
 
 	"google.golang.org/grpc"
-	grpcserver "google.golang.org/grpc"
+	"gorm.io/gorm"
 )
 
 type App struct {
-	GRPCServer  *grpc.Server
-	MongoClient *mongodb.MongoClient
+	GRPCServer *grpc.Server
+	DB         *gorm.DB
 }
 
-func NewApp(ctx context.Context) *App {
+func NewApp() *App {
 
-	// Connect to MongoDB
-	mongoUsername := os.Getenv("MONGODB_USERNAME")
-	mongoPASSWORD := os.Getenv("MONGODB_PASSWORD")
-	mongoURI := fmt.Sprintf("mongodb://%s:%s@mongo-headless:27017", mongoUsername, mongoPASSWORD)
-	log.Println(mongoURI, mongoUsername)
-	dbName := os.Getenv("MONGODB_DATABASE")
-	if dbName == "" {
-		dbName = "yaak_kaii_products"
-	}
-	mongoClient, err := mongodb.Connect(ctx, mongoURI, dbName)
-	if err != nil {
-		log.Fatalf("Failed to initialize MongoDB: %v", err)
-	}
+	db := database.InitDB()
 
-	mongodb := mongoClient.GetDatabase()
+	// Run migrations for models
+	database.Migrate(db)
 
-	// Initialize repositories
-	mongoDBRepo := repository.NewMongoRepository(mongodb)
-	svc := service.NewService(mongoDBRepo)
+	productRepo := repositories.NewProductRepository(db)
+	categoryRepo := repositories.NewCategoryRepository(db)
 
-	grpcServer := grpcserver.NewServer()
-	grpc_server.NewGRPCHandler(grpcServer, svc)
+	productService := services.NewProductService(productRepo)
+	categoryService := services.NewCategoryService(categoryRepo)
+	server := grpc.NewServer()
+	productGrpc := grpcserver.NewProductGRPCServer(productService, categoryService)
+
+	pb.RegisterProductServiceServer(server, productGrpc)
 
 	return &App{
-		GRPCServer:  grpcServer,
-		MongoClient: mongoClient,
+		GRPCServer: server,
+		DB:         db,
 	}
 
 }
 
 func (a *App) Run() {
-	// Initialize Grpc server
 	port := ":9091"
 	lis, err := net.Listen("tcp", port)
 	if err != nil {
@@ -63,36 +55,38 @@ func (a *App) Run() {
 	}
 	log.Printf("gRPC server is running on port %s", port)
 	a.GRPCServer.Serve(lis)
+
 }
 
-func (a *App) Shutdown(ctx context.Context) {
+func (a *App) Shutdown() {
 	log.Println("Shutting down gracefully...")
 
 	a.GRPCServer.GracefulStop()
 	log.Println("gRPC server stopped.")
 
-	err := a.MongoClient.Disconnect(ctx)
-	if err != nil {
-		log.Println("failed to disconnect mongo.", err)
-
+	sqlDB, err := a.DB.DB()
+	if err == nil {
+		if err := sqlDB.Close(); err != nil {
+			log.Printf("Error closing database: %v", err)
+		} else {
+			log.Println("Database connection closed.")
+		}
 	}
-
 }
 
 func main() {
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
-
-	app := NewApp(ctx)
+	app := NewApp()
 
 	go func() {
 		app.Run()
 	}()
 
+	// Graceful stop
 	stop := make(chan os.Signal, 1)
 	signal.Notify(stop, os.Interrupt, syscall.SIGTERM)
 	<-stop
 
-	app.Shutdown(ctx)
+	app.Shutdown()
 	log.Println("Application exited gracefully")
+
 }

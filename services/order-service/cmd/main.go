@@ -45,7 +45,7 @@ func NewApp() *App {
 }
 
 func (a *App) Run() {
-	port := ":9092"
+	port := ":9093"
 	lis, err := net.Listen("tcp", port)
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)

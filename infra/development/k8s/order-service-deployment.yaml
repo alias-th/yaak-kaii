@@ -16,7 +16,7 @@ spec:
         - name: order-service
           image: yaak-kaii/order-service
           ports:
-            - containerPort: 9092
+            - containerPort: 9093
           resources:
             requests:
               memory: "64Mi"
@@ -64,7 +64,7 @@ spec:
   selector:
     app: order-service
   ports:
-    - port: 9092
+    - port: 9093
       name: grpc
-      targetPort: 9092
+      targetPort: 9093
   type: ClusterIP

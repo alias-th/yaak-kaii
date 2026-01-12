@@ -105,6 +105,34 @@ k8s_yaml('./infra/development/k8s/product-service-deployment.yaml')
 k8s_resource('product-service', resource_deps=['product-service-compile'], labels="services")
 ### End OF PRODUCT SERVICE ###
 
+### START OF PRODUCT CATALOG SERVICE ###
+auth_compile_cmd = 'CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o build/product-catalog-service ./services/product-catalog-service/cmd/main.go'
+if os.name == 'nt':
+  auth_compile_cmd = './infra/development/docker/product-catalog-service-build.bat'
+
+local_resource(
+  'product-catalog-service-compile',
+  auth_compile_cmd,
+  deps=['./services/product-catalog-service', './shared'], labels="compiles")
+
+docker_build_with_restart(
+  'yaak-kaii/product-catalog-service',
+  '.',
+  entrypoint=['/app/build/product-catalog-service'],
+  dockerfile='./infra/development/docker/product-catalog-service.Dockerfile',
+  only=[
+    './build/product-catalog-service',
+    './shared',
+  ],
+  live_update=[
+    sync('./build', '/app/build'),
+    sync('./shared', '/app/shared'),
+  ],
+)
+k8s_yaml('./infra/development/k8s/product-catalog-service-deployment.yaml')
+k8s_resource('product-catalog-service', resource_deps=['product-catalog-service-compile'], labels="services")
+### End OF PRODUCT CATALOG SERVICE ###
+
 
 ### START OF ORDER SERVICE ###
 auth_compile_cmd = 'CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o build/order-service ./services/order-service/cmd/main.go'

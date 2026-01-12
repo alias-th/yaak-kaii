@@ -2,7 +2,7 @@ package repository
 
 import (
 	"context"
-	"yaak-kaii/services/product-service/internal/domain"
+	"yaak-kaii/services/product-catalog-service/internal/domain"
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/v2/mongo"

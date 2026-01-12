@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: product-catalog-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: product-catalog-service
+  template:
+    metadata:
+      labels:
+        app: product-catalog-service
+    spec:
+      containers:
+        - name: product-catalog-service
+          image: yaak-kaii/product-catalog-service
+          ports:
+            - containerPort: 9092
+          resources:
+            requests:
+              memory: "64Mi"
+              cpu: "100m"
+            limits:
+              memory: "128Mi"
+              cpu: "200m"
+          env:
+            - name: MONGODB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: mongo-creds
+                  key: MONGODB_USERNAME
+            - name: MONGODB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mongo-creds
+                  key: MONGODB_PASSWORD
+            - name: MONGODB_DATABASE
+              valueFrom:
+                secretKeyRef:
+                  name: mongo-creds
+                  key: MONGODB_DATABASE
+            - name: PG_URI
+              valueFrom:
+                secretKeyRef:
+                  name: pg
+                  key: PG_URI
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: product-catalog-service
+spec:
+  selector:
+    app: product-catalog-service
+  ports:
+    - port: 9092
+      name: grpc
+      targetPort: 9092
+  type: ClusterIP
