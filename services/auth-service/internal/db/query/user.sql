@@ -5,11 +5,10 @@ INSERT INTO
         password_hash,
         first_name,
         last_name,
-        phone_number,
-        role_id
+        phone_number
     )
 VALUES
-    ($1, $2, $3, $4, $5, $6) RETURNING *;
+    ($1, $2, $3, $4, $5) RETURNING *;
 
 
 -- name: GetUserById :one

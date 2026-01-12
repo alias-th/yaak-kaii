@@ -37,6 +37,25 @@ type Role struct {
 	Description string    `json:"description"`
 }
 
+type Seller struct {
+	ID        uuid.UUID `json:"id"`
+	UserID    uuid.UUID `json:"user_id"`
+	Name      string    `json:"name"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
+}
+
+type Shop struct {
+	ID          uuid.UUID   `json:"id"`
+	SellerID    uuid.UUID   `json:"seller_id"`
+	Name        string      `json:"name"`
+	Slug        string      `json:"slug"`
+	Description pgtype.Text `json:"description"`
+	IsActive    bool        `json:"is_active"`
+	CreatedAt   time.Time   `json:"created_at"`
+	UpdatedAt   time.Time   `json:"updated_at"`
+}
+
 type User struct {
 	ID            uuid.UUID          `json:"id"`
 	Email         string             `json:"email"`
@@ -49,5 +68,10 @@ type User struct {
 	CreatedAt     time.Time          `json:"created_at"`
 	UpdatedAt     time.Time          `json:"updated_at"`
 	DeletedAt     pgtype.Timestamptz `json:"deleted_at"`
-	RoleID        uuid.UUID          `json:"role_id"`
+}
+
+type UserRole struct {
+	ID     uuid.UUID `json:"id"`
+	UserID uuid.UUID `json:"user_id"`
+	RoleID uuid.UUID `json:"role_id"`
 }

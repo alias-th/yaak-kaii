@@ -16,5 +16,5 @@ type UserModel struct {
 	CreatedAt     int64
 	UpdatedAt     int64
 	DeletedAt     int64
-	Role          *RoleModel
+	Role          RoleModel
 }

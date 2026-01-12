@@ -14,7 +14,10 @@ import (
 type Querier interface {
 	CreateGuest(ctx context.Context, arg CreateGuestParams) (Guest, error)
 	CreateRefreshToken(ctx context.Context, arg CreateRefreshTokenParams) (RefreshToken, error)
+	CreateSeller(ctx context.Context, arg CreateSellerParams) (Seller, error)
+	CreateShop(ctx context.Context, arg CreateShopParams) (Shop, error)
 	CreateUser(ctx context.Context, arg CreateUserParams) (User, error)
+	CreateUserRole(ctx context.Context, arg CreateUserRoleParams) (UserRole, error)
 	GetGuestByToken(ctx context.Context, tokenHash string) (Guest, error)
 	GetRefreshTokenByTokenHash(ctx context.Context, tokenHash string) (RefreshToken, error)
 	GetRoleByName(ctx context.Context, name string) (Role, error)

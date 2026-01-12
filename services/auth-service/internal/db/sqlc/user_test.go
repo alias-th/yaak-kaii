@@ -27,7 +27,6 @@ func createRandomUser(t *testing.T) User {
 		FirstName:    utils.RandomString(6),
 		LastName:     utils.RandomString(6),
 		PhoneNumber:  utils.RandomString(10),
-		RoleID:       role.ID,
 	}
 
 	user, err := testStore.CreateUser(ctx, arg)
@@ -40,7 +39,6 @@ func createRandomUser(t *testing.T) User {
 	assert.Equal(t, arg.FirstName, user.FirstName)
 	assert.Equal(t, arg.LastName, user.LastName)
 	assert.Equal(t, arg.PhoneNumber, user.PhoneNumber)
-	assert.Equal(t, role.ID, user.RoleID)
 
 	// default
 	assert.NotEqual(t, uuid.Nil, user.ID)

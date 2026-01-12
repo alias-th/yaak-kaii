@@ -7,9 +7,9 @@ import (
 )
 
 type UserRepository interface {
-	CreateUser(ctx context.Context, user *UserModel) (*UserModel, error)
 	GetUserByID(ctx context.Context, id uuid.UUID) (*UserModel, error)
 	GetUserByEmail(ctx context.Context, email string) (*UserModel, error)
+	CreateSellerTx(ctx context.Context, user *UserModel) (*UserModel, error)
 }
 
 type GuestRepository interface {

@@ -19,8 +19,8 @@ func (s *service) CreateUser(ctx context.Context, req *domain.CreateUserRequest)
 		return nil, utils.NewInternalServerError()
 	}
 
-	// 2. Get role user
-	role, err := s.roleRepo.GetRoleByName(ctx, "user")
+	// 2. Get role seller
+	role, err := s.roleRepo.GetRoleByName(ctx, "seller")
 	if err != nil {
 		if utils.IsRoleNotFoundError(err) {
 			return nil, err
@@ -41,11 +41,11 @@ func (s *service) CreateUser(ctx context.Context, req *domain.CreateUserRequest)
 		LastName:     req.LastName,
 		PhoneNumber:  req.PhoneNumber,
 		PasswordHash: hashedPassword,
-		Role:         &domain.RoleModel{ID: role.ID},
+		Role:         domain.RoleModel{ID: role.ID},
 	}
 
 	// 5. Create user
-	result, err := s.userRepo.CreateUser(ctx, arg)
+	result, err := s.userRepo.CreateSellerTx(ctx, arg)
 	if err != nil {
 		if utils.IsUserAlreadyExistsError(err) {
 			return nil, err
@@ -65,7 +65,7 @@ func (s *service) CreateUser(ctx context.Context, req *domain.CreateUserRequest)
 			IsActive:      result.IsActive,
 			CreatedAt:     result.CreatedAt,
 			UpdatedAt:     result.UpdatedAt,
-			Role: &domain.RoleModel{
+			Role: domain.RoleModel{
 				ID: result.Role.ID,
 			},
 		},
