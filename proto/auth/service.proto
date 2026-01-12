@@ -25,4 +25,7 @@ service UserService {
 
   // RotateRefreshToken rotates if the refresh token is valid.
   rpc RotateRefreshToken(RotateRefreshTokenRequest) returns (RotateRefreshTokenResponse);
+
+  // GetShopUser retrieves user information for shop users.
+  rpc GetShopUser(GetShopRequest) returns (GetShopResponse);
 }

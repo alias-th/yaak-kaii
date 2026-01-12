@@ -87,6 +87,20 @@ message RotateRefreshTokenResponse {
   int64  expires_at    = 4; // Unix timestamp when access token expires
 }
 
+// ===== Get Shop User Messages =====
+message GetShopRequest {
+  string user_id = 1; // User ID to retrieve
+}
+
+message GetShopResponse {
+  string id            = 1; // shop id
+  string owner_user_id = 2; // owner user id
+  string name          = 3; // shop name
+  string slug          = 4; // shop slug
+  string description   = 5; // shop description
+  bool   is_active     = 6; // whether shop is active
+}
+
 // ===== Utility Messages =====
 enum ErrorCode {
   ERROR_CODE_UNSPECIFIED = 0; // Unspecified error (default)

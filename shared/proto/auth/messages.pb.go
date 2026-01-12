@@ -819,6 +819,135 @@ func (x *RotateRefreshTokenResponse) GetExpiresAt() int64 {
 	return 0
 }
 
+// ===== Get Shop User Messages =====
+type GetShopRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	UserId        string                 `protobuf:"bytes,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"` // User ID to retrieve
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetShopRequest) Reset() {
+	*x = GetShopRequest{}
+	mi := &file_auth_messages_proto_msgTypes[12]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetShopRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetShopRequest) ProtoMessage() {}
+
+func (x *GetShopRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_auth_messages_proto_msgTypes[12]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetShopRequest.ProtoReflect.Descriptor instead.
+func (*GetShopRequest) Descriptor() ([]byte, []int) {
+	return file_auth_messages_proto_rawDescGZIP(), []int{12}
+}
+
+func (x *GetShopRequest) GetUserId() string {
+	if x != nil {
+		return x.UserId
+	}
+	return ""
+}
+
+type GetShopResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`                                        // shop id
+	OwnerUserId   string                 `protobuf:"bytes,2,opt,name=owner_user_id,json=ownerUserId,proto3" json:"owner_user_id,omitempty"` // owner user id
+	Name          string                 `protobuf:"bytes,3,opt,name=name,proto3" json:"name,omitempty"`                                    // shop name
+	Slug          string                 `protobuf:"bytes,4,opt,name=slug,proto3" json:"slug,omitempty"`                                    // shop slug
+	Description   string                 `protobuf:"bytes,5,opt,name=description,proto3" json:"description,omitempty"`                      // shop description
+	IsActive      bool                   `protobuf:"varint,6,opt,name=is_active,json=isActive,proto3" json:"is_active,omitempty"`           // whether shop is active
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetShopResponse) Reset() {
+	*x = GetShopResponse{}
+	mi := &file_auth_messages_proto_msgTypes[13]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetShopResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetShopResponse) ProtoMessage() {}
+
+func (x *GetShopResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_auth_messages_proto_msgTypes[13]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetShopResponse.ProtoReflect.Descriptor instead.
+func (*GetShopResponse) Descriptor() ([]byte, []int) {
+	return file_auth_messages_proto_rawDescGZIP(), []int{13}
+}
+
+func (x *GetShopResponse) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+func (x *GetShopResponse) GetOwnerUserId() string {
+	if x != nil {
+		return x.OwnerUserId
+	}
+	return ""
+}
+
+func (x *GetShopResponse) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *GetShopResponse) GetSlug() string {
+	if x != nil {
+		return x.Slug
+	}
+	return ""
+}
+
+func (x *GetShopResponse) GetDescription() string {
+	if x != nil {
+		return x.Description
+	}
+	return ""
+}
+
+func (x *GetShopResponse) GetIsActive() bool {
+	if x != nil {
+		return x.IsActive
+	}
+	return false
+}
+
 type ErrorResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Code          ErrorCode              `protobuf:"varint,1,opt,name=code,proto3,enum=auth.ErrorCode" json:"code,omitempty"` // Error code enum
@@ -829,7 +958,7 @@ type ErrorResponse struct {
 
 func (x *ErrorResponse) Reset() {
 	*x = ErrorResponse{}
-	mi := &file_auth_messages_proto_msgTypes[12]
+	mi := &file_auth_messages_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -841,7 +970,7 @@ func (x *ErrorResponse) String() string {
 func (*ErrorResponse) ProtoMessage() {}
 
 func (x *ErrorResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_auth_messages_proto_msgTypes[12]
+	mi := &file_auth_messages_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -854,7 +983,7 @@ func (x *ErrorResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ErrorResponse.ProtoReflect.Descriptor instead.
 func (*ErrorResponse) Descriptor() ([]byte, []int) {
-	return file_auth_messages_proto_rawDescGZIP(), []int{12}
+	return file_auth_messages_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *ErrorResponse) GetCode() ErrorCode {
@@ -936,7 +1065,16 @@ const file_auth_messages_proto_rawDesc = "" +
 	"\x05token\x18\x02 \x01(\tR\x05token\x12#\n" +
 	"\rrefresh_token\x18\x03 \x01(\tR\frefreshToken\x12\x1d\n" +
 	"\n" +
-	"expires_at\x18\x04 \x01(\x03R\texpiresAt\"N\n" +
+	"expires_at\x18\x04 \x01(\x03R\texpiresAt\")\n" +
+	"\x0eGetShopRequest\x12\x17\n" +
+	"\auser_id\x18\x01 \x01(\tR\x06userId\"\xac\x01\n" +
+	"\x0fGetShopResponse\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12\"\n" +
+	"\rowner_user_id\x18\x02 \x01(\tR\vownerUserId\x12\x12\n" +
+	"\x04name\x18\x03 \x01(\tR\x04name\x12\x12\n" +
+	"\x04slug\x18\x04 \x01(\tR\x04slug\x12 \n" +
+	"\vdescription\x18\x05 \x01(\tR\vdescription\x12\x1b\n" +
+	"\tis_active\x18\x06 \x01(\bR\bisActive\"N\n" +
 	"\rErrorResponse\x12#\n" +
 	"\x04code\x18\x01 \x01(\x0e2\x0f.auth.ErrorCodeR\x04code\x12\x18\n" +
 	"\amessage\x18\x02 \x01(\tR\amessage*z\n" +
@@ -960,7 +1098,7 @@ func file_auth_messages_proto_rawDescGZIP() []byte {
 }
 
 var file_auth_messages_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_auth_messages_proto_msgTypes = make([]protoimpl.MessageInfo, 13)
+var file_auth_messages_proto_msgTypes = make([]protoimpl.MessageInfo, 15)
 var file_auth_messages_proto_goTypes = []any{
 	(ErrorCode)(0),                     // 0: auth.ErrorCode
 	(*CreateUserRequest)(nil),          // 1: auth.CreateUserRequest
@@ -975,11 +1113,13 @@ var file_auth_messages_proto_goTypes = []any{
 	(*TokenValid)(nil),                 // 10: auth.TokenValid
 	(*RotateRefreshTokenRequest)(nil),  // 11: auth.RotateRefreshTokenRequest
 	(*RotateRefreshTokenResponse)(nil), // 12: auth.RotateRefreshTokenResponse
-	(*ErrorResponse)(nil),              // 13: auth.ErrorResponse
+	(*GetShopRequest)(nil),             // 13: auth.GetShopRequest
+	(*GetShopResponse)(nil),            // 14: auth.GetShopResponse
+	(*ErrorResponse)(nil),              // 15: auth.ErrorResponse
 }
 var file_auth_messages_proto_depIdxs = []int32{
 	10, // 0: auth.VerifyTokenResponse.valid:type_name -> auth.TokenValid
-	13, // 1: auth.VerifyTokenResponse.error:type_name -> auth.ErrorResponse
+	15, // 1: auth.VerifyTokenResponse.error:type_name -> auth.ErrorResponse
 	0,  // 2: auth.ErrorResponse.code:type_name -> auth.ErrorCode
 	3,  // [3:3] is the sub-list for method output_type
 	3,  // [3:3] is the sub-list for method input_type
@@ -1003,7 +1143,7 @@ func file_auth_messages_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_auth_messages_proto_rawDesc), len(file_auth_messages_proto_rawDesc)),
 			NumEnums:      1,
-			NumMessages:   13,
+			NumMessages:   15,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

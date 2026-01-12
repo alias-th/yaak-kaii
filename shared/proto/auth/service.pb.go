@@ -24,7 +24,7 @@ var File_auth_service_proto protoreflect.FileDescriptor
 
 const file_auth_service_proto_rawDesc = "" +
 	"\n" +
-	"\x12auth/service.proto\x12\x04auth\x1a\x13auth/messages.proto2\xbd\x03\n" +
+	"\x12auth/service.proto\x12\x04auth\x1a\x13auth/messages.proto2\xf9\x03\n" +
 	"\vUserService\x12?\n" +
 	"\n" +
 	"CreateUser\x12\x17.auth.CreateUserRequest\x1a\x18.auth.CreateUserResponse\x120\n" +
@@ -32,7 +32,8 @@ const file_auth_service_proto_rawDesc = "" +
 	"\vCreateGuest\x12\x18.auth.CreateGuestRequest\x1a\x19.auth.CreateGuestResponse\x12L\n" +
 	"\x10VerifyGuestToken\x12\x1d.auth.VerifyGuestTokenRequest\x1a\x19.auth.VerifyTokenResponse\x12P\n" +
 	"\x12VerifyRefreshToken\x12\x1f.auth.VerifyRefreshTokenRequest\x1a\x19.auth.VerifyTokenResponse\x12W\n" +
-	"\x12RotateRefreshToken\x12\x1f.auth.RotateRefreshTokenRequest\x1a .auth.RotateRefreshTokenResponseB\x18Z\x16shared/proto/auth;authb\x06proto3"
+	"\x12RotateRefreshToken\x12\x1f.auth.RotateRefreshTokenRequest\x1a .auth.RotateRefreshTokenResponse\x12:\n" +
+	"\vGetShopUser\x12\x14.auth.GetShopRequest\x1a\x15.auth.GetShopResponseB\x18Z\x16shared/proto/auth;authb\x06proto3"
 
 var file_auth_service_proto_goTypes = []any{
 	(*CreateUserRequest)(nil),          // 0: auth.CreateUserRequest
@@ -41,11 +42,13 @@ var file_auth_service_proto_goTypes = []any{
 	(*VerifyGuestTokenRequest)(nil),    // 3: auth.VerifyGuestTokenRequest
 	(*VerifyRefreshTokenRequest)(nil),  // 4: auth.VerifyRefreshTokenRequest
 	(*RotateRefreshTokenRequest)(nil),  // 5: auth.RotateRefreshTokenRequest
-	(*CreateUserResponse)(nil),         // 6: auth.CreateUserResponse
-	(*LoginResponse)(nil),              // 7: auth.LoginResponse
-	(*CreateGuestResponse)(nil),        // 8: auth.CreateGuestResponse
-	(*VerifyTokenResponse)(nil),        // 9: auth.VerifyTokenResponse
-	(*RotateRefreshTokenResponse)(nil), // 10: auth.RotateRefreshTokenResponse
+	(*GetShopRequest)(nil),             // 6: auth.GetShopRequest
+	(*CreateUserResponse)(nil),         // 7: auth.CreateUserResponse
+	(*LoginResponse)(nil),              // 8: auth.LoginResponse
+	(*CreateGuestResponse)(nil),        // 9: auth.CreateGuestResponse
+	(*VerifyTokenResponse)(nil),        // 10: auth.VerifyTokenResponse
+	(*RotateRefreshTokenResponse)(nil), // 11: auth.RotateRefreshTokenResponse
+	(*GetShopResponse)(nil),            // 12: auth.GetShopResponse
 }
 var file_auth_service_proto_depIdxs = []int32{
 	0,  // 0: auth.UserService.CreateUser:input_type -> auth.CreateUserRequest
@@ -54,14 +57,16 @@ var file_auth_service_proto_depIdxs = []int32{
 	3,  // 3: auth.UserService.VerifyGuestToken:input_type -> auth.VerifyGuestTokenRequest
 	4,  // 4: auth.UserService.VerifyRefreshToken:input_type -> auth.VerifyRefreshTokenRequest
 	5,  // 5: auth.UserService.RotateRefreshToken:input_type -> auth.RotateRefreshTokenRequest
-	6,  // 6: auth.UserService.CreateUser:output_type -> auth.CreateUserResponse
-	7,  // 7: auth.UserService.Login:output_type -> auth.LoginResponse
-	8,  // 8: auth.UserService.CreateGuest:output_type -> auth.CreateGuestResponse
-	9,  // 9: auth.UserService.VerifyGuestToken:output_type -> auth.VerifyTokenResponse
-	9,  // 10: auth.UserService.VerifyRefreshToken:output_type -> auth.VerifyTokenResponse
-	10, // 11: auth.UserService.RotateRefreshToken:output_type -> auth.RotateRefreshTokenResponse
-	6,  // [6:12] is the sub-list for method output_type
-	0,  // [0:6] is the sub-list for method input_type
+	6,  // 6: auth.UserService.GetShopUser:input_type -> auth.GetShopRequest
+	7,  // 7: auth.UserService.CreateUser:output_type -> auth.CreateUserResponse
+	8,  // 8: auth.UserService.Login:output_type -> auth.LoginResponse
+	9,  // 9: auth.UserService.CreateGuest:output_type -> auth.CreateGuestResponse
+	10, // 10: auth.UserService.VerifyGuestToken:output_type -> auth.VerifyTokenResponse
+	10, // 11: auth.UserService.VerifyRefreshToken:output_type -> auth.VerifyTokenResponse
+	11, // 12: auth.UserService.RotateRefreshToken:output_type -> auth.RotateRefreshTokenResponse
+	12, // 13: auth.UserService.GetShopUser:output_type -> auth.GetShopResponse
+	7,  // [7:14] is the sub-list for method output_type
+	0,  // [0:7] is the sub-list for method input_type
 	0,  // [0:0] is the sub-list for extension type_name
 	0,  // [0:0] is the sub-list for extension extendee
 	0,  // [0:0] is the sub-list for field type_name

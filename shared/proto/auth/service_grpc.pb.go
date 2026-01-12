@@ -25,6 +25,7 @@ const (
 	UserService_VerifyGuestToken_FullMethodName   = "/auth.UserService/VerifyGuestToken"
 	UserService_VerifyRefreshToken_FullMethodName = "/auth.UserService/VerifyRefreshToken"
 	UserService_RotateRefreshToken_FullMethodName = "/auth.UserService/RotateRefreshToken"
+	UserService_GetShopUser_FullMethodName        = "/auth.UserService/GetShopUser"
 )
 
 // UserServiceClient is the client API for UserService service.
@@ -45,6 +46,8 @@ type UserServiceClient interface {
 	VerifyRefreshToken(ctx context.Context, in *VerifyRefreshTokenRequest, opts ...grpc.CallOption) (*VerifyTokenResponse, error)
 	// RotateRefreshToken rotates if the refresh token is valid.
 	RotateRefreshToken(ctx context.Context, in *RotateRefreshTokenRequest, opts ...grpc.CallOption) (*RotateRefreshTokenResponse, error)
+	// GetShopUser retrieves user information for shop users.
+	GetShopUser(ctx context.Context, in *GetShopRequest, opts ...grpc.CallOption) (*GetShopResponse, error)
 }
 
 type userServiceClient struct {
@@ -115,6 +118,16 @@ func (c *userServiceClient) RotateRefreshToken(ctx context.Context, in *RotateRe
 	return out, nil
 }
 
+func (c *userServiceClient) GetShopUser(ctx context.Context, in *GetShopRequest, opts ...grpc.CallOption) (*GetShopResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetShopResponse)
+	err := c.cc.Invoke(ctx, UserService_GetShopUser_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // UserServiceServer is the server API for UserService service.
 // All implementations must embed UnimplementedUserServiceServer
 // for forward compatibility.
@@ -133,6 +146,8 @@ type UserServiceServer interface {
 	VerifyRefreshToken(context.Context, *VerifyRefreshTokenRequest) (*VerifyTokenResponse, error)
 	// RotateRefreshToken rotates if the refresh token is valid.
 	RotateRefreshToken(context.Context, *RotateRefreshTokenRequest) (*RotateRefreshTokenResponse, error)
+	// GetShopUser retrieves user information for shop users.
+	GetShopUser(context.Context, *GetShopRequest) (*GetShopResponse, error)
 	mustEmbedUnimplementedUserServiceServer()
 }
 
@@ -160,6 +175,9 @@ func (UnimplementedUserServiceServer) VerifyRefreshToken(context.Context, *Verif
 }
 func (UnimplementedUserServiceServer) RotateRefreshToken(context.Context, *RotateRefreshTokenRequest) (*RotateRefreshTokenResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method RotateRefreshToken not implemented")
+}
+func (UnimplementedUserServiceServer) GetShopUser(context.Context, *GetShopRequest) (*GetShopResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method GetShopUser not implemented")
 }
 func (UnimplementedUserServiceServer) mustEmbedUnimplementedUserServiceServer() {}
 func (UnimplementedUserServiceServer) testEmbeddedByValue()                     {}
@@ -290,6 +308,24 @@ func _UserService_RotateRefreshToken_Handler(srv interface{}, ctx context.Contex
 	return interceptor(ctx, in, info, handler)
 }
 
+func _UserService_GetShopUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetShopRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).GetShopUser(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_GetShopUser_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).GetShopUser(ctx, req.(*GetShopRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // UserService_ServiceDesc is the grpc.ServiceDesc for UserService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -320,6 +356,10 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "RotateRefreshToken",
 			Handler:    _UserService_RotateRefreshToken_Handler,
+		},
+		{
+			MethodName: "GetShopUser",
+			Handler:    _UserService_GetShopUser_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
