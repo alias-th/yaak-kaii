@@ -1,5 +1,20 @@
 package types
 
+type CreateProductRequest struct {
+	Name        string            `json:"name" binding:"required"`
+	Description string            `json:"description" binding:"required"`
+	Price       float64           `json:"price" binding:"required,gt=0"`
+	CategoryID  string            `json:"category_id" binding:"required"`
+	Attributes  map[string]string `json:"attributes" binding:"min=1,max=10"`
+	Stock       int               `json:"stock" binding:"required,gte=0"`
+}
+type CreateProductResponse struct {
+	ID string `json:"id"`
+}
+
+// t-shirt-basic
+// TSB-BLK-M
+
 type CreateUserRequest struct {
 	Email       string `json:"email" binding:"required,email"`
 	FirstName   string `json:"first_name" binding:"required,min=2,max=50"`
@@ -37,3 +52,22 @@ type TokenResponse struct {
 	ExpiresAt    string `json:"expires_at"`
 	ExpiresIn    int64  `json:"expires_in"`
 }
+
+// func (req *CreateProductRequest) Validate() error {
+//     // 1. ตรวจสอบว่าต้องมี Key ที่จำเป็น (เช่น color, size)
+//     requiredKeys := []string{"color", "size"}
+//     for _, key := range requiredKeys {
+//         if _, ok := req.Attributes[key]; !ok {
+//             return fmt.Errorf("attribute '%s' is required", key)
+//         }
+//     }
+
+//     // 2. ตรวจสอบว่าค่า (Value) ใน Map ห้ามเป็นค่าว่าง
+//     for key, value := range req.Attributes {
+//         if strings.TrimSpace(value) == "" {
+//             return fmt.Errorf("value for attribute '%s' cannot be empty", key)
+//         }
+//     }
+
+//     return nil
+// }

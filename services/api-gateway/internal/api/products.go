@@ -1,8 +1,34 @@
 package api
 
-import "github.com/gin-gonic/gin"
+import (
+	"net/http"
+	"yaak-kaii/services/api-gateway/pkg/types"
+	"yaak-kaii/shared/contracts"
+	"yaak-kaii/shared/proto/product"
+
+	"github.com/gin-gonic/gin"
+)
 
 func (app *Application) createProduct(ctx *gin.Context) {
-	// Implement the logic to handle product creation
-	ctx.JSON(200, gin.H{"message": "createProduct endpoint"})
+	var reqBody types.CreateProductRequest
+
+	err := ctx.ShouldBindJSON(&reqBody)
+	if err != nil {
+		app.responseWithError(ctx, 400, err)
+		return
+	}
+
+	productRes, err := app.GrpcClients.Product.Client.CreateProduct(ctx, &product.CreateProductRequest{})
+	if err != nil {
+		app.responseWithError(ctx, http.StatusInternalServerError, err)
+		return
+	}
+
+	res := contracts.APIResponse{
+		Data: types.CreateProductResponse{
+			ID: productRes.ProductId,
+		},
+	}
+
+	ctx.JSON(http.StatusCreated, res)
 }

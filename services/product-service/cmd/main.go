@@ -7,8 +7,8 @@ import (
 	"os/signal"
 	"syscall"
 
-	"yaak-kaii/services/product-service/internal/database"
-	grpcserver "yaak-kaii/services/product-service/internal/grpc_server"
+	database "yaak-kaii/services/product-service/internal/db"
+	grpcserver "yaak-kaii/services/product-service/internal/grpc"
 	"yaak-kaii/services/product-service/internal/repositories"
 	"yaak-kaii/services/product-service/internal/services"
 

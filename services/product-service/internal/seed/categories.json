@@ -1,0 +1,44 @@
+{
+  "category": {
+    "id": "00000000-0000-0000-0000-000000000001",
+    "name": "Apparel",
+    "description": "Clothing items including shirts, pants, and accessories."
+  },
+  "attributes": [
+    {
+      "id": "10000000-0000-0000-0000-000000000001",
+      "category_id": "00000000-0000-0000-0000-000000000001",
+      "key": "size",
+      "label": "Size",
+      "type": "select",
+      "required": true,
+      "options": ["XS", "S", "M", "L", "XL", "XXL"]
+    },
+    {
+      "id": "10000000-0000-0000-0000-000000000001",
+      "category_id": "00000000-0000-0000-0000-000000000001",
+      "key": "color",
+      "label": "Color",
+      "type": "select",
+      "required": true,
+      "options": ["Black", "White", "Red", "Blue", "Green"]
+    },
+    {
+      "id": "10000000-0000-0000-0000-000000000001",
+      "category_id": "00000000-0000-0000-0000-000000000001",
+      "key": "material",
+      "label": "Material",
+      "type": "text",
+      "required": false
+    },
+    {
+      "id": "10000000-0000-0000-0000-000000000001",
+      "category_id": "00000000-0000-0000-0000-000000000001",
+      "key": "gender",
+      "label": "Gender",
+      "type": "select",
+      "required": false,
+      "options": ["men", "women", "unisex"]
+    }
+  ]
+}

@@ -6,24 +6,17 @@ option go_package = "shared/proto/product;product";
 
 // ===== Product Messages =====
 message CreateProductRequest {
-  string              shop_id     = 1; // ID of the shop to which the product belongs
+  string              user_id     = 1; // ID of the user creating the product
   string              name        = 2; // Product name
-  string              slug        = 3; // Product slug (URL-friendly identifier)
-  string              description = 4; // Product description
-  double              price       = 5; // Product price
-  string              category_id = 6; // Product category
-  string              sku         = 7; // Product SKU
-  int32               stock       = 8; // Available stock quantity
-  map<string, string> attributes  = 9; // Additional product attributes
-  repeated string     images      = 10; // URLs of product images
-  ProductStatus       status      = 11; // Product status (e.g., active, inactive)
+  string              description = 3; // Product description
+  double              price       = 4; // Product price
+  string              category_id = 5; // Product category
+  int32               stock       = 6; // Available stock quantity
+  map<string, string> attributes  = 7; // Additional product attributes
 }
 
 message CreateProductResponse {
-  oneof result {
-    string product_id = 1; // ID of the newly created product
-    ErrorResponse error = 2; // Error response if creation failed
-  }
+  string product_id = 1; // ID of the newly created product
 }
 
 message CreateCategoryRequest {
@@ -33,10 +26,7 @@ message CreateCategoryRequest {
 }
 
 message CreateCategoryResponse {
-  oneof result {
-    string        category_id = 1; // ID of the newly created category
-    ErrorResponse error       = 2; // Error response if creation failed
-  }
+  string category_id = 1; // ID of the newly created category
 
 }
 
@@ -52,17 +42,4 @@ enum ProductStatus {
   PRODUCT_STATUS_UNSPECIFIED = 0; // Unspecified status (default)
   ACTIVE                     = 1; // Product is active and available
   INACTIVE                   = 2; // Product is inactive and unavailable
-}
-
-// ===== Utility Messages =====
-enum ErrorCode {
-  ERROR_CODE_UNSPECIFIED = 0; // Unspecified error code
-  NOT_FOUND              = 1; // Resource not found
-  INVALID_ARGUMENT       = 2; // Invalid argument provided
-  INTERNAL               = 3; // Internal server error
-}
-
-message ErrorResponse {
-  ErrorCode code    = 1; // Error code enum
-  string    message = 2; // Error message
 }
