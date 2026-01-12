@@ -62,6 +62,3 @@ build/
 
 # Secrets
 secrets.yaml
-
-
-web/
