@@ -6,44 +6,63 @@ option go_package = "shared/proto/product;product";
 
 // ===== Product Messages =====
 message CreateProductRequest {
-  string              name           = 1; // Product name
-  string              slug           = 2; // Product slug (URL-friendly identifier)
-  string              description    = 3; // Product description
-  double              price          = 4; // Product price
-  string              category       = 5; // Product category
-  string              brand          = 6; // Product brand
-  int32               stock_quantity = 7; // Available stock quantity
-  map<string, string> attributes     = 8; // Additional product attributes
-  map<string,string>  variants       = 9; // Product variants (e.g., size, color)
-  repeated string     images         = 10; // URLs of product images
-  ProductStatus       status         = 11; // Product status (e.g., active, inactive)
-  int64               expires_at     = 12; // Product expiration timestamp (Unix time)
-  int64               created_at     = 13; // Product creation timestamp (Unix time)
-  int64               updated_at     = 14; // Product last update timestamp (Unix time
+  string              shop_id     = 1; // ID of the shop to which the product belongs
+  string              name        = 2; // Product name
+  string              slug        = 3; // Product slug (URL-friendly identifier)
+  string              description = 4; // Product description
+  double              price       = 5; // Product price
+  string              category_id = 6; // Product category
+  string              sku         = 7; // Product SKU
+  int32               stock       = 8; // Available stock quantity
+  map<string, string> attributes  = 9; // Additional product attributes
+  repeated string     images      = 10; // URLs of product images
+  ProductStatus       status      = 11; // Product status (e.g., active, inactive)
 }
 
 message CreateProductResponse {
-  string              id             = 1; // Product ID
-  string              name           = 2; // Product name
-  string              slug           = 3; // Product slug (URL-friendly identifier)
-  string              description    = 4; // Product description
-  double              price          = 5; // Product price
-  string              category       = 6; // Product category
-  string              brand          = 7; // Product brand
-  int32               stock_quantity = 8; // Available stock quantity
-  map<string, string> attributes     = 9; // Additional product attributes
-  map<string,string>  variants       = 10; // Product variants (e.g., size, color)
-  repeated string     images         = 11; // URLs of product images
-  ProductStatus       status         = 12; // Product status (e.g., active, inactive)
-  int64               expires_at     = 13; // Product expiration timestamp (Unix time)
-  int64               created_at     = 14; // Product creation timestamp (Unix time)
-  int64               updated_at     = 15; // Product last update timestamp (Unix time)
+  oneof result {
+    string product_id = 1; // ID of the newly created product
+    ErrorResponse error = 2; // Error response if creation failed
+  }
 }
 
+message CreateCategoryRequest {
+  string                     name        = 1; // Category name
+  string                     description = 2; // Category description
+  repeated CategoryAttribute attributes  = 3; // List of category attributes
+}
 
+message CreateCategoryResponse {
+  oneof result {
+    string        category_id = 1; // ID of the newly created category
+    ErrorResponse error       = 2; // Error response if creation failed
+  }
+
+}
+
+message CategoryAttribute {
+  string              key      = 1; // Attribute key
+  string              label    = 2; // Attribute label
+  string              type     = 3; // Attribute type (e.g., string, number, boolean)
+  bool                required = 4; // Whether the attribute is required
+  map<string, string> options  = 5; // Options for the attribute (if applicable)
+}
 
 enum ProductStatus {
   PRODUCT_STATUS_UNSPECIFIED = 0; // Unspecified status (default)
   ACTIVE                     = 1; // Product is active and available
   INACTIVE                   = 2; // Product is inactive and unavailable
+}
+
+// ===== Utility Messages =====
+enum ErrorCode {
+  ERROR_CODE_UNSPECIFIED = 0; // Unspecified error code
+  NOT_FOUND              = 1; // Resource not found
+  INVALID_ARGUMENT       = 2; // Invalid argument provided
+  INTERNAL               = 3; // Internal server error
+}
+
+message ErrorResponse {
+  ErrorCode code    = 1; // Error code enum
+  string    message = 2; // Error message
 }

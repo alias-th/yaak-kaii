@@ -29,7 +29,7 @@ func (a *JWTAuthenticator) GenerateToken(userID uuid.UUID) (string, error) {
 		ExpiresAt: jwt.NewNumericDate(time.Now().Add(1 * time.Hour)),
 		IssuedAt:  jwt.NewNumericDate(time.Now()),
 		Issuer:    a.iss,
-		Audience:  jwt.ClaimStrings{a.iss},
+		Audience:  jwt.ClaimStrings{a.aud},
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)

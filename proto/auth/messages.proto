@@ -88,7 +88,6 @@ message RotateRefreshTokenResponse {
 }
 
 // ===== Utility Messages =====
-
 enum ErrorCode {
   ERROR_CODE_UNSPECIFIED = 0; // Unspecified error (default)
   INVALID_CREDENTIALS    = 1; // Email or password is incorrect

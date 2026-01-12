@@ -160,6 +160,7 @@ func (h *gRPCHandler) RotateRefreshToken(
 	}
 
 	return &pb.RotateRefreshTokenResponse{
+		UserId:       resp.UserID,
 		Token:        resp.Token,
 		RefreshToken: resp.RefreshToken,
 		ExpiresAt:    resp.ExpiresAt,

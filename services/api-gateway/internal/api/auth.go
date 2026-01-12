@@ -1,6 +1,7 @@
 package api
 
 import (
+	"log"
 	"net/http"
 	"yaak-kaii/services/api-gateway/pkg/types"
 	"yaak-kaii/shared/contracts"
@@ -120,6 +121,7 @@ func (app *Application) rotateToken(ctx *gin.Context) {
 		app.responseWithError(ctx, http.StatusInternalServerError, err)
 		return
 	}
+	log.Printf("RotateRefreshToken response: %+v", resp)
 
 	// 3. Response
 	expiresAt, expiresIn, err := app.formatDate(&resp.ExpiresAt)

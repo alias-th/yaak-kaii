@@ -37,11 +37,18 @@ func (app *Application) Run() {
 
 		auth := v1.Group("/authentication")
 		{
-			auth.POST("/user", app.createUser)
+			auth.POST("/users", app.createUser)
 			auth.POST("/guest", app.createGuest)
 			auth.POST("/login", app.login)
 			auth.POST("/rotate-token", app.rotateToken)
 		}
+
+		seller := v1.Group("/seller").Use(app.sellerMiddleware())
+		{
+			seller.POST("/products", app.createProduct)
+			seller.POST("/categories", app.createCategory)
+		}
+
 	}
 
 	srv := &http.Server{

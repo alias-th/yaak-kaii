@@ -70,23 +70,73 @@ func (ProductStatus) EnumDescriptor() ([]byte, []int) {
 	return file_product_messages_proto_rawDescGZIP(), []int{0}
 }
 
+// ===== Utility Messages =====
+type ErrorCode int32
+
+const (
+	ErrorCode_ERROR_CODE_UNSPECIFIED ErrorCode = 0 // Unspecified error code
+	ErrorCode_NOT_FOUND              ErrorCode = 1 // Resource not found
+	ErrorCode_INVALID_ARGUMENT       ErrorCode = 2 // Invalid argument provided
+	ErrorCode_INTERNAL               ErrorCode = 3 // Internal server error
+)
+
+// Enum value maps for ErrorCode.
+var (
+	ErrorCode_name = map[int32]string{
+		0: "ERROR_CODE_UNSPECIFIED",
+		1: "NOT_FOUND",
+		2: "INVALID_ARGUMENT",
+		3: "INTERNAL",
+	}
+	ErrorCode_value = map[string]int32{
+		"ERROR_CODE_UNSPECIFIED": 0,
+		"NOT_FOUND":              1,
+		"INVALID_ARGUMENT":       2,
+		"INTERNAL":               3,
+	}
+)
+
+func (x ErrorCode) Enum() *ErrorCode {
+	p := new(ErrorCode)
+	*p = x
+	return p
+}
+
+func (x ErrorCode) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (ErrorCode) Descriptor() protoreflect.EnumDescriptor {
+	return file_product_messages_proto_enumTypes[1].Descriptor()
+}
+
+func (ErrorCode) Type() protoreflect.EnumType {
+	return &file_product_messages_proto_enumTypes[1]
+}
+
+func (x ErrorCode) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use ErrorCode.Descriptor instead.
+func (ErrorCode) EnumDescriptor() ([]byte, []int) {
+	return file_product_messages_proto_rawDescGZIP(), []int{1}
+}
+
 // ===== Product Messages =====
 type CreateProductRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`                                                                                       // Product name
-	Slug          string                 `protobuf:"bytes,2,opt,name=slug,proto3" json:"slug,omitempty"`                                                                                       // Product slug (URL-friendly identifier)
-	Description   string                 `protobuf:"bytes,3,opt,name=description,proto3" json:"description,omitempty"`                                                                         // Product description
-	Price         float64                `protobuf:"fixed64,4,opt,name=price,proto3" json:"price,omitempty"`                                                                                   // Product price
-	Category      string                 `protobuf:"bytes,5,opt,name=category,proto3" json:"category,omitempty"`                                                                               // Product category
-	Brand         string                 `protobuf:"bytes,6,opt,name=brand,proto3" json:"brand,omitempty"`                                                                                     // Product brand
-	StockQuantity int32                  `protobuf:"varint,7,opt,name=stock_quantity,json=stockQuantity,proto3" json:"stock_quantity,omitempty"`                                               // Available stock quantity
-	Attributes    map[string]string      `protobuf:"bytes,8,rep,name=attributes,proto3" json:"attributes,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"` // Additional product attributes
-	Variants      map[string]string      `protobuf:"bytes,9,rep,name=variants,proto3" json:"variants,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`     // Product variants (e.g., size, color)
+	ShopId        string                 `protobuf:"bytes,1,opt,name=shop_id,json=shopId,proto3" json:"shop_id,omitempty"`                                                                     // ID of the shop to which the product belongs
+	Name          string                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`                                                                                       // Product name
+	Slug          string                 `protobuf:"bytes,3,opt,name=slug,proto3" json:"slug,omitempty"`                                                                                       // Product slug (URL-friendly identifier)
+	Description   string                 `protobuf:"bytes,4,opt,name=description,proto3" json:"description,omitempty"`                                                                         // Product description
+	Price         float64                `protobuf:"fixed64,5,opt,name=price,proto3" json:"price,omitempty"`                                                                                   // Product price
+	CategoryId    string                 `protobuf:"bytes,6,opt,name=category_id,json=categoryId,proto3" json:"category_id,omitempty"`                                                         // Product category
+	Sku           string                 `protobuf:"bytes,7,opt,name=sku,proto3" json:"sku,omitempty"`                                                                                         // Product SKU
+	Stock         int32                  `protobuf:"varint,8,opt,name=stock,proto3" json:"stock,omitempty"`                                                                                    // Available stock quantity
+	Attributes    map[string]string      `protobuf:"bytes,9,rep,name=attributes,proto3" json:"attributes,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"` // Additional product attributes
 	Images        []string               `protobuf:"bytes,10,rep,name=images,proto3" json:"images,omitempty"`                                                                                  // URLs of product images
 	Status        ProductStatus          `protobuf:"varint,11,opt,name=status,proto3,enum=product.ProductStatus" json:"status,omitempty"`                                                      // Product status (e.g., active, inactive)
-	ExpiresAt     int64                  `protobuf:"varint,12,opt,name=expires_at,json=expiresAt,proto3" json:"expires_at,omitempty"`                                                          // Product expiration timestamp (Unix time)
-	CreatedAt     int64                  `protobuf:"varint,13,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`                                                          // Product creation timestamp (Unix time)
-	UpdatedAt     int64                  `protobuf:"varint,14,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`                                                          // Product last update timestamp (Unix time
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -121,6 +171,13 @@ func (*CreateProductRequest) Descriptor() ([]byte, []int) {
 	return file_product_messages_proto_rawDescGZIP(), []int{0}
 }
 
+func (x *CreateProductRequest) GetShopId() string {
+	if x != nil {
+		return x.ShopId
+	}
+	return ""
+}
+
 func (x *CreateProductRequest) GetName() string {
 	if x != nil {
 		return x.Name
@@ -149,23 +206,23 @@ func (x *CreateProductRequest) GetPrice() float64 {
 	return 0
 }
 
-func (x *CreateProductRequest) GetCategory() string {
+func (x *CreateProductRequest) GetCategoryId() string {
 	if x != nil {
-		return x.Category
+		return x.CategoryId
 	}
 	return ""
 }
 
-func (x *CreateProductRequest) GetBrand() string {
+func (x *CreateProductRequest) GetSku() string {
 	if x != nil {
-		return x.Brand
+		return x.Sku
 	}
 	return ""
 }
 
-func (x *CreateProductRequest) GetStockQuantity() int32 {
+func (x *CreateProductRequest) GetStock() int32 {
 	if x != nil {
-		return x.StockQuantity
+		return x.Stock
 	}
 	return 0
 }
@@ -173,13 +230,6 @@ func (x *CreateProductRequest) GetStockQuantity() int32 {
 func (x *CreateProductRequest) GetAttributes() map[string]string {
 	if x != nil {
 		return x.Attributes
-	}
-	return nil
-}
-
-func (x *CreateProductRequest) GetVariants() map[string]string {
-	if x != nil {
-		return x.Variants
 	}
 	return nil
 }
@@ -198,44 +248,13 @@ func (x *CreateProductRequest) GetStatus() ProductStatus {
 	return ProductStatus_PRODUCT_STATUS_UNSPECIFIED
 }
 
-func (x *CreateProductRequest) GetExpiresAt() int64 {
-	if x != nil {
-		return x.ExpiresAt
-	}
-	return 0
-}
-
-func (x *CreateProductRequest) GetCreatedAt() int64 {
-	if x != nil {
-		return x.CreatedAt
-	}
-	return 0
-}
-
-func (x *CreateProductRequest) GetUpdatedAt() int64 {
-	if x != nil {
-		return x.UpdatedAt
-	}
-	return 0
-}
-
 type CreateProductResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`                                                                                           // Product ID
-	Name          string                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`                                                                                       // Product name
-	Slug          string                 `protobuf:"bytes,3,opt,name=slug,proto3" json:"slug,omitempty"`                                                                                       // Product slug (URL-friendly identifier)
-	Description   string                 `protobuf:"bytes,4,opt,name=description,proto3" json:"description,omitempty"`                                                                         // Product description
-	Price         float64                `protobuf:"fixed64,5,opt,name=price,proto3" json:"price,omitempty"`                                                                                   // Product price
-	Category      string                 `protobuf:"bytes,6,opt,name=category,proto3" json:"category,omitempty"`                                                                               // Product category
-	Brand         string                 `protobuf:"bytes,7,opt,name=brand,proto3" json:"brand,omitempty"`                                                                                     // Product brand
-	StockQuantity int32                  `protobuf:"varint,8,opt,name=stock_quantity,json=stockQuantity,proto3" json:"stock_quantity,omitempty"`                                               // Available stock quantity
-	Attributes    map[string]string      `protobuf:"bytes,9,rep,name=attributes,proto3" json:"attributes,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"` // Additional product attributes
-	Variants      map[string]string      `protobuf:"bytes,10,rep,name=variants,proto3" json:"variants,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`    // Product variants (e.g., size, color)
-	Images        []string               `protobuf:"bytes,11,rep,name=images,proto3" json:"images,omitempty"`                                                                                  // URLs of product images
-	Status        ProductStatus          `protobuf:"varint,12,opt,name=status,proto3,enum=product.ProductStatus" json:"status,omitempty"`                                                      // Product status (e.g., active, inactive)
-	ExpiresAt     int64                  `protobuf:"varint,13,opt,name=expires_at,json=expiresAt,proto3" json:"expires_at,omitempty"`                                                          // Product expiration timestamp (Unix time)
-	CreatedAt     int64                  `protobuf:"varint,14,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`                                                          // Product creation timestamp (Unix time)
-	UpdatedAt     int64                  `protobuf:"varint,15,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`                                                          // Product last update timestamp (Unix time)
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Types that are valid to be assigned to Result:
+	//
+	//	*CreateProductResponse_ProductId
+	//	*CreateProductResponse_Error
+	Result        isCreateProductResponse_Result `protobuf_oneof:"result"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -270,176 +289,379 @@ func (*CreateProductResponse) Descriptor() ([]byte, []int) {
 	return file_product_messages_proto_rawDescGZIP(), []int{1}
 }
 
-func (x *CreateProductResponse) GetId() string {
+func (x *CreateProductResponse) GetResult() isCreateProductResponse_Result {
 	if x != nil {
-		return x.Id
+		return x.Result
+	}
+	return nil
+}
+
+func (x *CreateProductResponse) GetProductId() string {
+	if x != nil {
+		if x, ok := x.Result.(*CreateProductResponse_ProductId); ok {
+			return x.ProductId
+		}
 	}
 	return ""
 }
 
-func (x *CreateProductResponse) GetName() string {
+func (x *CreateProductResponse) GetError() *ErrorResponse {
+	if x != nil {
+		if x, ok := x.Result.(*CreateProductResponse_Error); ok {
+			return x.Error
+		}
+	}
+	return nil
+}
+
+type isCreateProductResponse_Result interface {
+	isCreateProductResponse_Result()
+}
+
+type CreateProductResponse_ProductId struct {
+	ProductId string `protobuf:"bytes,1,opt,name=product_id,json=productId,proto3,oneof"` // ID of the newly created product
+}
+
+type CreateProductResponse_Error struct {
+	Error *ErrorResponse `protobuf:"bytes,2,opt,name=error,proto3,oneof"` // Error response if creation failed
+}
+
+func (*CreateProductResponse_ProductId) isCreateProductResponse_Result() {}
+
+func (*CreateProductResponse_Error) isCreateProductResponse_Result() {}
+
+type CreateCategoryRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`               // Category name
+	Description   string                 `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"` // Category description
+	Attributes    []*CategoryAttribute   `protobuf:"bytes,3,rep,name=attributes,proto3" json:"attributes,omitempty"`   // List of category attributes
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CreateCategoryRequest) Reset() {
+	*x = CreateCategoryRequest{}
+	mi := &file_product_messages_proto_msgTypes[2]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CreateCategoryRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreateCategoryRequest) ProtoMessage() {}
+
+func (x *CreateCategoryRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_product_messages_proto_msgTypes[2]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CreateCategoryRequest.ProtoReflect.Descriptor instead.
+func (*CreateCategoryRequest) Descriptor() ([]byte, []int) {
+	return file_product_messages_proto_rawDescGZIP(), []int{2}
+}
+
+func (x *CreateCategoryRequest) GetName() string {
 	if x != nil {
 		return x.Name
 	}
 	return ""
 }
 
-func (x *CreateProductResponse) GetSlug() string {
-	if x != nil {
-		return x.Slug
-	}
-	return ""
-}
-
-func (x *CreateProductResponse) GetDescription() string {
+func (x *CreateCategoryRequest) GetDescription() string {
 	if x != nil {
 		return x.Description
 	}
 	return ""
 }
 
-func (x *CreateProductResponse) GetPrice() float64 {
-	if x != nil {
-		return x.Price
-	}
-	return 0
-}
-
-func (x *CreateProductResponse) GetCategory() string {
-	if x != nil {
-		return x.Category
-	}
-	return ""
-}
-
-func (x *CreateProductResponse) GetBrand() string {
-	if x != nil {
-		return x.Brand
-	}
-	return ""
-}
-
-func (x *CreateProductResponse) GetStockQuantity() int32 {
-	if x != nil {
-		return x.StockQuantity
-	}
-	return 0
-}
-
-func (x *CreateProductResponse) GetAttributes() map[string]string {
+func (x *CreateCategoryRequest) GetAttributes() []*CategoryAttribute {
 	if x != nil {
 		return x.Attributes
 	}
 	return nil
 }
 
-func (x *CreateProductResponse) GetVariants() map[string]string {
+type CreateCategoryResponse struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Types that are valid to be assigned to Result:
+	//
+	//	*CreateCategoryResponse_CategoryId
+	//	*CreateCategoryResponse_Error
+	Result        isCreateCategoryResponse_Result `protobuf_oneof:"result"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CreateCategoryResponse) Reset() {
+	*x = CreateCategoryResponse{}
+	mi := &file_product_messages_proto_msgTypes[3]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CreateCategoryResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreateCategoryResponse) ProtoMessage() {}
+
+func (x *CreateCategoryResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_product_messages_proto_msgTypes[3]
 	if x != nil {
-		return x.Variants
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CreateCategoryResponse.ProtoReflect.Descriptor instead.
+func (*CreateCategoryResponse) Descriptor() ([]byte, []int) {
+	return file_product_messages_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *CreateCategoryResponse) GetResult() isCreateCategoryResponse_Result {
+	if x != nil {
+		return x.Result
 	}
 	return nil
 }
 
-func (x *CreateProductResponse) GetImages() []string {
+func (x *CreateCategoryResponse) GetCategoryId() string {
 	if x != nil {
-		return x.Images
+		if x, ok := x.Result.(*CreateCategoryResponse_CategoryId); ok {
+			return x.CategoryId
+		}
+	}
+	return ""
+}
+
+func (x *CreateCategoryResponse) GetError() *ErrorResponse {
+	if x != nil {
+		if x, ok := x.Result.(*CreateCategoryResponse_Error); ok {
+			return x.Error
+		}
 	}
 	return nil
 }
 
-func (x *CreateProductResponse) GetStatus() ProductStatus {
-	if x != nil {
-		return x.Status
-	}
-	return ProductStatus_PRODUCT_STATUS_UNSPECIFIED
+type isCreateCategoryResponse_Result interface {
+	isCreateCategoryResponse_Result()
 }
 
-func (x *CreateProductResponse) GetExpiresAt() int64 {
-	if x != nil {
-		return x.ExpiresAt
-	}
-	return 0
+type CreateCategoryResponse_CategoryId struct {
+	CategoryId string `protobuf:"bytes,1,opt,name=category_id,json=categoryId,proto3,oneof"` // ID of the newly created category
 }
 
-func (x *CreateProductResponse) GetCreatedAt() int64 {
-	if x != nil {
-		return x.CreatedAt
-	}
-	return 0
+type CreateCategoryResponse_Error struct {
+	Error *ErrorResponse `protobuf:"bytes,2,opt,name=error,proto3,oneof"` // Error response if creation failed
 }
 
-func (x *CreateProductResponse) GetUpdatedAt() int64 {
+func (*CreateCategoryResponse_CategoryId) isCreateCategoryResponse_Result() {}
+
+func (*CreateCategoryResponse_Error) isCreateCategoryResponse_Result() {}
+
+type CategoryAttribute struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Key           string                 `protobuf:"bytes,1,opt,name=key,proto3" json:"key,omitempty"`                                                                                   // Attribute key
+	Label         string                 `protobuf:"bytes,2,opt,name=label,proto3" json:"label,omitempty"`                                                                               // Attribute label
+	Type          string                 `protobuf:"bytes,3,opt,name=type,proto3" json:"type,omitempty"`                                                                                 // Attribute type (e.g., string, number, boolean)
+	Required      bool                   `protobuf:"varint,4,opt,name=required,proto3" json:"required,omitempty"`                                                                        // Whether the attribute is required
+	Options       map[string]string      `protobuf:"bytes,5,rep,name=options,proto3" json:"options,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"` // Options for the attribute (if applicable)
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CategoryAttribute) Reset() {
+	*x = CategoryAttribute{}
+	mi := &file_product_messages_proto_msgTypes[4]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CategoryAttribute) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CategoryAttribute) ProtoMessage() {}
+
+func (x *CategoryAttribute) ProtoReflect() protoreflect.Message {
+	mi := &file_product_messages_proto_msgTypes[4]
 	if x != nil {
-		return x.UpdatedAt
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
 	}
-	return 0
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CategoryAttribute.ProtoReflect.Descriptor instead.
+func (*CategoryAttribute) Descriptor() ([]byte, []int) {
+	return file_product_messages_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *CategoryAttribute) GetKey() string {
+	if x != nil {
+		return x.Key
+	}
+	return ""
+}
+
+func (x *CategoryAttribute) GetLabel() string {
+	if x != nil {
+		return x.Label
+	}
+	return ""
+}
+
+func (x *CategoryAttribute) GetType() string {
+	if x != nil {
+		return x.Type
+	}
+	return ""
+}
+
+func (x *CategoryAttribute) GetRequired() bool {
+	if x != nil {
+		return x.Required
+	}
+	return false
+}
+
+func (x *CategoryAttribute) GetOptions() map[string]string {
+	if x != nil {
+		return x.Options
+	}
+	return nil
+}
+
+type ErrorResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Code          ErrorCode              `protobuf:"varint,1,opt,name=code,proto3,enum=product.ErrorCode" json:"code,omitempty"` // Error code enum
+	Message       string                 `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`                   // Error message
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ErrorResponse) Reset() {
+	*x = ErrorResponse{}
+	mi := &file_product_messages_proto_msgTypes[5]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ErrorResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ErrorResponse) ProtoMessage() {}
+
+func (x *ErrorResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_product_messages_proto_msgTypes[5]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ErrorResponse.ProtoReflect.Descriptor instead.
+func (*ErrorResponse) Descriptor() ([]byte, []int) {
+	return file_product_messages_proto_rawDescGZIP(), []int{5}
+}
+
+func (x *ErrorResponse) GetCode() ErrorCode {
+	if x != nil {
+		return x.Code
+	}
+	return ErrorCode_ERROR_CODE_UNSPECIFIED
+}
+
+func (x *ErrorResponse) GetMessage() string {
+	if x != nil {
+		return x.Message
+	}
+	return ""
 }
 
 var File_product_messages_proto protoreflect.FileDescriptor
 
 const file_product_messages_proto_rawDesc = "" +
 	"\n" +
-	"\x16product/messages.proto\x12\aproduct\"\x88\x05\n" +
-	"\x14CreateProductRequest\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x12\x12\n" +
-	"\x04slug\x18\x02 \x01(\tR\x04slug\x12 \n" +
-	"\vdescription\x18\x03 \x01(\tR\vdescription\x12\x14\n" +
-	"\x05price\x18\x04 \x01(\x01R\x05price\x12\x1a\n" +
-	"\bcategory\x18\x05 \x01(\tR\bcategory\x12\x14\n" +
-	"\x05brand\x18\x06 \x01(\tR\x05brand\x12%\n" +
-	"\x0estock_quantity\x18\a \x01(\x05R\rstockQuantity\x12M\n" +
-	"\n" +
-	"attributes\x18\b \x03(\v2-.product.CreateProductRequest.AttributesEntryR\n" +
-	"attributes\x12G\n" +
-	"\bvariants\x18\t \x03(\v2+.product.CreateProductRequest.VariantsEntryR\bvariants\x12\x16\n" +
-	"\x06images\x18\n" +
-	" \x03(\tR\x06images\x12.\n" +
-	"\x06status\x18\v \x01(\x0e2\x16.product.ProductStatusR\x06status\x12\x1d\n" +
-	"\n" +
-	"expires_at\x18\f \x01(\x03R\texpiresAt\x12\x1d\n" +
-	"\n" +
-	"created_at\x18\r \x01(\x03R\tcreatedAt\x12\x1d\n" +
-	"\n" +
-	"updated_at\x18\x0e \x01(\x03R\tupdatedAt\x1a=\n" +
-	"\x0fAttributesEntry\x12\x10\n" +
-	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1a;\n" +
-	"\rVariantsEntry\x12\x10\n" +
-	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\x9b\x05\n" +
-	"\x15CreateProductResponse\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n" +
+	"\x16product/messages.proto\x12\aproduct\"\xae\x03\n" +
+	"\x14CreateProductRequest\x12\x17\n" +
+	"\ashop_id\x18\x01 \x01(\tR\x06shopId\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12\x12\n" +
 	"\x04slug\x18\x03 \x01(\tR\x04slug\x12 \n" +
 	"\vdescription\x18\x04 \x01(\tR\vdescription\x12\x14\n" +
-	"\x05price\x18\x05 \x01(\x01R\x05price\x12\x1a\n" +
-	"\bcategory\x18\x06 \x01(\tR\bcategory\x12\x14\n" +
-	"\x05brand\x18\a \x01(\tR\x05brand\x12%\n" +
-	"\x0estock_quantity\x18\b \x01(\x05R\rstockQuantity\x12N\n" +
+	"\x05price\x18\x05 \x01(\x01R\x05price\x12\x1f\n" +
+	"\vcategory_id\x18\x06 \x01(\tR\n" +
+	"categoryId\x12\x10\n" +
+	"\x03sku\x18\a \x01(\tR\x03sku\x12\x14\n" +
+	"\x05stock\x18\b \x01(\x05R\x05stock\x12M\n" +
 	"\n" +
-	"attributes\x18\t \x03(\v2..product.CreateProductResponse.AttributesEntryR\n" +
-	"attributes\x12H\n" +
-	"\bvariants\x18\n" +
-	" \x03(\v2,.product.CreateProductResponse.VariantsEntryR\bvariants\x12\x16\n" +
-	"\x06images\x18\v \x03(\tR\x06images\x12.\n" +
-	"\x06status\x18\f \x01(\x0e2\x16.product.ProductStatusR\x06status\x12\x1d\n" +
-	"\n" +
-	"expires_at\x18\r \x01(\x03R\texpiresAt\x12\x1d\n" +
-	"\n" +
-	"created_at\x18\x0e \x01(\x03R\tcreatedAt\x12\x1d\n" +
-	"\n" +
-	"updated_at\x18\x0f \x01(\x03R\tupdatedAt\x1a=\n" +
+	"attributes\x18\t \x03(\v2-.product.CreateProductRequest.AttributesEntryR\n" +
+	"attributes\x12\x16\n" +
+	"\x06images\x18\n" +
+	" \x03(\tR\x06images\x12.\n" +
+	"\x06status\x18\v \x01(\x0e2\x16.product.ProductStatusR\x06status\x1a=\n" +
 	"\x0fAttributesEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1a;\n" +
-	"\rVariantsEntry\x12\x10\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"r\n" +
+	"\x15CreateProductResponse\x12\x1f\n" +
+	"\n" +
+	"product_id\x18\x01 \x01(\tH\x00R\tproductId\x12.\n" +
+	"\x05error\x18\x02 \x01(\v2\x16.product.ErrorResponseH\x00R\x05errorB\b\n" +
+	"\x06result\"\x89\x01\n" +
+	"\x15CreateCategoryRequest\x12\x12\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12 \n" +
+	"\vdescription\x18\x02 \x01(\tR\vdescription\x12:\n" +
+	"\n" +
+	"attributes\x18\x03 \x03(\v2\x1a.product.CategoryAttributeR\n" +
+	"attributes\"u\n" +
+	"\x16CreateCategoryResponse\x12!\n" +
+	"\vcategory_id\x18\x01 \x01(\tH\x00R\n" +
+	"categoryId\x12.\n" +
+	"\x05error\x18\x02 \x01(\v2\x16.product.ErrorResponseH\x00R\x05errorB\b\n" +
+	"\x06result\"\xea\x01\n" +
+	"\x11CategoryAttribute\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01*I\n" +
+	"\x05label\x18\x02 \x01(\tR\x05label\x12\x12\n" +
+	"\x04type\x18\x03 \x01(\tR\x04type\x12\x1a\n" +
+	"\brequired\x18\x04 \x01(\bR\brequired\x12A\n" +
+	"\aoptions\x18\x05 \x03(\v2'.product.CategoryAttribute.OptionsEntryR\aoptions\x1a:\n" +
+	"\fOptionsEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"Q\n" +
+	"\rErrorResponse\x12&\n" +
+	"\x04code\x18\x01 \x01(\x0e2\x12.product.ErrorCodeR\x04code\x12\x18\n" +
+	"\amessage\x18\x02 \x01(\tR\amessage*I\n" +
 	"\rProductStatus\x12\x1e\n" +
 	"\x1aPRODUCT_STATUS_UNSPECIFIED\x10\x00\x12\n" +
 	"\n" +
 	"\x06ACTIVE\x10\x01\x12\f\n" +
-	"\bINACTIVE\x10\x02B\x1eZ\x1cshared/proto/product;productb\x06proto3"
+	"\bINACTIVE\x10\x02*Z\n" +
+	"\tErrorCode\x12\x1a\n" +
+	"\x16ERROR_CODE_UNSPECIFIED\x10\x00\x12\r\n" +
+	"\tNOT_FOUND\x10\x01\x12\x14\n" +
+	"\x10INVALID_ARGUMENT\x10\x02\x12\f\n" +
+	"\bINTERNAL\x10\x03B\x1eZ\x1cshared/proto/product;productb\x06proto3"
 
 var (
 	file_product_messages_proto_rawDescOnce sync.Once
@@ -453,29 +675,33 @@ func file_product_messages_proto_rawDescGZIP() []byte {
 	return file_product_messages_proto_rawDescData
 }
 
-var file_product_messages_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_product_messages_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
+var file_product_messages_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
+var file_product_messages_proto_msgTypes = make([]protoimpl.MessageInfo, 8)
 var file_product_messages_proto_goTypes = []any{
-	(ProductStatus)(0),            // 0: product.ProductStatus
-	(*CreateProductRequest)(nil),  // 1: product.CreateProductRequest
-	(*CreateProductResponse)(nil), // 2: product.CreateProductResponse
-	nil,                           // 3: product.CreateProductRequest.AttributesEntry
-	nil,                           // 4: product.CreateProductRequest.VariantsEntry
-	nil,                           // 5: product.CreateProductResponse.AttributesEntry
-	nil,                           // 6: product.CreateProductResponse.VariantsEntry
+	(ProductStatus)(0),             // 0: product.ProductStatus
+	(ErrorCode)(0),                 // 1: product.ErrorCode
+	(*CreateProductRequest)(nil),   // 2: product.CreateProductRequest
+	(*CreateProductResponse)(nil),  // 3: product.CreateProductResponse
+	(*CreateCategoryRequest)(nil),  // 4: product.CreateCategoryRequest
+	(*CreateCategoryResponse)(nil), // 5: product.CreateCategoryResponse
+	(*CategoryAttribute)(nil),      // 6: product.CategoryAttribute
+	(*ErrorResponse)(nil),          // 7: product.ErrorResponse
+	nil,                            // 8: product.CreateProductRequest.AttributesEntry
+	nil,                            // 9: product.CategoryAttribute.OptionsEntry
 }
 var file_product_messages_proto_depIdxs = []int32{
-	3, // 0: product.CreateProductRequest.attributes:type_name -> product.CreateProductRequest.AttributesEntry
-	4, // 1: product.CreateProductRequest.variants:type_name -> product.CreateProductRequest.VariantsEntry
-	0, // 2: product.CreateProductRequest.status:type_name -> product.ProductStatus
-	5, // 3: product.CreateProductResponse.attributes:type_name -> product.CreateProductResponse.AttributesEntry
-	6, // 4: product.CreateProductResponse.variants:type_name -> product.CreateProductResponse.VariantsEntry
-	0, // 5: product.CreateProductResponse.status:type_name -> product.ProductStatus
-	6, // [6:6] is the sub-list for method output_type
-	6, // [6:6] is the sub-list for method input_type
-	6, // [6:6] is the sub-list for extension type_name
-	6, // [6:6] is the sub-list for extension extendee
-	0, // [0:6] is the sub-list for field type_name
+	8, // 0: product.CreateProductRequest.attributes:type_name -> product.CreateProductRequest.AttributesEntry
+	0, // 1: product.CreateProductRequest.status:type_name -> product.ProductStatus
+	7, // 2: product.CreateProductResponse.error:type_name -> product.ErrorResponse
+	6, // 3: product.CreateCategoryRequest.attributes:type_name -> product.CategoryAttribute
+	7, // 4: product.CreateCategoryResponse.error:type_name -> product.ErrorResponse
+	9, // 5: product.CategoryAttribute.options:type_name -> product.CategoryAttribute.OptionsEntry
+	1, // 6: product.ErrorResponse.code:type_name -> product.ErrorCode
+	7, // [7:7] is the sub-list for method output_type
+	7, // [7:7] is the sub-list for method input_type
+	7, // [7:7] is the sub-list for extension type_name
+	7, // [7:7] is the sub-list for extension extendee
+	0, // [0:7] is the sub-list for field type_name
 }
 
 func init() { file_product_messages_proto_init() }
@@ -483,13 +709,21 @@ func file_product_messages_proto_init() {
 	if File_product_messages_proto != nil {
 		return
 	}
+	file_product_messages_proto_msgTypes[1].OneofWrappers = []any{
+		(*CreateProductResponse_ProductId)(nil),
+		(*CreateProductResponse_Error)(nil),
+	}
+	file_product_messages_proto_msgTypes[3].OneofWrappers = []any{
+		(*CreateCategoryResponse_CategoryId)(nil),
+		(*CreateCategoryResponse_Error)(nil),
+	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_product_messages_proto_rawDesc), len(file_product_messages_proto_rawDesc)),
-			NumEnums:      1,
-			NumMessages:   6,
+			NumEnums:      2,
+			NumMessages:   8,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

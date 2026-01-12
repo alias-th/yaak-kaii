@@ -26,3 +26,8 @@ func (h *gRPCHandler) CreateProduct(ctx context.Context,
 	// Implement the logic to create a product using h.service
 	return nil, nil
 }
+
+func (h *gRPCHandler) CreateCategory(ctx context.Context, req *pb.CreateCategoryRequest) (*pb.CreateCategoryResponse, error) {
+	// Implement the logic to create a category using h.service
+	return nil, nil
+}

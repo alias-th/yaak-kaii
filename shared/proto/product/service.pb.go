@@ -24,19 +24,24 @@ var File_product_service_proto protoreflect.FileDescriptor
 
 const file_product_service_proto_rawDesc = "" +
 	"\n" +
-	"\x15product/service.proto\x12\aproduct\x1a\x16product/messages.proto2`\n" +
+	"\x15product/service.proto\x12\aproduct\x1a\x16product/messages.proto2\xb3\x01\n" +
 	"\x0eProductService\x12N\n" +
-	"\rCreateProduct\x12\x1d.product.CreateProductRequest\x1a\x1e.product.CreateProductResponseB\x1eZ\x1cshared/proto/product;productb\x06proto3"
+	"\rCreateProduct\x12\x1d.product.CreateProductRequest\x1a\x1e.product.CreateProductResponse\x12Q\n" +
+	"\x0eCreateCategory\x12\x1e.product.CreateCategoryRequest\x1a\x1f.product.CreateCategoryResponseB\x1eZ\x1cshared/proto/product;productb\x06proto3"
 
 var file_product_service_proto_goTypes = []any{
-	(*CreateProductRequest)(nil),  // 0: product.CreateProductRequest
-	(*CreateProductResponse)(nil), // 1: product.CreateProductResponse
+	(*CreateProductRequest)(nil),   // 0: product.CreateProductRequest
+	(*CreateCategoryRequest)(nil),  // 1: product.CreateCategoryRequest
+	(*CreateProductResponse)(nil),  // 2: product.CreateProductResponse
+	(*CreateCategoryResponse)(nil), // 3: product.CreateCategoryResponse
 }
 var file_product_service_proto_depIdxs = []int32{
 	0, // 0: product.ProductService.CreateProduct:input_type -> product.CreateProductRequest
-	1, // 1: product.ProductService.CreateProduct:output_type -> product.CreateProductResponse
-	1, // [1:2] is the sub-list for method output_type
-	0, // [0:1] is the sub-list for method input_type
+	1, // 1: product.ProductService.CreateCategory:input_type -> product.CreateCategoryRequest
+	2, // 2: product.ProductService.CreateProduct:output_type -> product.CreateProductResponse
+	3, // 3: product.ProductService.CreateCategory:output_type -> product.CreateCategoryResponse
+	2, // [2:4] is the sub-list for method output_type
+	0, // [0:2] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name
 	0, // [0:0] is the sub-list for extension extendee
 	0, // [0:0] is the sub-list for field type_name

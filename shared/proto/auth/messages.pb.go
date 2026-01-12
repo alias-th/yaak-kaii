@@ -21,6 +21,7 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// ===== Utility Messages =====
 type ErrorCode int32
 
 const (
