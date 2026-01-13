@@ -10,6 +10,7 @@ import (
 	"time"
 	"yaak-kaii/services/api-gateway/internal/auth"
 	grpcclients "yaak-kaii/services/api-gateway/internal/grpc_clients"
+	"yaak-kaii/services/api-gateway/internal/s3"
 
 	"github.com/gin-gonic/gin"
 )
@@ -18,6 +19,7 @@ type Application struct {
 	Config      Config
 	GrpcClients *grpcclients.GrpcClients
 	JwtAuth     *auth.JWTAuthenticator
+	S3Uploader  *s3.S3Uploader
 }
 
 type Config struct {
@@ -46,6 +48,7 @@ func (app *Application) Run() {
 		seller := v1.Group("/seller").Use(app.sellerMiddleware())
 		{
 			seller.POST("/products", app.createProduct)
+			seller.POST("/products/:id/images", app.uploadProductImages)
 			seller.POST("/categories", app.createCategory)
 		}
 

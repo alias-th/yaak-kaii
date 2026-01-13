@@ -5,6 +5,7 @@ import (
 	"yaak-kaii/services/api-gateway/internal/api"
 	"yaak-kaii/services/api-gateway/internal/auth"
 	grpcclients "yaak-kaii/services/api-gateway/internal/grpc_clients"
+	"yaak-kaii/services/api-gateway/internal/s3"
 	"yaak-kaii/shared/env"
 )
 
@@ -25,12 +26,22 @@ func main() {
 
 	jwtAuth := auth.NewJWTAuthenticator(jwtSecret, jwtISS, jwtISS)
 
+	s3AccountID := env.GetString("S3_ACCOUNT_ID", "")
+	s3AccessKey := env.GetString("S3_ACCESS_KEY_ID", "")
+	s3SecretKey := env.GetString("S3_SECRET_ACCESS_KEY", "")
+	s3Bucket := env.GetString("S3_BUCKET_NAME", "")
+	s3Uploader, err := s3.NewS3Uploader(s3AccountID, s3AccessKey, s3SecretKey, s3Bucket)
+	if err != nil {
+		log.Fatal("failed to initialize S3 uploader:", err)
+	}
+
 	app := &api.Application{
 		Config: api.Config{
 			Addr: httpAddr,
 		},
 		GrpcClients: grpcClients,
 		JwtAuth:     jwtAuth,
+		S3Uploader:  s3Uploader,
 	}
 
 	app.Run()
