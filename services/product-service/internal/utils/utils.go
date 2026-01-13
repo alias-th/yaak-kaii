@@ -7,12 +7,12 @@ import (
 	"yaak-kaii/services/product-service/pkg/types"
 )
 
-func GenerateSKU(category, color, size string) string {
+func GenerateSKU(category, color, size string, variantNo int) string {
 	c := strings.ToUpper(category[:3])
 	cl := strings.ToUpper(color[:2])
 	sz := strings.ToUpper(size)
 
-	return fmt.Sprintf("%s-%s-%s", c, cl, sz)
+	return fmt.Sprintf("%s-%s-%s-%02d", c, cl, sz, variantNo)
 }
 
 func NewPagination(page, pageSize int, total int64) *types.Pagination {
@@ -49,5 +49,36 @@ func NewPagination(page, pageSize int, total int64) *types.Pagination {
 		PrevPage: prevPage,
 		HasNext:  nextPage != nil,
 		HasPrev:  prevPage != nil,
+	}
+}
+
+func ProductOrder(sort string) string {
+	switch sort {
+	case "oldest":
+		return "products.created_at ASC, products.id ASC"
+	case "name_asc":
+		return "products.name ASC, products.id ASC"
+	case "name_desc":
+		return "products.name DESC, products.id DESC"
+	case "price_asc":
+		return `
+			(
+				SELECT MIN(pv.price)
+				FROM product_variants pv
+				WHERE pv.product_id = products.id
+			) ASC NULLS LAST,
+			products.id ASC
+		`
+	case "price_desc":
+		return `
+			(
+				SELECT MIN(pv.price)
+				FROM product_variants pv
+				WHERE pv.product_id = products.id
+			) DESC NULLS LAST,
+			products.id DESC
+		`
+	default:
+		return "products.created_at DESC, products.id DESC"
 	}
 }

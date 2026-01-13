@@ -4,7 +4,6 @@ import (
 	"context"
 	grpcclients "yaak-kaii/services/product-service/internal/grpc_clients"
 	"yaak-kaii/services/product-service/internal/repositories"
-	"yaak-kaii/services/product-service/internal/utils"
 	"yaak-kaii/services/product-service/pkg/types"
 	"yaak-kaii/shared/proto/auth"
 
@@ -32,44 +31,45 @@ func NewProductService(repo repositories.ProductRepository, grpcClients *grpccli
 	return &ProductService{repo: repo, grpcClients: grpcClients}
 }
 
-func (s *ProductService) CreateProduct(ctx context.Context, product *CreateProductPayload) error {
+func (s *ProductService) CreateProduct(ctx context.Context, product *CreateProductPayload) (string, error) {
 	shop, err := s.grpcClients.Auth.Client.GetShopUser(ctx, &auth.GetShopRequest{UserId: product.UserId})
 	if err != nil {
-		return err
+		return "", err
 	}
 	shopID, err := uuid.Parse(shop.Id)
 	if err != nil {
-		return err
+		return "", err
 	}
 	categoryID, err := uuid.Parse(product.CategoryId)
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	slugValue := slug.Make(product.Name)
 
-	catName := product.CategoryName
 	colorVal := product.Attributes["color"]
 	sizeVal := product.Attributes["size"]
 
-	sku := utils.GenerateSKU(catName, colorVal, sizeVal)
-
-	err = s.repo.CreateProductTx(ctx, &repositories.CreateProductPayload{
+	productId, err := s.repo.CreateProductTx(ctx, &repositories.CreateProductPayload{
 		ShopID:      shopID,
 		UserID:      product.UserId,
 		Name:        product.Name,
 		Description: product.Description,
 		Price:       product.Price,
-		CategoryID:  categoryID,
 		Stock:       product.Stock,
 		Slug:        slugValue,
-		Sku:         sku,
 		Attributes:  product.Attributes,
+		Category: repositories.Category{
+			CategoryID: categoryID,
+			Name:       product.CategoryName,
+			Color:      colorVal,
+			Size:       sizeVal,
+		},
 	})
 	if err != nil {
-		return err
+		return "", err
 	}
-	return nil
+	return productId, nil
 }
 
 func (s *ProductService) ListProducts(ctx context.Context, query types.ListProductsReq) (*types.ListProductsRes, error) {

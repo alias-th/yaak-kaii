@@ -9,10 +9,10 @@ import (
 
 type Product struct {
 	ID          uuid.UUID        `gorm:"type:uuid;default:gen_random_uuid();primaryKey"`
-	ShopID      uuid.UUID        `gorm:"column:shop_id;type:uuid;not null;index"`
+	ShopID      uuid.UUID        `gorm:"column:shop_id;type:uuid;not null;uniqueIndex:ux_products_shop_slug"`
 	CategoryID  uuid.UUID        `gorm:"column:category_id;type:uuid;not null;index"`
 	Category    Category         `gorm:"foreignKey:CategoryID;references:ID"`
-	Slug        string           `gorm:"column:slug;type:varchar(255);not null;uniqueIndex"`
+	Slug        string           `gorm:"column:slug;type:varchar(255);not null;uniqueIndex:ux_products_shop_slug"`
 	Name        string           `gorm:"column:name;type:varchar(255);not null"`
 	Description string           `gorm:"column:description;type:text"`
 	Status      string           `gorm:"column:status;type:varchar(50);default:'active';not null"`
@@ -32,11 +32,12 @@ type ProductImage struct {
 
 type ProductVariant struct {
 	ID         uuid.UUID  `gorm:"type:uuid;default:gen_random_uuid();primaryKey"`
-	ProductID  uuid.UUID  `gorm:"column:product_id;type:uuid;not null"`
-	Sku        string     `gorm:"column:sku;type:varchar(100);not null;uniqueIndex"`
+	ProductID  uuid.UUID  `gorm:"column:product_id;type:uuid;not null;uniqueIndex:ux_product_variants_sku"`
+	Sku        string     `gorm:"column:sku;type:varchar(100);not null;uniqueIndex:ux_product_variants_sku"`
 	Price      float64    `gorm:"type:numeric(12,2);not null"`
 	Stock      int        `gorm:"column:stock;type:int;not null"`
 	Attributes Attributes `gorm:"column:attributes;type:jsonb;default:'{}'"`
+	VariantNo  int        `gorm:"column:variant_no;not null;"`
 	CreatedAt  time.Time  `gorm:"autoCreateTime"`
 	UpdatedAt  time.Time  `gorm:"autoUpdateTime"`
 }

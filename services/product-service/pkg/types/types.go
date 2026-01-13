@@ -13,6 +13,7 @@ type ListProductsReq struct {
 	MaxPrice    int64
 	Limit       int32
 	Page        int32
+	Sort        string
 }
 type ListProductsRes struct {
 	Products   []models.Product

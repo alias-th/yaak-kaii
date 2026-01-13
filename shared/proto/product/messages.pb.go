@@ -346,6 +346,7 @@ type ListProductsRequest struct {
 	MaxPrice      int64                  `protobuf:"varint,4,opt,name=max_price,json=maxPrice,proto3" json:"max_price,omitempty"`         // Maximum price filter
 	Limit         int32                  `protobuf:"varint,5,opt,name=limit,proto3" json:"limit,omitempty"`                               // Number of products to return
 	Page          int32                  `protobuf:"varint,6,opt,name=page,proto3" json:"page,omitempty"`                                 // Offset for pagination
+	Sort          string                 `protobuf:"bytes,7,opt,name=sort,proto3" json:"sort,omitempty"`                                  // Sort order (e.g., "price_asc", "price_desc")
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -420,6 +421,13 @@ func (x *ListProductsRequest) GetPage() int32 {
 		return x.Page
 	}
 	return 0
+}
+
+func (x *ListProductsRequest) GetSort() string {
+	if x != nil {
+		return x.Sort
+	}
+	return ""
 }
 
 type ListProductsResponse struct {
@@ -841,14 +849,15 @@ const file_product_messages_proto_rawDesc = "" +
 	"\aoptions\x18\x05 \x03(\v2'.product.CategoryAttribute.OptionsEntryR\aoptions\x1a:\n" +
 	"\fOptionsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xaa\x01\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xbe\x01\n" +
 	"\x13ListProductsRequest\x12\f\n" +
 	"\x01q\x18\x01 \x01(\tR\x01q\x12!\n" +
 	"\fcategory_ids\x18\x02 \x03(\tR\vcategoryIds\x12\x1b\n" +
 	"\tmin_price\x18\x03 \x01(\x03R\bminPrice\x12\x1b\n" +
 	"\tmax_price\x18\x04 \x01(\x03R\bmaxPrice\x12\x14\n" +
 	"\x05limit\x18\x05 \x01(\x05R\x05limit\x12\x12\n" +
-	"\x04page\x18\x06 \x01(\x05R\x04page\"y\n" +
+	"\x04page\x18\x06 \x01(\x05R\x04page\x12\x12\n" +
+	"\x04sort\x18\a \x01(\tR\x04sort\"y\n" +
 	"\x14ListProductsResponse\x12,\n" +
 	"\bproducts\x18\x01 \x03(\v2\x10.product.ProductR\bproducts\x123\n" +
 	"\n" +

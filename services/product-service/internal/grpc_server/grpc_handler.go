@@ -39,13 +39,13 @@ func (s *ProductGRPCServer) CreateProduct(ctx context.Context, req *pb.CreatePro
 	categoryName := category.Name
 	payload.CategoryName = categoryName
 
-	err = s.productService.CreateProduct(ctx, payload)
+	productId, err := s.productService.CreateProduct(ctx, payload)
 	if err != nil {
 		return nil, err
 	}
 
 	return &pb.CreateProductResponse{
-		ProductId: "new-product-id",
+		ProductId: productId,
 	}, nil
 }
 
@@ -57,6 +57,7 @@ func (s *ProductGRPCServer) ListProducts(ctx context.Context, req *pb.ListProduc
 		MaxPrice:    req.GetMaxPrice(),
 		Limit:       req.GetLimit(),
 		Page:        req.GetPage(),
+		Sort:        req.GetSort(),
 	}
 
 	products, err := s.productService.ListProducts(ctx, payload)

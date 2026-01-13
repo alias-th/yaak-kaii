@@ -65,6 +65,7 @@ func (app *Application) listProducts(ctx *gin.Context) {
 		CategoryIds: listProducts.CategoryID,
 		MinPrice:    minPrice,
 		MaxPrice:    maxPrice,
+		Sort:        listProducts.Sort,
 	})
 	if err != nil {
 		app.responseWithError(ctx, http.StatusInternalServerError, err)

@@ -45,6 +45,7 @@ message ListProductsRequest {
   int64           max_price    = 4; // Maximum price filter
   int32           limit        = 5; // Number of products to return
   int32           page         = 6; // Offset for pagination
+  string          sort         = 7; // Sort order (e.g., "price_asc", "price_desc")
 }
 
 message ListProductsResponse {
