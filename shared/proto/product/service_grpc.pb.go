@@ -19,9 +19,11 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	ProductService_CreateProduct_FullMethodName  = "/product.ProductService/CreateProduct"
-	ProductService_CreateCategory_FullMethodName = "/product.ProductService/CreateCategory"
-	ProductService_ListProducts_FullMethodName   = "/product.ProductService/ListProducts"
+	ProductService_CreateProduct_FullMethodName       = "/product.ProductService/CreateProduct"
+	ProductService_CreateCategory_FullMethodName      = "/product.ProductService/CreateCategory"
+	ProductService_ListProducts_FullMethodName        = "/product.ProductService/ListProducts"
+	ProductService_GetProductByID_FullMethodName      = "/product.ProductService/GetProductByID"
+	ProductService_UploadProductImages_FullMethodName = "/product.ProductService/UploadProductImages"
 )
 
 // ProductServiceClient is the client API for ProductService service.
@@ -36,6 +38,10 @@ type ProductServiceClient interface {
 	CreateCategory(ctx context.Context, in *CreateCategoryRequest, opts ...grpc.CallOption) (*CreateCategoryResponse, error)
 	// ListProducts retrieves a list of products based on the provided filters.
 	ListProducts(ctx context.Context, in *ListProductsRequest, opts ...grpc.CallOption) (*ListProductsResponse, error)
+	// GetProduct retrieves detailed information about a specific product by its ID.
+	GetProductByID(ctx context.Context, in *GetProductByIDRequest, opts ...grpc.CallOption) (*GetProductByIDResponse, error)
+	// UploadProductImages uploads images for a specific product.
+	UploadProductImages(ctx context.Context, in *UploadProductImagesRequest, opts ...grpc.CallOption) (*UploadProductImagesResponse, error)
 }
 
 type productServiceClient struct {
@@ -76,6 +82,26 @@ func (c *productServiceClient) ListProducts(ctx context.Context, in *ListProduct
 	return out, nil
 }
 
+func (c *productServiceClient) GetProductByID(ctx context.Context, in *GetProductByIDRequest, opts ...grpc.CallOption) (*GetProductByIDResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetProductByIDResponse)
+	err := c.cc.Invoke(ctx, ProductService_GetProductByID_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *productServiceClient) UploadProductImages(ctx context.Context, in *UploadProductImagesRequest, opts ...grpc.CallOption) (*UploadProductImagesResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(UploadProductImagesResponse)
+	err := c.cc.Invoke(ctx, ProductService_UploadProductImages_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ProductServiceServer is the server API for ProductService service.
 // All implementations must embed UnimplementedProductServiceServer
 // for forward compatibility.
@@ -88,6 +114,10 @@ type ProductServiceServer interface {
 	CreateCategory(context.Context, *CreateCategoryRequest) (*CreateCategoryResponse, error)
 	// ListProducts retrieves a list of products based on the provided filters.
 	ListProducts(context.Context, *ListProductsRequest) (*ListProductsResponse, error)
+	// GetProduct retrieves detailed information about a specific product by its ID.
+	GetProductByID(context.Context, *GetProductByIDRequest) (*GetProductByIDResponse, error)
+	// UploadProductImages uploads images for a specific product.
+	UploadProductImages(context.Context, *UploadProductImagesRequest) (*UploadProductImagesResponse, error)
 	mustEmbedUnimplementedProductServiceServer()
 }
 
@@ -106,6 +136,12 @@ func (UnimplementedProductServiceServer) CreateCategory(context.Context, *Create
 }
 func (UnimplementedProductServiceServer) ListProducts(context.Context, *ListProductsRequest) (*ListProductsResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method ListProducts not implemented")
+}
+func (UnimplementedProductServiceServer) GetProductByID(context.Context, *GetProductByIDRequest) (*GetProductByIDResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method GetProductByID not implemented")
+}
+func (UnimplementedProductServiceServer) UploadProductImages(context.Context, *UploadProductImagesRequest) (*UploadProductImagesResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method UploadProductImages not implemented")
 }
 func (UnimplementedProductServiceServer) mustEmbedUnimplementedProductServiceServer() {}
 func (UnimplementedProductServiceServer) testEmbeddedByValue()                        {}
@@ -182,6 +218,42 @@ func _ProductService_ListProducts_Handler(srv interface{}, ctx context.Context, 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ProductService_GetProductByID_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetProductByIDRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ProductServiceServer).GetProductByID(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ProductService_GetProductByID_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ProductServiceServer).GetProductByID(ctx, req.(*GetProductByIDRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ProductService_UploadProductImages_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UploadProductImagesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ProductServiceServer).UploadProductImages(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ProductService_UploadProductImages_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ProductServiceServer).UploadProductImages(ctx, req.(*UploadProductImagesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // ProductService_ServiceDesc is the grpc.ServiceDesc for ProductService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -200,6 +272,14 @@ var ProductService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ListProducts",
 			Handler:    _ProductService_ListProducts_Handler,
+		},
+		{
+			MethodName: "GetProductByID",
+			Handler:    _ProductService_GetProductByID_Handler,
+		},
+		{
+			MethodName: "UploadProductImages",
+			Handler:    _ProductService_UploadProductImages_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

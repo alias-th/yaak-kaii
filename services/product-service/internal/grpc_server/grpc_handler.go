@@ -125,3 +125,34 @@ func (s *ProductGRPCServer) ListProducts(ctx context.Context, req *pb.ListProduc
 		},
 	}, nil
 }
+
+func (s *ProductGRPCServer) GetProductByID(ctx context.Context, req *pb.GetProductByIDRequest) (*pb.GetProductByIDResponse, error) {
+	product, err := s.productService.GetProductByID(ctx, req.GetProductId())
+	if err != nil {
+		return nil, err
+	}
+	return &pb.GetProductByIDResponse{
+		Product: &pb.Product{
+			Id:          product.ID.String(),
+			Name:        product.Name,
+			ShopId:      product.ShopID.String(),
+			Description: product.Description,
+			Status:      product.Status,
+			Category: &pb.ProductCategory{
+				CategoryId: product.Category.ID.String(),
+				Name:       product.Category.Name,
+			},
+		},
+	}, nil
+}
+
+func (s *ProductGRPCServer) UploadProductImages(ctx context.Context, req *pb.UploadProductImagesRequest) (*pb.UploadProductImagesResponse, error) {
+	err := s.productService.UploadProductImages(ctx, req.GetProductId(), req.GetImageUrls())
+	if err != nil {
+		return nil, err
+	}
+
+	return &pb.UploadProductImagesResponse{
+		Success: true,
+	}, nil
+}

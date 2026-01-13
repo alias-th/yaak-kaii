@@ -16,4 +16,10 @@ service ProductService {
 
   // ListProducts retrieves a list of products based on the provided filters.
   rpc ListProducts(ListProductsRequest) returns (ListProductsResponse);
+
+  // GetProduct retrieves detailed information about a specific product by its ID.
+  rpc GetProductByID(GetProductByIDRequest) returns (GetProductByIDResponse);
+
+  // UploadProductImages uploads images for a specific product.
+  rpc UploadProductImages(UploadProductImagesRequest) returns (UploadProductImagesResponse);
 }

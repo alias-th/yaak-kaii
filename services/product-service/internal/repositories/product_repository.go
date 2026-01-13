@@ -16,6 +16,8 @@ import (
 type ProductRepository interface {
 	CreateProductTx(ctx context.Context, payload *CreateProductPayload) (string, error)
 	ListProducts(ctx context.Context, query types.ListProductsReq) (*types.ListProductsRes, error)
+	GetProductByID(ctx context.Context, productID string) (*models.Product, error)
+	AddProductImages(ctx context.Context, productID string, imageUrls []string) error
 }
 
 type productRepositoryImpl struct {
@@ -161,4 +163,41 @@ func (o *productRepositoryImpl) ListProducts(ctx context.Context, q types.ListPr
 		Products:   products,
 		Pagination: *pagination,
 	}, nil
+}
+
+// Get product by ID
+func (o *productRepositoryImpl) GetProductByID(ctx context.Context, productID string) (*models.Product, error) {
+	productUUID, err := uuid.Parse(productID)
+	if err != nil {
+		return nil, err
+	}
+	var product models.Product
+	if err := o.db.WithContext(ctx).
+		Preload("Category").
+		Preload("Variants").
+		Preload("Images", func(d *gorm.DB) *gorm.DB { return d.Order("created_at ASC") }).
+		First(&product, "id = ?", productUUID).Error; err != nil {
+		return nil, err
+	}
+	return &product, nil
+}
+
+func (o *productRepositoryImpl) AddProductImages(ctx context.Context, productID string, imageUrls []string) error {
+	productUUID, err := uuid.Parse(productID)
+	if err != nil {
+		return err
+	}
+
+	images := make([]models.ProductImage, 0, len(imageUrls))
+	for _, url := range imageUrls {
+		images = append(images, models.ProductImage{
+			ProductID: productUUID,
+			ImageURL:  url,
+		})
+	}
+
+	if err := o.db.WithContext(ctx).Create(&images).Error; err != nil {
+		return err
+	}
+	return nil
 }

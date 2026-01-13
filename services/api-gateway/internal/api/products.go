@@ -2,7 +2,6 @@ package api
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 	"path"
 	"strings"
@@ -125,11 +124,8 @@ func (app *Application) listProducts(ctx *gin.Context) {
 }
 
 type UploadedImage struct {
-	ObjectKey   string `json:"object_key"`
-	URL         string `json:"url"`
-	Original    string `json:"original_filename"`
-	Size        int64  `json:"size"`
-	ContentType string `json:"content_type"`
+	ProjectID string
+	Urls      []string
 }
 
 func (app *Application) uploadProductImages(c *gin.Context) {
@@ -137,21 +133,34 @@ func (app *Application) uploadProductImages(c *gin.Context) {
 
 	form, err := c.MultipartForm()
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid form"})
+		app.responseWithError(c, http.StatusBadRequest, err)
 		return
 	}
 
 	files := form.File["images"]
 	if len(files) == 0 {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "no images uploaded"})
+		app.responseWithError(c, http.StatusBadRequest, fmt.Errorf("no images provided"))
 		return
 	}
 
-	results := make([]UploadedImage, 0, len(files))
+	if strings.TrimSpace(productID) == "" {
+		app.responseWithError(c, http.StatusBadRequest, fmt.Errorf("product ID is required"))
+		return
+	}
+
+	_, err = app.GrpcClients.Product.Client.GetProductByID(c, &product.GetProductByIDRequest{
+		ProductId: productID,
+	})
+	if err != nil {
+		app.responseWithError(c, http.StatusBadRequest, err)
+		return
+	}
+
+	urls := make([]string, 0, len(files))
 	for _, fh := range files {
 		// 5MB limit
 		if fh.Size > 5<<20 {
-			c.JSON(http.StatusBadRequest, gin.H{"error": fmt.Sprintf("file too large: %s", fh.Filename)})
+			app.responseWithError(c, http.StatusBadRequest, fmt.Errorf("file too large: %s", fh.Filename))
 			return
 		}
 
@@ -160,13 +169,13 @@ func (app *Application) uploadProductImages(c *gin.Context) {
 			ct = "application/octet-stream"
 		}
 		if !isAllowedImageCT(ct) {
-			c.JSON(http.StatusBadRequest, gin.H{"error": fmt.Sprintf("unsupported content type: %s (%s)", fh.Filename, ct)})
+			app.responseWithError(c, http.StatusBadRequest, fmt.Errorf("unsupported content type: %s (%s)", fh.Filename, ct))
 			return
 		}
 
 		f, err := fh.Open()
 		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": fmt.Sprintf("cannot open file: %s", fh.Filename)})
+			app.responseWithError(c, http.StatusBadRequest, fmt.Errorf("cannot open file: %s", fh.Filename))
 			return
 		}
 
@@ -179,25 +188,28 @@ func (app *Application) uploadProductImages(c *gin.Context) {
 
 		err = app.S3Uploader.Upload(f, key, ct)
 		if err != nil {
-			log.Println(err)
-			c.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("failed to upload file: %s", fh.Filename)})
+			app.responseWithError(c, http.StatusInternalServerError, fmt.Errorf("failed to upload file: %s", fh.Filename))
 			return
 		}
 
 		_ = f.Close()
 
-		results = append(results, UploadedImage{
-			ObjectKey:   key,
-			URL:         key,
-			Original:    fh.Filename,
-			Size:        fh.Size,
-			ContentType: ct,
-		})
+		urls = append(urls, key)
 
 	}
 
-	c.JSON(http.StatusCreated, contracts.APIResponse{
-		Data: results,
+	_, err = app.GrpcClients.Product.Client.UploadProductImages(c, &product.UploadProductImagesRequest{
+		ProductId: productID,
+		ImageUrls: urls,
+	})
+	if err != nil {
+		app.responseWithError(c, http.StatusInternalServerError, err)
+		return
+	}
+
+	c.JSON(http.StatusCreated, gin.H{
+		"message":    "images uploaded successfully",
+		"image_urls": urls,
 	})
 
 }

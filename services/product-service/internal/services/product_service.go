@@ -3,6 +3,7 @@ package services
 import (
 	"context"
 	grpcclients "yaak-kaii/services/product-service/internal/grpc_clients"
+	"yaak-kaii/services/product-service/internal/models"
 	"yaak-kaii/services/product-service/internal/repositories"
 	"yaak-kaii/services/product-service/pkg/types"
 	"yaak-kaii/shared/proto/auth"
@@ -78,4 +79,21 @@ func (s *ProductService) ListProducts(ctx context.Context, query types.ListProdu
 		return nil, err
 	}
 	return products, nil
+}
+
+func (s *ProductService) GetProductByID(ctx context.Context, productID string) (*models.Product, error) {
+	products, err := s.repo.GetProductByID(ctx, productID)
+	if err != nil {
+		return nil, err
+	}
+
+	return products, nil
+}
+
+func (s *ProductService) UploadProductImages(ctx context.Context, productID string, imageUrls []string) error {
+	err := s.repo.AddProductImages(ctx, productID, imageUrls)
+	if err != nil {
+		return err
+	}
+	return nil
 }

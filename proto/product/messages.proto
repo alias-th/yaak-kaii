@@ -53,6 +53,21 @@ message ListProductsResponse {
   Pagination       pagination = 2; // Pagination details
 }
 
+message UploadProductImagesRequest {
+  string          product_id = 1; // ID of the product
+  repeated string image_urls = 2; // List of image URLs to upload
+}
+message UploadProductImagesResponse {
+  bool success = 1; // Indicates if the upload was successful
+}
+
+message GetProductByIDRequest {
+  string product_id = 1; // ID of the product to retrieve
+}
+message GetProductByIDResponse {
+  Product product = 1; // Product details
+}
+
 message Product{
   string                  id          = 1; // Product ID
   string                  shop_id     = 2; // Shop ID
