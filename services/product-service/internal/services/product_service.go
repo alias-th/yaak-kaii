@@ -5,6 +5,7 @@ import (
 	grpcclients "yaak-kaii/services/product-service/internal/grpc_clients"
 	"yaak-kaii/services/product-service/internal/repositories"
 	"yaak-kaii/services/product-service/internal/utils"
+	"yaak-kaii/services/product-service/pkg/types"
 	"yaak-kaii/shared/proto/auth"
 
 	"github.com/google/uuid"
@@ -69,4 +70,12 @@ func (s *ProductService) CreateProduct(ctx context.Context, product *CreateProdu
 		return err
 	}
 	return nil
+}
+
+func (s *ProductService) ListProducts(ctx context.Context, query types.ListProductsReq) (*types.ListProductsRes, error) {
+	products, err := s.repo.ListProducts(ctx, query)
+	if err != nil {
+		return nil, err
+	}
+	return products, nil
 }

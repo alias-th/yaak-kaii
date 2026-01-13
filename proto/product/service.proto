@@ -13,4 +13,7 @@ service ProductService {
 
   // CreateCategory creates a new product category with the provided details.
   rpc CreateCategory(CreateCategoryRequest) returns (CreateCategoryResponse);
+
+  // ListProducts retrieves a list of products based on the provided filters.
+  rpc ListProducts(ListProductsRequest) returns (ListProductsResponse);
 }

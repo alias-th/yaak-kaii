@@ -53,6 +53,55 @@ type TokenResponse struct {
 	ExpiresIn    int64  `json:"expires_in"`
 }
 
+type ListProductRequest struct {
+	Q          string   `form:"q"`
+	CategoryID []string `form:"category_id"`
+	MinPrice   *int64   `form:"min_price"`
+	MaxPrice   *int64   `form:"max_price"`
+	Page       int32    `form:"page,default=1"`
+	Limit      int32    `form:"limit,default=20"`
+	Sort       string   `form:"sort,default=newest"`
+}
+
+type ListProductResponse struct {
+	Products   []ProductResponse `json:"products"`
+	Pagination Pagination        `json:"pagination"`
+}
+
+type ProductResponse struct {
+	ID          string           `json:"id"`
+	Name        string           `json:"name"`
+	ShopID      string           `json:"shop_id"`
+	Description string           `json:"description"`
+	Status      string           `json:"status"`
+	Variants    []ProductVariant `json:"variants"`
+	Images      []string         `json:"images"`
+	Category    ProductCategory  `json:"category"`
+}
+
+type ProductVariant struct {
+	SKU        string            `json:"sku"`
+	Price      float64           `json:"price"`
+	Stock      int32             `json:"stock"`
+	Attributes map[string]string `json:"attributes"`
+}
+
+type ProductCategory struct {
+	CategoryID string `json:"category_id"`
+	Name       string `json:"name"`
+}
+
+type Pagination struct {
+	Page     int32 `json:"page"`
+	Limit    int32 `json:"limit"`
+	Total    int32 `json:"total"`
+	LastPage int32 `json:"last_page"`
+	NextPage int32 `json:"next_page"`
+	PrevPage int32 `json:"prev_page"`
+	HasNext  bool  `json:"has_next"`
+	HasPrev  bool  `json:"has_prev"`
+}
+
 // func (req *CreateProductRequest) Validate() error {
 //     // 1. ตรวจสอบว่าต้องมี Key ที่จำเป็น (เช่น color, size)
 //     requiredKeys := []string{"color", "size"}

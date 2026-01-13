@@ -38,8 +38,51 @@ message CategoryAttribute {
   map<string, string> options  = 5; // Options for the attribute (if applicable)
 }
 
-enum ProductStatus {
-  PRODUCT_STATUS_UNSPECIFIED = 0; // Unspecified status (default)
-  ACTIVE                     = 1; // Product is active and available
-  INACTIVE                   = 2; // Product is inactive and unavailable
+message ListProductsRequest {
+  string          q            = 1; // Search query
+  repeated string category_ids = 2; // Filter by category IDs
+  int64           min_price    = 3; // Minimum price filter
+  int64           max_price    = 4; // Maximum price filter
+  int32           limit        = 5; // Number of products to return
+  int32           page         = 6; // Offset for pagination
+}
+
+message ListProductsResponse {
+  repeated Product products   = 1; // List of products
+  Pagination       pagination = 2; // Pagination details
+}
+
+message Product{
+  string                  id          = 1; // Product ID
+  string                  shop_id     = 2; // Shop ID
+  string                  name        = 3; // Product name
+  string                  description = 4; // Product description
+  string                  status      = 6; // Product status (e.g., active, inactive)
+  repeated ProductVariant variants    = 7; // Product variant details
+  repeated string         images      = 8; // List of product image URLs
+  ProductCategory         category    = 9; // Product category
+}
+
+message ProductCategory {
+  string category_id = 1; // Category ID
+  string name        = 2; // Category name
+  string description = 3; // Category description
+}
+
+message ProductVariant{
+  string              sku        = 1; // Stock Keeping Unit
+  double              price      = 2; // Variant price
+  int32               stock      = 3; // Available stock for the variant
+  map<string, string> attributes = 4; // Variant-specific attributes
+}
+
+message Pagination{
+  int32 limit     = 1; // Number of items per page
+  int32 page      = 2; // Current page number
+  int32 total     = 3; // Total number of items
+  int32 last_page = 4; // Indicates if this is the last page
+  int32 next_page = 5; // Indicates if there is a next page
+  int32 prev_page = 6; // Indicates if there is a previous page
+  bool  has_next  = 7; // Flag for next page availability
+  bool  has_prev  = 8; // Flag for previous page availability
 }

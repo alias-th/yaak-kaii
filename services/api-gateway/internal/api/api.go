@@ -49,6 +49,11 @@ func (app *Application) Run() {
 			seller.POST("/categories", app.createCategory)
 		}
 
+		boyer := v1.Group("/buyer")
+		{
+			boyer.GET("/products", app.listProducts)
+		}
+
 	}
 
 	srv := &http.Server{

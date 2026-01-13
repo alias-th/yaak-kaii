@@ -24,24 +24,29 @@ var File_product_service_proto protoreflect.FileDescriptor
 
 const file_product_service_proto_rawDesc = "" +
 	"\n" +
-	"\x15product/service.proto\x12\aproduct\x1a\x16product/messages.proto2\xb3\x01\n" +
+	"\x15product/service.proto\x12\aproduct\x1a\x16product/messages.proto2\x80\x02\n" +
 	"\x0eProductService\x12N\n" +
 	"\rCreateProduct\x12\x1d.product.CreateProductRequest\x1a\x1e.product.CreateProductResponse\x12Q\n" +
-	"\x0eCreateCategory\x12\x1e.product.CreateCategoryRequest\x1a\x1f.product.CreateCategoryResponseB\x1eZ\x1cshared/proto/product;productb\x06proto3"
+	"\x0eCreateCategory\x12\x1e.product.CreateCategoryRequest\x1a\x1f.product.CreateCategoryResponse\x12K\n" +
+	"\fListProducts\x12\x1c.product.ListProductsRequest\x1a\x1d.product.ListProductsResponseB\x1eZ\x1cshared/proto/product;productb\x06proto3"
 
 var file_product_service_proto_goTypes = []any{
 	(*CreateProductRequest)(nil),   // 0: product.CreateProductRequest
 	(*CreateCategoryRequest)(nil),  // 1: product.CreateCategoryRequest
-	(*CreateProductResponse)(nil),  // 2: product.CreateProductResponse
-	(*CreateCategoryResponse)(nil), // 3: product.CreateCategoryResponse
+	(*ListProductsRequest)(nil),    // 2: product.ListProductsRequest
+	(*CreateProductResponse)(nil),  // 3: product.CreateProductResponse
+	(*CreateCategoryResponse)(nil), // 4: product.CreateCategoryResponse
+	(*ListProductsResponse)(nil),   // 5: product.ListProductsResponse
 }
 var file_product_service_proto_depIdxs = []int32{
 	0, // 0: product.ProductService.CreateProduct:input_type -> product.CreateProductRequest
 	1, // 1: product.ProductService.CreateCategory:input_type -> product.CreateCategoryRequest
-	2, // 2: product.ProductService.CreateProduct:output_type -> product.CreateProductResponse
-	3, // 3: product.ProductService.CreateCategory:output_type -> product.CreateCategoryResponse
-	2, // [2:4] is the sub-list for method output_type
-	0, // [0:2] is the sub-list for method input_type
+	2, // 2: product.ProductService.ListProducts:input_type -> product.ListProductsRequest
+	3, // 3: product.ProductService.CreateProduct:output_type -> product.CreateProductResponse
+	4, // 4: product.ProductService.CreateCategory:output_type -> product.CreateCategoryResponse
+	5, // 5: product.ProductService.ListProducts:output_type -> product.ListProductsResponse
+	3, // [3:6] is the sub-list for method output_type
+	0, // [0:3] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name
 	0, // [0:0] is the sub-list for extension extendee
 	0, // [0:0] is the sub-list for field type_name
