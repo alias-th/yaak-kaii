@@ -9,10 +9,7 @@ message CreateProductRequest {
   string              user_id     = 1; // ID of the user creating the product
   string              name        = 2; // Product name
   string              description = 3; // Product description
-  double              price       = 4; // Product price
   string              category_id = 5; // Product category
-  int32               stock       = 6; // Available stock quantity
-  map<string, string> attributes  = 7; // Additional product attributes
 }
 
 message CreateProductResponse {
@@ -128,6 +125,7 @@ message Product{
   string                  name        = 3; // Product name
   string                  description = 4; // Product description
   string                  status      = 6; // Product status (e.g., active, inactive)
+  string                  slug        = 5; // Product slug
   repeated ProductVariant variants    = 7; // Product variant details
   repeated string         images      = 8; // List of product image URLs
   ProductCategory         category    = 9; // Product category

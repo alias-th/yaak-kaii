@@ -28,10 +28,7 @@ func (app *Application) createProduct(ctx *gin.Context) {
 		UserId:      userID,
 		Name:        reqBody.Name,
 		Description: reqBody.Description,
-		Price:       reqBody.Price,
 		CategoryId:  reqBody.CategoryID,
-		Stock:       int32(reqBody.Stock),
-		Attributes:  reqBody.Attributes,
 	})
 	if err != nil {
 		app.responseWithError(ctx, http.StatusInternalServerError, err)
@@ -93,6 +90,7 @@ func (app *Application) listProducts(ctx *gin.Context) {
 			ShopID:      p.ShopId,
 			Description: p.Description,
 			Status:      p.Status,
+			Slug:        p.Slug,
 			Variants:    variants,
 			Images:      p.Images,
 			Category: types.ProductCategory{

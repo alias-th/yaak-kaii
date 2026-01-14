@@ -37,24 +37,12 @@ func (s *ProductService) CreateProduct(ctx context.Context, product *types.Creat
 
 	slugValue := slug.Make(product.Name)
 
-	colorVal := product.Attributes["color"]
-	sizeVal := product.Attributes["size"]
-
 	productId, err := s.repo.CreateProductTx(ctx, &repositories.CreateProductPayload{
 		ShopID:      shopID,
-		UserID:      product.UserId,
 		Name:        product.Name,
 		Description: product.Description,
-		Price:       product.Price,
-		Stock:       product.Stock,
 		Slug:        slugValue,
-		Attributes:  product.Attributes,
-		Category: repositories.Category{
-			CategoryID: categoryID,
-			Name:       product.CategoryName,
-			Color:      colorVal,
-			Size:       sizeVal,
-		},
+		CategoryID:  categoryID,
 	})
 	if err != nil {
 		return "", err

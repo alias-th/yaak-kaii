@@ -27,18 +27,8 @@ func (s *ProductGRPCServer) CreateProduct(ctx context.Context, req *pb.CreatePro
 		Name:        req.GetName(),
 		UserId:      req.GetUserId(),
 		Description: req.GetDescription(),
-		Price:       req.GetPrice(),
 		CategoryId:  req.GetCategoryId(),
-		Stock:       req.GetStock(),
-		Attributes:  req.GetAttributes(),
 	}
-
-	category, err := s.categoryService.GetCategoryByID(ctx, req.GetCategoryId())
-	if err != nil {
-		return nil, err
-	}
-	categoryName := category.Name
-	payload.CategoryName = categoryName
 
 	productId, err := s.productService.CreateProduct(ctx, payload)
 	if err != nil {
@@ -94,6 +84,7 @@ func (s *ProductGRPCServer) ListProducts(ctx context.Context, req *pb.ListProduc
 			ShopId:      p.ShopID.String(),
 			Description: p.Description,
 			Status:      p.Status,
+			Slug:        p.Slug,
 			Variants:    variants,
 			Images:      images,
 			Category: &pb.ProductCategory{

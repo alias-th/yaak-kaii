@@ -24,13 +24,10 @@ const (
 // ===== Product Messages =====
 type CreateProductRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	UserId        string                 `protobuf:"bytes,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`                                                                     // ID of the user creating the product
-	Name          string                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`                                                                                       // Product name
-	Description   string                 `protobuf:"bytes,3,opt,name=description,proto3" json:"description,omitempty"`                                                                         // Product description
-	Price         float64                `protobuf:"fixed64,4,opt,name=price,proto3" json:"price,omitempty"`                                                                                   // Product price
-	CategoryId    string                 `protobuf:"bytes,5,opt,name=category_id,json=categoryId,proto3" json:"category_id,omitempty"`                                                         // Product category
-	Stock         int32                  `protobuf:"varint,6,opt,name=stock,proto3" json:"stock,omitempty"`                                                                                    // Available stock quantity
-	Attributes    map[string]string      `protobuf:"bytes,7,rep,name=attributes,proto3" json:"attributes,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"` // Additional product attributes
+	UserId        string                 `protobuf:"bytes,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`             // ID of the user creating the product
+	Name          string                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`                               // Product name
+	Description   string                 `protobuf:"bytes,3,opt,name=description,proto3" json:"description,omitempty"`                 // Product description
+	CategoryId    string                 `protobuf:"bytes,5,opt,name=category_id,json=categoryId,proto3" json:"category_id,omitempty"` // Product category
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -86,32 +83,11 @@ func (x *CreateProductRequest) GetDescription() string {
 	return ""
 }
 
-func (x *CreateProductRequest) GetPrice() float64 {
-	if x != nil {
-		return x.Price
-	}
-	return 0
-}
-
 func (x *CreateProductRequest) GetCategoryId() string {
 	if x != nil {
 		return x.CategoryId
 	}
 	return ""
-}
-
-func (x *CreateProductRequest) GetStock() int32 {
-	if x != nil {
-		return x.Stock
-	}
-	return 0
-}
-
-func (x *CreateProductRequest) GetAttributes() map[string]string {
-	if x != nil {
-		return x.Attributes
-	}
-	return nil
 }
 
 type CreateProductResponse struct {
@@ -1173,6 +1149,7 @@ type Product struct {
 	Name          string                 `protobuf:"bytes,3,opt,name=name,proto3" json:"name,omitempty"`                   // Product name
 	Description   string                 `protobuf:"bytes,4,opt,name=description,proto3" json:"description,omitempty"`     // Product description
 	Status        string                 `protobuf:"bytes,6,opt,name=status,proto3" json:"status,omitempty"`               // Product status (e.g., active, inactive)
+	Slug          string                 `protobuf:"bytes,5,opt,name=slug,proto3" json:"slug,omitempty"`                   // Product slug
 	Variants      []*ProductVariant      `protobuf:"bytes,7,rep,name=variants,proto3" json:"variants,omitempty"`           // Product variant details
 	Images        []string               `protobuf:"bytes,8,rep,name=images,proto3" json:"images,omitempty"`               // List of product image URLs
 	Category      *ProductCategory       `protobuf:"bytes,9,opt,name=category,proto3" json:"category,omitempty"`           // Product category
@@ -1241,6 +1218,13 @@ func (x *Product) GetDescription() string {
 func (x *Product) GetStatus() string {
 	if x != nil {
 		return x.Status
+	}
+	return ""
+}
+
+func (x *Product) GetSlug() string {
+	if x != nil {
+		return x.Slug
 	}
 	return ""
 }
@@ -1498,21 +1482,13 @@ var File_product_messages_proto protoreflect.FileDescriptor
 
 const file_product_messages_proto_rawDesc = "" +
 	"\n" +
-	"\x16product/messages.proto\x12\aproduct\"\xc0\x02\n" +
+	"\x16product/messages.proto\x12\aproduct\"\x86\x01\n" +
 	"\x14CreateProductRequest\x12\x17\n" +
 	"\auser_id\x18\x01 \x01(\tR\x06userId\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12 \n" +
-	"\vdescription\x18\x03 \x01(\tR\vdescription\x12\x14\n" +
-	"\x05price\x18\x04 \x01(\x01R\x05price\x12\x1f\n" +
+	"\vdescription\x18\x03 \x01(\tR\vdescription\x12\x1f\n" +
 	"\vcategory_id\x18\x05 \x01(\tR\n" +
-	"categoryId\x12\x14\n" +
-	"\x05stock\x18\x06 \x01(\x05R\x05stock\x12M\n" +
-	"\n" +
-	"attributes\x18\a \x03(\v2-.product.CreateProductRequest.AttributesEntryR\n" +
-	"attributes\x1a=\n" +
-	"\x0fAttributesEntry\x12\x10\n" +
-	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"6\n" +
+	"categoryId\"6\n" +
 	"\x15CreateProductResponse\x12\x1d\n" +
 	"\n" +
 	"product_id\x18\x01 \x01(\tR\tproductId\"\x89\x01\n" +
@@ -1612,13 +1588,14 @@ const file_product_messages_proto_rawDesc = "" +
 	"variantKey\x1a=\n" +
 	"\x0fAttributesEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\x83\x02\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\x97\x02\n" +
 	"\aProduct\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x17\n" +
 	"\ashop_id\x18\x02 \x01(\tR\x06shopId\x12\x12\n" +
 	"\x04name\x18\x03 \x01(\tR\x04name\x12 \n" +
 	"\vdescription\x18\x04 \x01(\tR\vdescription\x12\x16\n" +
-	"\x06status\x18\x06 \x01(\tR\x06status\x123\n" +
+	"\x06status\x18\x06 \x01(\tR\x06status\x12\x12\n" +
+	"\x04slug\x18\x05 \x01(\tR\x04slug\x123\n" +
 	"\bvariants\x18\a \x03(\v2\x17.product.ProductVariantR\bvariants\x12\x16\n" +
 	"\x06images\x18\b \x03(\tR\x06images\x124\n" +
 	"\bcategory\x18\t \x01(\v2\x18.product.ProductCategoryR\bcategory\"h\n" +
@@ -1660,7 +1637,7 @@ func file_product_messages_proto_rawDescGZIP() []byte {
 	return file_product_messages_proto_rawDescData
 }
 
-var file_product_messages_proto_msgTypes = make([]protoimpl.MessageInfo, 27)
+var file_product_messages_proto_msgTypes = make([]protoimpl.MessageInfo, 26)
 var file_product_messages_proto_goTypes = []any{
 	(*CreateProductRequest)(nil),         // 0: product.CreateProductRequest
 	(*CreateProductResponse)(nil),        // 1: product.CreateProductResponse
@@ -1684,32 +1661,30 @@ var file_product_messages_proto_goTypes = []any{
 	(*ProductCategory)(nil),              // 19: product.ProductCategory
 	(*ProductVariant)(nil),               // 20: product.ProductVariant
 	(*Pagination)(nil),                   // 21: product.Pagination
-	nil,                                  // 22: product.CreateProductRequest.AttributesEntry
-	nil,                                  // 23: product.CreateProductVariantRequest.AttributesEntry
-	nil,                                  // 24: product.CategoryAttribute.OptionsEntry
-	nil,                                  // 25: product.VariantDTO.AttributesEntry
-	nil,                                  // 26: product.ProductVariant.AttributesEntry
+	nil,                                  // 22: product.CreateProductVariantRequest.AttributesEntry
+	nil,                                  // 23: product.CategoryAttribute.OptionsEntry
+	nil,                                  // 24: product.VariantDTO.AttributesEntry
+	nil,                                  // 25: product.ProductVariant.AttributesEntry
 }
 var file_product_messages_proto_depIdxs = []int32{
-	22, // 0: product.CreateProductRequest.attributes:type_name -> product.CreateProductRequest.AttributesEntry
-	6,  // 1: product.CreateCategoryRequest.attributes:type_name -> product.CategoryAttribute
-	23, // 2: product.CreateProductVariantRequest.attributes:type_name -> product.CreateProductVariantRequest.AttributesEntry
-	24, // 3: product.CategoryAttribute.options:type_name -> product.CategoryAttribute.OptionsEntry
-	18, // 4: product.ListProductsResponse.products:type_name -> product.Product
-	21, // 5: product.ListProductsResponse.pagination:type_name -> product.Pagination
-	18, // 6: product.GetProductByIDResponse.product:type_name -> product.Product
-	15, // 7: product.GetProductBySlugResponse.product:type_name -> product.ProductDetails
-	16, // 8: product.GetProductBySlugResponse.axes:type_name -> product.AxisDTO
-	17, // 9: product.GetProductBySlugResponse.variants:type_name -> product.VariantDTO
-	25, // 10: product.VariantDTO.attributes:type_name -> product.VariantDTO.AttributesEntry
-	20, // 11: product.Product.variants:type_name -> product.ProductVariant
-	19, // 12: product.Product.category:type_name -> product.ProductCategory
-	26, // 13: product.ProductVariant.attributes:type_name -> product.ProductVariant.AttributesEntry
-	14, // [14:14] is the sub-list for method output_type
-	14, // [14:14] is the sub-list for method input_type
-	14, // [14:14] is the sub-list for extension type_name
-	14, // [14:14] is the sub-list for extension extendee
-	0,  // [0:14] is the sub-list for field type_name
+	6,  // 0: product.CreateCategoryRequest.attributes:type_name -> product.CategoryAttribute
+	22, // 1: product.CreateProductVariantRequest.attributes:type_name -> product.CreateProductVariantRequest.AttributesEntry
+	23, // 2: product.CategoryAttribute.options:type_name -> product.CategoryAttribute.OptionsEntry
+	18, // 3: product.ListProductsResponse.products:type_name -> product.Product
+	21, // 4: product.ListProductsResponse.pagination:type_name -> product.Pagination
+	18, // 5: product.GetProductByIDResponse.product:type_name -> product.Product
+	15, // 6: product.GetProductBySlugResponse.product:type_name -> product.ProductDetails
+	16, // 7: product.GetProductBySlugResponse.axes:type_name -> product.AxisDTO
+	17, // 8: product.GetProductBySlugResponse.variants:type_name -> product.VariantDTO
+	24, // 9: product.VariantDTO.attributes:type_name -> product.VariantDTO.AttributesEntry
+	20, // 10: product.Product.variants:type_name -> product.ProductVariant
+	19, // 11: product.Product.category:type_name -> product.ProductCategory
+	25, // 12: product.ProductVariant.attributes:type_name -> product.ProductVariant.AttributesEntry
+	13, // [13:13] is the sub-list for method output_type
+	13, // [13:13] is the sub-list for method input_type
+	13, // [13:13] is the sub-list for extension type_name
+	13, // [13:13] is the sub-list for extension extendee
+	0,  // [0:13] is the sub-list for field type_name
 }
 
 func init() { file_product_messages_proto_init() }
@@ -1723,7 +1698,7 @@ func file_product_messages_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_product_messages_proto_rawDesc), len(file_product_messages_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   27,
+			NumMessages:   26,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

@@ -7,12 +7,9 @@ import (
 )
 
 type CreateProductRequest struct {
-	Name        string            `json:"name" binding:"required"`
-	Description string            `json:"description" binding:"required"`
-	Price       float64           `json:"price" binding:"required,gt=0"`
-	CategoryID  string            `json:"category_id" binding:"required"`
-	Attributes  map[string]string `json:"attributes" binding:"min=1,max=10"`
-	Stock       int               `json:"stock" binding:"required,gte=0"`
+	Name        string `json:"name" binding:"required"`
+	Description string `json:"description" binding:"required"`
+	CategoryID  string `json:"category_id" binding:"required"`
 }
 type CreateProductResponse struct {
 	ID string `json:"id"`
@@ -77,6 +74,7 @@ type ProductResponse struct {
 	ShopID      string           `json:"shop_id"`
 	Description string           `json:"description"`
 	Status      string           `json:"status"`
+	Slug        string           `json:"slug"`
 	Variants    []ProductVariant `json:"variants"`
 	Images      []string         `json:"images"`
 	Category    ProductCategory  `json:"category"`

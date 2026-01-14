@@ -35,22 +35,12 @@ func NewProductRepository(db *gorm.DB) ProductRepository {
 	}
 }
 
-type Category struct {
-	CategoryID uuid.UUID
-	Name       string
-	Color      string
-	Size       string
-}
 type CreateProductPayload struct {
 	ShopID      uuid.UUID // ID of the shop creating the product
-	UserID      string    // ID of the user creating the product
 	Name        string    // Product name
 	Description string    // Product description
-	Price       float64   // Product price
-	Stock       int32     // Available stock quantity
 	Slug        string    // Product slug
-	Attributes  types.Attributes
-	Category    Category
+	CategoryID  uuid.UUID
 }
 
 func (o *productRepositoryImpl) CreateProductTx(ctx context.Context, payload *CreateProductPayload) (string, error) {
@@ -61,36 +51,9 @@ func (o *productRepositoryImpl) CreateProductTx(ctx context.Context, payload *Cr
 			Name:        payload.Name,
 			Description: payload.Description,
 			Slug:        payload.Slug,
-			CategoryID:  payload.Category.CategoryID,
+			CategoryID:  payload.CategoryID,
 		}
 		if err := tx.Create(product).Error; err != nil {
-			return err
-		}
-
-		attByte, err := payload.Attributes.Value()
-		if err != nil {
-			return err
-		}
-
-		var nextNo int
-		if err := tx.Raw(`
-		SELECT COALESCE(pv.variant_no, 0) + 1
-		FROM product_variants pv
-		WHERE pv.product_id = ?;
-		`, product.ID).Scan(&nextNo).Error; err != nil {
-			return err
-		}
-
-		sku := utils.GenerateSKU(payload.Category.Name, payload.Category.Color, payload.Category.Size, nextNo)
-
-		if err := tx.Create(&models.ProductVariant{
-			ProductID:  product.ID,
-			Sku:        sku,
-			Price:      payload.Price,
-			Stock:      int(payload.Stock),
-			Attributes: attByte,
-			VariantNo:  nextNo,
-		}).Error; err != nil {
 			return err
 		}
 		productId = product.ID.String()

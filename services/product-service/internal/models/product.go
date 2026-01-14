@@ -15,7 +15,7 @@ type Product struct {
 	Slug        string           `gorm:"column:slug;type:varchar(255);not null;uniqueIndex:ux_products_shop_slug"`
 	Name        string           `gorm:"column:name;type:varchar(255);not null"`
 	Description string           `gorm:"column:description;type:text"`
-	Status      string           `gorm:"column:status;type:varchar(50);default:'active';not null"`
+	Status      string           `gorm:"column:status;type:varchar(50);default:'daft';not null"`
 	CreatedAt   time.Time        `gorm:"autoCreateTime"`
 	UpdatedAt   time.Time        `gorm:"autoUpdateTime"`
 	Images      []ProductImage   `gorm:"foreignKey:ProductID;constraint:OnDelete:CASCADE"`

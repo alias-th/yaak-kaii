@@ -48,14 +48,10 @@ func (a *Attributes) Scan(value interface{}) error {
 }
 
 type CreateProductPayload struct {
-	UserId       string  // ID of the user creating the product
-	Name         string  // Product name
-	Description  string  // Product description
-	Price        float64 // Product price
-	CategoryId   string  // Product category
-	Stock        int32   // Available stock quantity
-	Attributes   map[string]string
-	CategoryName string
+	UserId      string // ID of the user creating the product
+	Name        string // Product name
+	Description string // Product description
+	CategoryId  string // Product category
 }
 
 type CreateProductVariantPayload struct {
