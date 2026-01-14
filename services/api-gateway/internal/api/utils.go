@@ -87,3 +87,25 @@ func (app *Application) formatDate(timestamp *int64) (at string, in int64, err e
 
 	return expiresAt.Format(time.RFC3339), expiresIn, nil
 }
+
+func isAllowedImageCT(ct string) bool {
+	switch ct {
+	case "image/jpeg", "image/png", "image/webp":
+		return true
+	default:
+		return false
+	}
+}
+
+func guessExtFromContentType(ct string) string {
+	switch ct {
+	case "image/jpeg":
+		return ".jpg"
+	case "image/png":
+		return ".png"
+	case "image/webp":
+		return ".webp"
+	default:
+		return ""
+	}
+}

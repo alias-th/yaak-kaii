@@ -12,9 +12,6 @@ type CreateProductResponse struct {
 	ID string `json:"id"`
 }
 
-// t-shirt-basic
-// TSB-BLK-M
-
 type CreateUserRequest struct {
 	Email       string `json:"email" binding:"required,email"`
 	FirstName   string `json:"first_name" binding:"required,min=2,max=50"`
@@ -102,21 +99,12 @@ type Pagination struct {
 	HasPrev  bool  `json:"has_prev"`
 }
 
-// func (req *CreateProductRequest) Validate() error {
-//     // 1. ตรวจสอบว่าต้องมี Key ที่จำเป็น (เช่น color, size)
-//     requiredKeys := []string{"color", "size"}
-//     for _, key := range requiredKeys {
-//         if _, ok := req.Attributes[key]; !ok {
-//             return fmt.Errorf("attribute '%s' is required", key)
-//         }
-//     }
+type CreateProductVariantRequest struct {
+	Price      float64           `json:"price" binding:"required,gt=0"`
+	Stock      int32             `json:"stock" binding:"required,gte=0"`
+	Attributes map[string]string `json:"attributes" binding:"min=1,max=10"`
+}
 
-//     // 2. ตรวจสอบว่าค่า (Value) ใน Map ห้ามเป็นค่าว่าง
-//     for key, value := range req.Attributes {
-//         if strings.TrimSpace(value) == "" {
-//             return fmt.Errorf("value for attribute '%s' cannot be empty", key)
-//         }
-//     }
-
-//     return nil
-// }
+type CreateProductVariantResponse struct {
+	VariantID string `json:"variant_id"`
+}

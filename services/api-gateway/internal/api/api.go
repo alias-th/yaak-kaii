@@ -49,12 +49,13 @@ func (app *Application) Run() {
 		{
 			seller.POST("/products", app.createProduct)
 			seller.POST("/products/:id/images", app.uploadProductImages)
+			seller.POST("/products/:id/variant", app.createProductVariant)
 			seller.POST("/categories", app.createCategory)
 		}
 
-		boyer := v1.Group("/buyer")
+		buyer := v1.Group("/buyer")
 		{
-			boyer.GET("/products", app.listProducts)
+			buyer.GET("/products", app.listProducts)
 		}
 
 	}

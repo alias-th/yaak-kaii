@@ -24,42 +24,47 @@ var File_product_service_proto protoreflect.FileDescriptor
 
 const file_product_service_proto_rawDesc = "" +
 	"\n" +
-	"\x15product/service.proto\x12\aproduct\x1a\x16product/messages.proto2\xb5\x03\n" +
+	"\x15product/service.proto\x12\aproduct\x1a\x16product/messages.proto2\x9a\x04\n" +
 	"\x0eProductService\x12N\n" +
-	"\rCreateProduct\x12\x1d.product.CreateProductRequest\x1a\x1e.product.CreateProductResponse\x12Q\n" +
+	"\rCreateProduct\x12\x1d.product.CreateProductRequest\x1a\x1e.product.CreateProductResponse\x12c\n" +
+	"\x14CreateProductVariant\x12$.product.CreateProductVariantRequest\x1a%.product.CreateProductVariantResponse\x12Q\n" +
 	"\x0eCreateCategory\x12\x1e.product.CreateCategoryRequest\x1a\x1f.product.CreateCategoryResponse\x12K\n" +
 	"\fListProducts\x12\x1c.product.ListProductsRequest\x1a\x1d.product.ListProductsResponse\x12Q\n" +
 	"\x0eGetProductByID\x12\x1e.product.GetProductByIDRequest\x1a\x1f.product.GetProductByIDResponse\x12`\n" +
 	"\x13UploadProductImages\x12#.product.UploadProductImagesRequest\x1a$.product.UploadProductImagesResponseB\x1eZ\x1cshared/proto/product;productb\x06proto3"
 
 var file_product_service_proto_goTypes = []any{
-	(*CreateProductRequest)(nil),        // 0: product.CreateProductRequest
-	(*CreateCategoryRequest)(nil),       // 1: product.CreateCategoryRequest
-	(*ListProductsRequest)(nil),         // 2: product.ListProductsRequest
-	(*GetProductByIDRequest)(nil),       // 3: product.GetProductByIDRequest
-	(*UploadProductImagesRequest)(nil),  // 4: product.UploadProductImagesRequest
-	(*CreateProductResponse)(nil),       // 5: product.CreateProductResponse
-	(*CreateCategoryResponse)(nil),      // 6: product.CreateCategoryResponse
-	(*ListProductsResponse)(nil),        // 7: product.ListProductsResponse
-	(*GetProductByIDResponse)(nil),      // 8: product.GetProductByIDResponse
-	(*UploadProductImagesResponse)(nil), // 9: product.UploadProductImagesResponse
+	(*CreateProductRequest)(nil),         // 0: product.CreateProductRequest
+	(*CreateProductVariantRequest)(nil),  // 1: product.CreateProductVariantRequest
+	(*CreateCategoryRequest)(nil),        // 2: product.CreateCategoryRequest
+	(*ListProductsRequest)(nil),          // 3: product.ListProductsRequest
+	(*GetProductByIDRequest)(nil),        // 4: product.GetProductByIDRequest
+	(*UploadProductImagesRequest)(nil),   // 5: product.UploadProductImagesRequest
+	(*CreateProductResponse)(nil),        // 6: product.CreateProductResponse
+	(*CreateProductVariantResponse)(nil), // 7: product.CreateProductVariantResponse
+	(*CreateCategoryResponse)(nil),       // 8: product.CreateCategoryResponse
+	(*ListProductsResponse)(nil),         // 9: product.ListProductsResponse
+	(*GetProductByIDResponse)(nil),       // 10: product.GetProductByIDResponse
+	(*UploadProductImagesResponse)(nil),  // 11: product.UploadProductImagesResponse
 }
 var file_product_service_proto_depIdxs = []int32{
-	0, // 0: product.ProductService.CreateProduct:input_type -> product.CreateProductRequest
-	1, // 1: product.ProductService.CreateCategory:input_type -> product.CreateCategoryRequest
-	2, // 2: product.ProductService.ListProducts:input_type -> product.ListProductsRequest
-	3, // 3: product.ProductService.GetProductByID:input_type -> product.GetProductByIDRequest
-	4, // 4: product.ProductService.UploadProductImages:input_type -> product.UploadProductImagesRequest
-	5, // 5: product.ProductService.CreateProduct:output_type -> product.CreateProductResponse
-	6, // 6: product.ProductService.CreateCategory:output_type -> product.CreateCategoryResponse
-	7, // 7: product.ProductService.ListProducts:output_type -> product.ListProductsResponse
-	8, // 8: product.ProductService.GetProductByID:output_type -> product.GetProductByIDResponse
-	9, // 9: product.ProductService.UploadProductImages:output_type -> product.UploadProductImagesResponse
-	5, // [5:10] is the sub-list for method output_type
-	0, // [0:5] is the sub-list for method input_type
-	0, // [0:0] is the sub-list for extension type_name
-	0, // [0:0] is the sub-list for extension extendee
-	0, // [0:0] is the sub-list for field type_name
+	0,  // 0: product.ProductService.CreateProduct:input_type -> product.CreateProductRequest
+	1,  // 1: product.ProductService.CreateProductVariant:input_type -> product.CreateProductVariantRequest
+	2,  // 2: product.ProductService.CreateCategory:input_type -> product.CreateCategoryRequest
+	3,  // 3: product.ProductService.ListProducts:input_type -> product.ListProductsRequest
+	4,  // 4: product.ProductService.GetProductByID:input_type -> product.GetProductByIDRequest
+	5,  // 5: product.ProductService.UploadProductImages:input_type -> product.UploadProductImagesRequest
+	6,  // 6: product.ProductService.CreateProduct:output_type -> product.CreateProductResponse
+	7,  // 7: product.ProductService.CreateProductVariant:output_type -> product.CreateProductVariantResponse
+	8,  // 8: product.ProductService.CreateCategory:output_type -> product.CreateCategoryResponse
+	9,  // 9: product.ProductService.ListProducts:output_type -> product.ListProductsResponse
+	10, // 10: product.ProductService.GetProductByID:output_type -> product.GetProductByIDResponse
+	11, // 11: product.ProductService.UploadProductImages:output_type -> product.UploadProductImagesResponse
+	6,  // [6:12] is the sub-list for method output_type
+	0,  // [0:6] is the sub-list for method input_type
+	0,  // [0:0] is the sub-list for extension type_name
+	0,  // [0:0] is the sub-list for extension extendee
+	0,  // [0:0] is the sub-list for field type_name
 }
 
 func init() { file_product_service_proto_init() }

@@ -1,10 +1,13 @@
 package utils
 
 import (
+	"encoding/json"
 	"fmt"
 	"math"
 	"strings"
 	"yaak-kaii/services/product-service/pkg/types"
+
+	"gorm.io/datatypes"
 )
 
 func GenerateSKU(category, color, size string, variantNo int) string {
@@ -81,4 +84,70 @@ func ProductOrder(sort string) string {
 	default:
 		return "products.created_at DESC, products.id DESC"
 	}
+}
+
+func ParseOptionsAsSet(raw datatypes.JSON) (map[string]struct{}, error) {
+	if len(raw) == 0 {
+		return map[string]struct{}{}, nil
+	}
+	var arr []string
+	if err := json.Unmarshal([]byte(raw), &arr); err != nil {
+		return nil, err
+	}
+	set := make(map[string]struct{}, len(arr))
+	for _, v := range arr {
+		v = strings.TrimSpace(v)
+		if v == "" {
+			continue
+		}
+		set[v] = struct{}{}
+	}
+	return set, nil
+}
+
+func BuildVariantKeyAndValidate(attrs map[string]string, axes []types.AxisDef) (string, error) {
+	parts := make([]string, 0, len(axes))
+
+	for _, ax := range axes {
+		val, ok := attrs[ax.Key]
+		val = strings.TrimSpace(val)
+
+		if ax.Required && (!ok || val == "") {
+			return "", fmt.Errorf("%s: %s", "missing required axis", ax.Key)
+		}
+
+		if !ok || val == "" {
+			return "", fmt.Errorf("%s: %s", "missing required axis", ax.Key)
+		}
+
+		if len(ax.Options) > 0 {
+			if _, exists := ax.Options[val]; !exists {
+				return "", fmt.Errorf("%s: %s=%s", "invalid attribute value", ax.Key, val)
+			}
+		}
+
+		parts = append(parts, fmt.Sprintf("%s=%s", ax.Key, NormValue(val)))
+	}
+
+	return strings.Join(parts, "|"), nil
+}
+
+func RejectUnknownKeys(attrs map[string]string, axes []types.AxisDef) error {
+	allowedKeys := make(map[string]struct{}, len(axes))
+	for _, ax := range axes {
+		allowedKeys[ax.Key] = struct{}{}
+	}
+	for k := range attrs {
+		if _, ok := allowedKeys[k]; !ok {
+			return fmt.Errorf("%s: %s", "invalid attribute key", k)
+		}
+	}
+	return nil
+}
+
+func NormValue(s string) string {
+	s = strings.TrimSpace(s)
+	s = strings.ToLower(s)
+	s = strings.Join(strings.Fields(s), " ") // collapse whitespace
+	return s
 }

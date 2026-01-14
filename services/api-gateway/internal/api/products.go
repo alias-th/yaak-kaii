@@ -123,11 +123,6 @@ func (app *Application) listProducts(ctx *gin.Context) {
 	ctx.JSON(200, mapRes)
 }
 
-type UploadedImage struct {
-	ProjectID string
-	Urls      []string
-}
-
 func (app *Application) uploadProductImages(c *gin.Context) {
 	productID := c.Param("id")
 
@@ -214,24 +209,35 @@ func (app *Application) uploadProductImages(c *gin.Context) {
 
 }
 
-func isAllowedImageCT(ct string) bool {
-	switch ct {
-	case "image/jpeg", "image/png", "image/webp":
-		return true
-	default:
-		return false
+func (app *Application) createProductVariant(c *gin.Context) {
+	var req types.CreateProductVariantRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		app.responseWithError(c, http.StatusBadRequest, err)
+		return
 	}
-}
+	productID := c.Param("id")
+	if strings.TrimSpace(productID) == "" {
+		app.responseWithError(c, http.StatusBadRequest, fmt.Errorf("product ID is required"))
+		return
+	}
 
-func guessExtFromContentType(ct string) string {
-	switch ct {
-	case "image/jpeg":
-		return ".jpg"
-	case "image/png":
-		return ".png"
-	case "image/webp":
-		return ".webp"
-	default:
-		return ""
+	appRes, err := app.GrpcClients.Product.Client.CreateProductVariant(c, &product.CreateProductVariantRequest{
+		ProductId:  productID,
+		Price:      req.Price,
+		Stock:      req.Stock,
+		Attributes: req.Attributes,
+	})
+	if err != nil {
+		app.responseWithError(c, http.StatusInternalServerError, err)
+		return
 	}
+
+	res := contracts.APIResponse{
+		Data: types.CreateProductVariantResponse{
+			VariantID: appRes.VariantId,
+		},
+	}
+
+	c.JSON(http.StatusCreated, res)
+
 }

@@ -24,6 +24,8 @@ type CategoryAttribute struct {
 	Type       string         `gorm:"column:type;type:varchar(100);not null"`
 	Required   bool           `gorm:"column:required;type:boolean;not null"`
 	Options    datatypes.JSON `gorm:"column:options;type:jsonb"`
+	Scope      string         `gorm:"column:scope;type:varchar(100);not null;default:'PRODUCT'"`
+	AxisOrder  int            `gorm:"column:axis_order;type:int;not null;default:0"`
 	CreatedAt  time.Time
 	UpdatedAt  time.Time
 }

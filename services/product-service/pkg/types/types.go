@@ -43,3 +43,28 @@ func (a *Attributes) Scan(value interface{}) error {
 	}
 	return json.Unmarshal(b, &a)
 }
+
+type CreateProductPayload struct {
+	UserId       string  // ID of the user creating the product
+	Name         string  // Product name
+	Description  string  // Product description
+	Price        float64 // Product price
+	CategoryId   string  // Product category
+	Stock        int32   // Available stock quantity
+	Attributes   map[string]string
+	CategoryName string
+}
+
+type CreateProductVariantPayload struct {
+	ProductID  string
+	Price      float64
+	Stock      int32
+	Attributes Attributes
+}
+
+type AxisDef struct {
+	Key      string
+	Required bool
+	Options  map[string]struct{} // set
+	Order    int
+}

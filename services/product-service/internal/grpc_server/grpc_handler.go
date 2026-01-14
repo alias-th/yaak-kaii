@@ -22,7 +22,7 @@ func NewProductGRPCServer(product *services.ProductService, category *services.C
 }
 
 func (s *ProductGRPCServer) CreateProduct(ctx context.Context, req *pb.CreateProductRequest) (*pb.CreateProductResponse, error) {
-	payload := &services.CreateProductPayload{
+	payload := &types.CreateProductPayload{
 		Name:        req.GetName(),
 		UserId:      req.GetUserId(),
 		Description: req.GetDescription(),
@@ -155,4 +155,23 @@ func (s *ProductGRPCServer) UploadProductImages(ctx context.Context, req *pb.Upl
 	return &pb.UploadProductImagesResponse{
 		Success: true,
 	}, nil
+}
+
+func (s *ProductGRPCServer) CreateProductVariant(ctx context.Context, req *pb.CreateProductVariantRequest) (*pb.CreateProductVariantResponse, error) {
+	payload := &types.CreateProductVariantPayload{
+		ProductID:  req.GetProductId(),
+		Price:      req.GetPrice(),
+		Stock:      req.GetStock(),
+		Attributes: req.GetAttributes(),
+	}
+
+	variantID, err := s.productService.CreateProductVariant(ctx, payload)
+	if err != nil {
+		return nil, err
+	}
+
+	return &pb.CreateProductVariantResponse{
+		VariantId: variantID,
+	}, nil
+
 }

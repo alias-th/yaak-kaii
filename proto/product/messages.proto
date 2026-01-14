@@ -25,6 +25,16 @@ message CreateCategoryRequest {
   repeated CategoryAttribute attributes  = 3; // List of category attributes
 }
 
+message CreateProductVariantRequest {
+  string              product_id = 1; // ID of the product to which the variant belongs
+  double              price      = 2; // Price of the variant
+  int32               stock      = 3; // Available stock for the variant
+  map<string, string> attributes = 4; // Variant-specific attributes
+}
+message CreateProductVariantResponse {
+  string variant_id = 1; // ID of the newly created product variant
+}
+
 message CreateCategoryResponse {
   string category_id = 1; // ID of the newly created category
 
@@ -57,6 +67,7 @@ message UploadProductImagesRequest {
   string          product_id = 1; // ID of the product
   repeated string image_urls = 2; // List of image URLs to upload
 }
+
 message UploadProductImagesResponse {
   bool success = 1; // Indicates if the upload was successful
 }
@@ -64,6 +75,7 @@ message UploadProductImagesResponse {
 message GetProductByIDRequest {
   string product_id = 1; // ID of the product to retrieve
 }
+
 message GetProductByIDResponse {
   Product product = 1; // Product details
 }

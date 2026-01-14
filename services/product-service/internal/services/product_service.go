@@ -17,22 +17,11 @@ type ProductService struct {
 	grpcClients *grpcclients.GrpcClients
 }
 
-type CreateProductPayload struct {
-	UserId       string  // ID of the user creating the product
-	Name         string  // Product name
-	Description  string  // Product description
-	Price        float64 // Product price
-	CategoryId   string  // Product category
-	Stock        int32   // Available stock quantity
-	Attributes   map[string]string
-	CategoryName string
-}
-
 func NewProductService(repo repositories.ProductRepository, grpcClients *grpcclients.GrpcClients) *ProductService {
 	return &ProductService{repo: repo, grpcClients: grpcClients}
 }
 
-func (s *ProductService) CreateProduct(ctx context.Context, product *CreateProductPayload) (string, error) {
+func (s *ProductService) CreateProduct(ctx context.Context, product *types.CreateProductPayload) (string, error) {
 	shop, err := s.grpcClients.Auth.Client.GetShopUser(ctx, &auth.GetShopRequest{UserId: product.UserId})
 	if err != nil {
 		return "", err
@@ -96,4 +85,18 @@ func (s *ProductService) UploadProductImages(ctx context.Context, productID stri
 		return err
 	}
 	return nil
+}
+
+func (s *ProductService) CreateProductVariant(ctx context.Context, payload *types.CreateProductVariantPayload) (string, error) {
+	variantID, err := s.repo.CreateProductVariant(ctx, &types.CreateProductVariantPayload{
+		ProductID:  payload.ProductID,
+		Price:      payload.Price,
+		Stock:      payload.Stock,
+		Attributes: payload.Attributes,
+	})
+	if err != nil {
+		return "", err
+	}
+
+	return variantID, nil
 }

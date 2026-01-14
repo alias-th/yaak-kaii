@@ -2,6 +2,8 @@ package repositories
 
 import (
 	"context"
+	"errors"
+	"sort"
 	"strconv"
 	"strings"
 	"yaak-kaii/services/product-service/internal/models"
@@ -15,6 +17,7 @@ import (
 
 type ProductRepository interface {
 	CreateProductTx(ctx context.Context, payload *CreateProductPayload) (string, error)
+	CreateProductVariant(ctx context.Context, payload *types.CreateProductVariantPayload) (string, error)
 	ListProducts(ctx context.Context, query types.ListProductsReq) (*types.ListProductsRes, error)
 	GetProductByID(ctx context.Context, productID string) (*models.Product, error)
 	AddProductImages(ctx context.Context, productID string, imageUrls []string) error
@@ -200,4 +203,97 @@ func (o *productRepositoryImpl) AddProductImages(ctx context.Context, productID 
 		return err
 	}
 	return nil
+}
+
+func (o *productRepositoryImpl) CreateProductVariant(ctx context.Context, payload *types.CreateProductVariantPayload) (string, error) {
+	var variantID string
+	err := o.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
+		// load product
+		var p models.Product
+		if err := tx.First(&p, "id = ?", payload.ProductID).Error; err != nil {
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				return errors.New("product not found")
+			}
+			return err
+		}
+
+		// load variant axes
+		var attrs []models.CategoryAttribute
+		if err := tx.Where("category_id = ? AND scope = ?", p.CategoryID, "VARIANT").Order("axis_order ASC").Find(&attrs).Error; err != nil {
+			return err
+		}
+		if len(attrs) == 0 {
+			return errors.New("category has no variant attributes")
+		}
+		axes := make([]types.AxisDef, 0, len(attrs))
+		for _, a := range attrs {
+			opts, err := utils.ParseOptionsAsSet(a.Options)
+			if err != nil {
+				return err
+			}
+			axes = append(axes, types.AxisDef{
+				Key:      a.Key,
+				Required: a.Required,
+				Options:  opts,
+				Order:    a.AxisOrder,
+			})
+		}
+		sort.Slice(axes, func(i, j int) bool { return axes[i].Order < axes[j].Order })
+
+		// check unknown attributes
+		if err := utils.RejectUnknownKeys(payload.Attributes, axes); err != nil {
+			return err
+		}
+
+		// build variant key
+		varKey, err := utils.BuildVariantKeyAndValidate(payload.Attributes, axes)
+		if err != nil {
+			return err
+		}
+
+		// create sku
+		var c models.Category
+		if err := tx.First(&c, "id = ?", p.CategoryID).Error; err != nil {
+			return err
+		}
+		var nextNo int
+		if err := tx.Raw(`
+		SELECT COALESCE(pv.variant_no, 0) + 1
+		FROM product_variants pv
+		WHERE pv.product_id = ?;
+		`, p.ID).Scan(&nextNo).Error; err != nil {
+			return err
+		}
+		sku := utils.GenerateSKU(c.Name, payload.Attributes["color"], payload.Attributes["size"], nextNo)
+
+		// Convert map[string]string to bytes
+		attByte, err := payload.Attributes.Value()
+		if err != nil {
+			return err
+		}
+
+		// create variant
+		variant := &models.ProductVariant{
+			ProductID:  p.ID,
+			Sku:        sku,
+			Price:      payload.Price,
+			Stock:      int(payload.Stock),
+			Attributes: attByte,
+			VariantNo:  nextNo,
+			VariantKey: varKey,
+		}
+		if err := tx.Create(variant).Error; err != nil {
+			return err
+		}
+
+		variantID = variant.ID.String()
+
+		return nil
+	})
+
+	if err != nil {
+		return "", err
+	}
+
+	return variantID, nil
 }
