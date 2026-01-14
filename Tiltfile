@@ -161,3 +161,31 @@ docker_build_with_restart(
 k8s_yaml('./infra/development/k8s/order-service-deployment.yaml')
 k8s_resource('order-service', resource_deps=['order-service-compile'], labels="services")
 ### End OF ORDER SERVICE ###
+
+
+### Web Public Frontend ###
+
+docker_build(
+  'yaak-kaii/web-public',
+  '.',
+  dockerfile='./infra/development/docker/web-public.Dockerfile',
+)
+
+k8s_yaml('./infra/development/k8s/web-public-deployment.yaml')
+k8s_resource('web-public', port_forwards=3000, labels="frontend")
+
+### End of Web Public Frontend ###
+
+
+### Web Admin Frontend ###
+
+docker_build(
+  'yaak-kaii/web-admin',
+  '.',
+  dockerfile='./infra/development/docker/web-admin.Dockerfile',
+)
+
+k8s_yaml('./infra/development/k8s/web-admin-deployment.yaml')
+k8s_resource('web-admin', port_forwards=3001, labels="frontend")
+
+### End of Web Admin Frontend ###
