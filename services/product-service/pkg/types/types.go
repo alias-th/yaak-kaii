@@ -9,6 +9,12 @@ import (
 	"github.com/google/uuid"
 )
 
+type ListSellerProductsReq struct {
+	UserID string
+	Limit  int32
+	Page   int32
+	Sort   string
+}
 type ListProductsReq struct {
 	Q           string
 	CategoryIds []string

@@ -50,8 +50,31 @@ func (s *ProductService) CreateProduct(ctx context.Context, product *types.Creat
 	return productId, nil
 }
 
-func (s *ProductService) ListProducts(ctx context.Context, query types.ListProductsReq) (*types.ListProductsRes, error) {
-	products, err := s.repo.ListProducts(ctx, query)
+func (s *ProductService) ListSellerProducts(ctx context.Context, query types.ListSellerProductsReq) (*types.ListProductsRes, error) {
+	shop, err := s.grpcClients.Auth.Client.GetShopUser(ctx, &auth.GetShopRequest{UserId: query.UserID})
+	if err != nil {
+		return nil, err
+	}
+	shopID, err := uuid.Parse(shop.Id)
+	if err != nil {
+		return nil, err
+	}
+
+	products, err := s.repo.ListSellerProducts(ctx, repositories.ListSellerProductsReq{
+		ShopID: shopID,
+		Limit:  query.Limit,
+		Page:   query.Page,
+		Sort:   query.Sort,
+	})
+
+	if err != nil {
+		return nil, err
+	}
+	return products, nil
+}
+
+func (s *ProductService) ListBuyerProducts(ctx context.Context, query types.ListProductsReq) (*types.ListProductsRes, error) {
+	products, err := s.repo.ListBuyerProducts(ctx, query)
 	if err != nil {
 		return nil, err
 	}

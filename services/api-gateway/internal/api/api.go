@@ -40,23 +40,25 @@ func (app *Application) Run() {
 		auth := v1.Group("/authentication")
 		{
 			auth.POST("/users", app.createUser)
-			auth.POST("/guest", app.createGuest)
 			auth.POST("/login", app.login)
 			auth.POST("/rotate-token", app.rotateToken)
 		}
 
-		seller := v1.Group("/seller").Use(app.sellerMiddleware())
+		admin := v1.Group("/admin").Use(app.adminMiddleware())
 		{
-			seller.GET("/:shopId/products/:slug", app.getProductDetails)
-			seller.POST("/products", app.createProduct)
-			seller.POST("/products/:id/images", app.uploadProductImages)
-			seller.POST("/products/:id/variant", app.createProductVariant)
-			seller.POST("/categories", app.createCategory)
+			admin.GET("/products", app.listSellerProducts)
+			admin.GET("/:shopId/products/:slug", app.getProductDetails)
+			admin.POST("/products", app.createProduct)
+			admin.POST("/products/:id/images", app.uploadProductImages)
+			admin.POST("/products/:id/variant", app.createProductVariant)
+			admin.POST("/categories", app.createCategory)
 		}
 
 		buyer := v1.Group("/buyer")
 		{
 			buyer.GET("/products", app.listProducts)
+			buyer.GET("/:shopId/products/:slug", app.getProductDetails)
+
 		}
 
 	}

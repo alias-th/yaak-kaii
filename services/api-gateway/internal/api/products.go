@@ -59,7 +59,7 @@ func (app *Application) listProducts(ctx *gin.Context) {
 		minPrice = *listProducts.MinPrice
 	}
 
-	res, err := app.GrpcClients.Product.Client.ListProducts(ctx, &product.ListProductsRequest{
+	res, err := app.GrpcClients.Product.Client.ListBuyerProducts(ctx, &product.ListBuyerProductsRequest{
 		Q:           listProducts.Q,
 		Limit:       listProducts.Limit,
 		Page:        listProducts.Page,
@@ -301,4 +301,72 @@ func (app *Application) getProductDetails(c *gin.Context) {
 	c.JSON(http.StatusOK, contracts.APIResponse{
 		Data: res,
 	})
+}
+
+func (app *Application) listSellerProducts(c *gin.Context) {
+	userID := c.GetString("user_id")
+	var listProducts types.ListSellerProductsRequest
+	if err := c.ShouldBindQuery(&listProducts); err != nil {
+		app.responseWithError(c, 400, err)
+		return
+	}
+
+	res, err := app.GrpcClients.Product.Client.ListSellerProducts(c, &product.ListSellerProductsRequest{
+		UserId: userID,
+		Page:   listProducts.Page,
+		Limit:  listProducts.Limit,
+		Sort:   listProducts.Sort,
+	})
+	if err != nil {
+		app.responseWithError(c, http.StatusInternalServerError, err)
+		return
+	}
+
+	products := []types.ProductResponse{}
+	for _, p := range res.Products {
+		variants := []types.ProductVariant{}
+		for _, v := range p.Variants {
+			variants = append(variants, types.ProductVariant{
+				SKU:        v.Sku,
+				Price:      v.Price,
+				Stock:      v.Stock,
+				Attributes: v.Attributes,
+			})
+		}
+		products = append(products, types.ProductResponse{
+			ID:          p.Id,
+			Name:        p.Name,
+			ShopID:      p.ShopId,
+			Description: p.Description,
+			Status:      p.Status,
+			Slug:        p.Slug,
+			Variants:    variants,
+			Images:      p.Images,
+			Category: types.ProductCategory{
+				CategoryID: p.Category.CategoryId,
+				Name:       p.Category.Name,
+			},
+		})
+	}
+
+	pagination := types.Pagination{
+		Page:     res.Pagination.Page,
+		Limit:    res.Pagination.Limit,
+		Total:    res.Pagination.Total,
+		LastPage: res.Pagination.LastPage,
+		NextPage: res.Pagination.NextPage,
+		PrevPage: res.Pagination.PrevPage,
+		HasNext:  res.Pagination.HasNext,
+		HasPrev:  res.Pagination.HasPrev,
+	}
+
+	mapRes := contracts.APIResponse{
+		Data: types.ListProductResponse{
+			Products:   products,
+			Pagination: pagination,
+		},
+	}
+
+	c.JSON(200, mapRes)
+
 }

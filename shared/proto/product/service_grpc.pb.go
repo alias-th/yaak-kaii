@@ -22,7 +22,8 @@ const (
 	ProductService_CreateProduct_FullMethodName        = "/product.ProductService/CreateProduct"
 	ProductService_CreateProductVariant_FullMethodName = "/product.ProductService/CreateProductVariant"
 	ProductService_CreateCategory_FullMethodName       = "/product.ProductService/CreateCategory"
-	ProductService_ListProducts_FullMethodName         = "/product.ProductService/ListProducts"
+	ProductService_ListBuyerProducts_FullMethodName    = "/product.ProductService/ListBuyerProducts"
+	ProductService_ListSellerProducts_FullMethodName   = "/product.ProductService/ListSellerProducts"
 	ProductService_GetProductByID_FullMethodName       = "/product.ProductService/GetProductByID"
 	ProductService_GetProductBySlug_FullMethodName     = "/product.ProductService/GetProductBySlug"
 	ProductService_UploadProductImages_FullMethodName  = "/product.ProductService/UploadProductImages"
@@ -41,7 +42,9 @@ type ProductServiceClient interface {
 	// CreateCategory creates a new product category with the provided details.
 	CreateCategory(ctx context.Context, in *CreateCategoryRequest, opts ...grpc.CallOption) (*CreateCategoryResponse, error)
 	// ListProducts retrieves a list of products based on the provided filters.
-	ListProducts(ctx context.Context, in *ListProductsRequest, opts ...grpc.CallOption) (*ListProductsResponse, error)
+	ListBuyerProducts(ctx context.Context, in *ListBuyerProductsRequest, opts ...grpc.CallOption) (*ListBuyerProductsResponse, error)
+	// ListSellerProducts retrieves a list of products for a specific seller.
+	ListSellerProducts(ctx context.Context, in *ListSellerProductsRequest, opts ...grpc.CallOption) (*ListSellerProductsResponse, error)
 	// GetProduct retrieves detailed information about a specific product by its ID.
 	GetProductByID(ctx context.Context, in *GetProductByIDRequest, opts ...grpc.CallOption) (*GetProductByIDResponse, error)
 	// GetProductBySlug retrieves detailed information about a specific product by its slug.
@@ -88,10 +91,20 @@ func (c *productServiceClient) CreateCategory(ctx context.Context, in *CreateCat
 	return out, nil
 }
 
-func (c *productServiceClient) ListProducts(ctx context.Context, in *ListProductsRequest, opts ...grpc.CallOption) (*ListProductsResponse, error) {
+func (c *productServiceClient) ListBuyerProducts(ctx context.Context, in *ListBuyerProductsRequest, opts ...grpc.CallOption) (*ListBuyerProductsResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(ListProductsResponse)
-	err := c.cc.Invoke(ctx, ProductService_ListProducts_FullMethodName, in, out, cOpts...)
+	out := new(ListBuyerProductsResponse)
+	err := c.cc.Invoke(ctx, ProductService_ListBuyerProducts_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *productServiceClient) ListSellerProducts(ctx context.Context, in *ListSellerProductsRequest, opts ...grpc.CallOption) (*ListSellerProductsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ListSellerProductsResponse)
+	err := c.cc.Invoke(ctx, ProductService_ListSellerProducts_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -141,7 +154,9 @@ type ProductServiceServer interface {
 	// CreateCategory creates a new product category with the provided details.
 	CreateCategory(context.Context, *CreateCategoryRequest) (*CreateCategoryResponse, error)
 	// ListProducts retrieves a list of products based on the provided filters.
-	ListProducts(context.Context, *ListProductsRequest) (*ListProductsResponse, error)
+	ListBuyerProducts(context.Context, *ListBuyerProductsRequest) (*ListBuyerProductsResponse, error)
+	// ListSellerProducts retrieves a list of products for a specific seller.
+	ListSellerProducts(context.Context, *ListSellerProductsRequest) (*ListSellerProductsResponse, error)
 	// GetProduct retrieves detailed information about a specific product by its ID.
 	GetProductByID(context.Context, *GetProductByIDRequest) (*GetProductByIDResponse, error)
 	// GetProductBySlug retrieves detailed information about a specific product by its slug.
@@ -167,8 +182,11 @@ func (UnimplementedProductServiceServer) CreateProductVariant(context.Context, *
 func (UnimplementedProductServiceServer) CreateCategory(context.Context, *CreateCategoryRequest) (*CreateCategoryResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method CreateCategory not implemented")
 }
-func (UnimplementedProductServiceServer) ListProducts(context.Context, *ListProductsRequest) (*ListProductsResponse, error) {
-	return nil, status.Error(codes.Unimplemented, "method ListProducts not implemented")
+func (UnimplementedProductServiceServer) ListBuyerProducts(context.Context, *ListBuyerProductsRequest) (*ListBuyerProductsResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ListBuyerProducts not implemented")
+}
+func (UnimplementedProductServiceServer) ListSellerProducts(context.Context, *ListSellerProductsRequest) (*ListSellerProductsResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ListSellerProducts not implemented")
 }
 func (UnimplementedProductServiceServer) GetProductByID(context.Context, *GetProductByIDRequest) (*GetProductByIDResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method GetProductByID not implemented")
@@ -254,20 +272,38 @@ func _ProductService_CreateCategory_Handler(srv interface{}, ctx context.Context
 	return interceptor(ctx, in, info, handler)
 }
 
-func _ProductService_ListProducts_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ListProductsRequest)
+func _ProductService_ListBuyerProducts_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListBuyerProductsRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ProductServiceServer).ListProducts(ctx, in)
+		return srv.(ProductServiceServer).ListBuyerProducts(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: ProductService_ListProducts_FullMethodName,
+		FullMethod: ProductService_ListBuyerProducts_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ProductServiceServer).ListProducts(ctx, req.(*ListProductsRequest))
+		return srv.(ProductServiceServer).ListBuyerProducts(ctx, req.(*ListBuyerProductsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ProductService_ListSellerProducts_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListSellerProductsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ProductServiceServer).ListSellerProducts(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ProductService_ListSellerProducts_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ProductServiceServer).ListSellerProducts(ctx, req.(*ListSellerProductsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -346,8 +382,12 @@ var ProductService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _ProductService_CreateCategory_Handler,
 		},
 		{
-			MethodName: "ListProducts",
-			Handler:    _ProductService_ListProducts_Handler,
+			MethodName: "ListBuyerProducts",
+			Handler:    _ProductService_ListBuyerProducts_Handler,
+		},
+		{
+			MethodName: "ListSellerProducts",
+			Handler:    _ProductService_ListSellerProducts_Handler,
 		},
 		{
 			MethodName: "GetProductByID",

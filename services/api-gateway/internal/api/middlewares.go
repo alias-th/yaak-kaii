@@ -24,7 +24,7 @@ func (app *Application) guestMiddleware() gin.HandlerFunc {
 	}
 }
 
-func (app *Application) sellerMiddleware() gin.HandlerFunc {
+func (app *Application) adminMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// Check for Authorization header
 		authHeader := c.GetHeader("Authorization")

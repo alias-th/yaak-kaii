@@ -39,19 +39,15 @@ func (s *ProductGRPCServer) CreateProduct(ctx context.Context, req *pb.CreatePro
 		ProductId: productId,
 	}, nil
 }
-
-func (s *ProductGRPCServer) ListProducts(ctx context.Context, req *pb.ListProductsRequest) (*pb.ListProductsResponse, error) {
-	payload := types.ListProductsReq{
-		Q:           req.GetQ(),
-		CategoryIds: req.GetCategoryIds(),
-		MinPrice:    req.GetMinPrice(),
-		MaxPrice:    req.GetMaxPrice(),
-		Limit:       req.GetLimit(),
-		Page:        req.GetPage(),
-		Sort:        req.GetSort(),
+func (s *ProductGRPCServer) ListSellerProducts(ctx context.Context, req *pb.ListSellerProductsRequest) (*pb.ListSellerProductsResponse, error) {
+	payload := types.ListSellerProductsReq{
+		UserID: req.GetUserId(),
+		Limit:  req.GetLimit(),
+		Page:   req.GetPage(),
+		Sort:   req.GetSort(),
 	}
 
-	products, err := s.productService.ListProducts(ctx, payload)
+	products, err := s.productService.ListSellerProducts(ctx, payload)
 	if err != nil {
 		return nil, err
 	}
@@ -103,7 +99,85 @@ func (s *ProductGRPCServer) ListProducts(ctx context.Context, req *pb.ListProduc
 		prevPage = int32(*products.Pagination.PrevPage)
 	}
 
-	return &pb.ListProductsResponse{
+	return &pb.ListSellerProductsResponse{
+		Products: productRes,
+		Pagination: &pb.Pagination{
+			Limit:    int32(products.Pagination.PageSize),
+			Page:     int32(products.Pagination.Page),
+			Total:    int32(products.Pagination.Total),
+			LastPage: int32(products.Pagination.LastPage),
+			NextPage: nextPage,
+			PrevPage: prevPage,
+			HasNext:  products.Pagination.HasNext,
+			HasPrev:  products.Pagination.HasPrev,
+		},
+	}, nil
+}
+
+func (s *ProductGRPCServer) ListBuyerProducts(ctx context.Context, req *pb.ListBuyerProductsRequest) (*pb.ListBuyerProductsResponse, error) {
+	payload := types.ListProductsReq{
+		Q:           req.GetQ(),
+		CategoryIds: req.GetCategoryIds(),
+		MinPrice:    req.GetMinPrice(),
+		MaxPrice:    req.GetMaxPrice(),
+		Limit:       req.GetLimit(),
+		Page:        req.GetPage(),
+		Sort:        req.GetSort(),
+	}
+
+	products, err := s.productService.ListBuyerProducts(ctx, payload)
+	if err != nil {
+		return nil, err
+	}
+
+	productRes := []*pb.Product{}
+	for _, p := range products.Products {
+		variants := []*pb.ProductVariant{}
+		for _, v := range p.Variants {
+			att, err := v.Attributes.Value()
+			if err != nil {
+				log.Println(err)
+				return nil, err
+			}
+
+			variants = append(variants, &pb.ProductVariant{
+				Sku:        v.Sku,
+				Price:      v.Price,
+				Stock:      int32(v.Stock),
+				Attributes: att,
+			})
+		}
+		images := []string{}
+		for _, img := range p.Images {
+			images = append(images, img.ImageURL)
+		}
+
+		productRes = append(productRes, &pb.Product{
+			Id:          p.ID.String(),
+			Name:        p.Name,
+			ShopId:      p.ShopID.String(),
+			Description: p.Description,
+			Status:      p.Status,
+			Slug:        p.Slug,
+			Variants:    variants,
+			Images:      images,
+			Category: &pb.ProductCategory{
+				CategoryId: p.Category.ID.String(),
+				Name:       p.Category.Name,
+			},
+		})
+	}
+
+	nextPage := int32(0)
+	prevPage := int32(0)
+	if products.Pagination.NextPage != nil {
+		nextPage = int32(*products.Pagination.NextPage)
+	}
+	if products.Pagination.PrevPage != nil {
+		prevPage = int32(*products.Pagination.PrevPage)
+	}
+
+	return &pb.ListBuyerProductsResponse{
 		Products: productRes,
 		Pagination: &pb.Pagination{
 			Limit:    int32(products.Pagination.PageSize),

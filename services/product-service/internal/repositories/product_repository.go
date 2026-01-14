@@ -19,7 +19,8 @@ import (
 type ProductRepository interface {
 	CreateProductTx(ctx context.Context, payload *CreateProductPayload) (string, error)
 	CreateProductVariant(ctx context.Context, payload *types.CreateProductVariantPayload) (string, error)
-	ListProducts(ctx context.Context, query types.ListProductsReq) (*types.ListProductsRes, error)
+	ListBuyerProducts(ctx context.Context, query types.ListProductsReq) (*types.ListProductsRes, error)
+	ListSellerProducts(ctx context.Context, q ListSellerProductsReq) (*types.ListProductsRes, error)
 	GetProductByID(ctx context.Context, productID string) (*models.Product, error)
 	GetProductBySlug(ctx context.Context, shopID string, slug string) (*types.ProductDetailResponse, error)
 	AddProductImages(ctx context.Context, productID string, imageUrls []string) error
@@ -66,7 +67,49 @@ func (o *productRepositoryImpl) CreateProductTx(ctx context.Context, payload *Cr
 	return productId, nil
 }
 
-func (o *productRepositoryImpl) ListProducts(ctx context.Context, q types.ListProductsReq) (*types.ListProductsRes, error) {
+type ListSellerProductsReq struct {
+	ShopID uuid.UUID
+	Limit  int32
+	Page   int32
+	Sort   string
+}
+
+func (o *productRepositoryImpl) ListSellerProducts(ctx context.Context, q ListSellerProductsReq) (*types.ListProductsRes, error) {
+	if q.Page < 1 {
+		q.Page = 1
+	}
+	if q.Limit < 1 || q.Limit > 100 {
+		q.Limit = 20
+	}
+	offset := int((q.Page - 1) * q.Limit)
+	base := o.db.WithContext(ctx).Model(&models.Product{})
+	base = base.Where("shop_id = ?", q.ShopID)
+	var total int64
+	if err := base.Session(&gorm.Session{}).Count(&total).Error; err != nil {
+		return nil, err
+	}
+
+	var products []models.Product
+	if err := base.Session(&gorm.Session{}).
+		Order(utils.ProductOrder(q.Sort)).
+		Limit(int(q.Limit)).
+		Offset(offset).
+		Preload("Category").
+		Preload("Variants").
+		Preload("Images", func(d *gorm.DB) *gorm.DB { return d.Order("created_at ASC") }).
+		Find(&products).Error; err != nil {
+		return nil, err
+	}
+
+	pagination := utils.NewPagination(int(q.Page), int(q.Limit), total)
+	return &types.ListProductsRes{
+		Products:   products,
+		Pagination: *pagination,
+	}, nil
+
+}
+
+func (o *productRepositoryImpl) ListBuyerProducts(ctx context.Context, q types.ListProductsReq) (*types.ListProductsRes, error) {
 	if q.Page < 1 {
 		q.Page = 1
 	}

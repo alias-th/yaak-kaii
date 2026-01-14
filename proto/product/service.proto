@@ -18,7 +18,10 @@ service ProductService {
   rpc CreateCategory(CreateCategoryRequest) returns (CreateCategoryResponse);
 
   // ListProducts retrieves a list of products based on the provided filters.
-  rpc ListProducts(ListProductsRequest) returns (ListProductsResponse);
+  rpc ListBuyerProducts(ListBuyerProductsRequest) returns (ListBuyerProductsResponse);
+
+  // ListSellerProducts retrieves a list of products for a specific seller.
+  rpc ListSellerProducts(ListSellerProductsRequest) returns (ListSellerProductsResponse);
 
   // GetProduct retrieves detailed information about a specific product by its ID.
   rpc GetProductByID(GetProductByIDRequest) returns (GetProductByIDResponse);

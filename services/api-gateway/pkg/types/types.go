@@ -53,6 +53,17 @@ type TokenResponse struct {
 	ExpiresIn    int64  `json:"expires_in"`
 }
 
+type ListSellerProductsRequest struct {
+	Page  int32  `form:"page,default=1"`
+	Limit int32  `form:"limit,default=20"`
+	Sort  string `form:"sort,default=newest"`
+}
+
+type ListSellerProductsResponse struct {
+	Products   []ProductResponse `json:"products"`
+	Pagination Pagination        `json:"pagination"`
+}
+
 type ListProductRequest struct {
 	Q          string   `form:"q"`
 	CategoryID []string `form:"category_id"`
