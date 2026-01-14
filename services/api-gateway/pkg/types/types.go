@@ -1,5 +1,11 @@
 package types
 
+import (
+	"time"
+
+	"github.com/google/uuid"
+)
+
 type CreateProductRequest struct {
 	Name        string            `json:"name" binding:"required"`
 	Description string            `json:"description" binding:"required"`
@@ -107,4 +113,39 @@ type CreateProductVariantRequest struct {
 
 type CreateProductVariantResponse struct {
 	VariantID string `json:"variant_id"`
+}
+
+type ProductDetailResponse struct {
+	Product struct {
+		ID          uuid.UUID `json:"id"`
+		ShopID      uuid.UUID `json:"shop_id"`
+		CategoryID  uuid.UUID `json:"category_id"`
+		Name        string    `json:"name"`
+		Slug        string    `json:"slug"`
+		Description string    `json:"description"`
+		Status      string    `json:"status"`
+		CreatedAt   time.Time `json:"created_at"`
+	} `json:"product"`
+
+	Axes     []AxisDTO    `json:"axes"`
+	Variants []VariantDTO `json:"variants"`
+	Images   []string     `json:"images"`
+}
+
+type AxisDTO struct {
+	Key      string   `json:"key"`
+	Label    string   `json:"label"`
+	Type     string   `json:"type"`
+	Required bool     `json:"required"`
+	Options  []string `json:"options"`
+	Order    int      `json:"order"`
+}
+
+type VariantDTO struct {
+	ID         uuid.UUID         `json:"id"`
+	SKU        string            `json:"sku"`
+	Price      float64           `json:"price"`
+	Stock      int32             `json:"stock"`
+	Attributes map[string]string `json:"attributes"`
+	VariantKey string            `json:"variant_key,omitempty"`
 }

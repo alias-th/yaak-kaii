@@ -3,6 +3,7 @@ package grpcserver
 import (
 	"context"
 	"log"
+	"time"
 	"yaak-kaii/services/product-service/internal/services"
 	"yaak-kaii/services/product-service/pkg/types"
 	pb "yaak-kaii/shared/proto/product"
@@ -174,4 +175,52 @@ func (s *ProductGRPCServer) CreateProductVariant(ctx context.Context, req *pb.Cr
 		VariantId: variantID,
 	}, nil
 
+}
+
+func (s *ProductGRPCServer) GetProductBySlug(ctx context.Context, req *pb.GetProductBySlugRequest) (*pb.GetProductBySlugResponse, error) {
+	productDetail, err := s.productService.GetProductBySlug(ctx, req.GetShopId(), req.GetSlug())
+	if err != nil {
+		return nil, err
+	}
+
+	product := &pb.ProductDetails{
+		Id:          productDetail.Product.ID.String(),
+		ShopId:      productDetail.Product.ShopID.String(),
+		Name:        productDetail.Product.Name,
+		Description: productDetail.Product.Description,
+		Status:      productDetail.Product.Status,
+		CategoryId:  productDetail.Product.CategoryID.String(),
+		CreatedAt:   productDetail.Product.CreatedAt.Format(time.RFC3339),
+		Slug:        productDetail.Product.Slug,
+	}
+	axes := make([]*pb.AxisDTO, 0, len(productDetail.Axes))
+	for _, a := range productDetail.Axes {
+		axes = append(axes, &pb.AxisDTO{
+			Key:      a.Key,
+			Label:    a.Label,
+			Type:     a.Type,
+			Required: a.Required,
+			Options:  a.Options,
+			Order:    int32(a.Order),
+		})
+	}
+	variants := make([]*pb.VariantDTO, 0, len(productDetail.Variants))
+	for _, v := range productDetail.Variants {
+		variants = append(variants, &pb.VariantDTO{
+			Id:         v.ID.String(),
+			Sku:        v.SKU,
+			Price:      v.Price,
+			Stock:      v.Stock,
+			Attributes: v.Attributes,
+			VariantKey: v.VariantKey,
+		})
+	}
+	res := &pb.GetProductBySlugResponse{
+		Product:  product,
+		Images:   productDetail.Images,
+		Axes:     axes,
+		Variants: variants,
+	}
+
+	return res, nil
 }

@@ -31,6 +31,7 @@ message CreateProductVariantRequest {
   int32               stock      = 3; // Available stock for the variant
   map<string, string> attributes = 4; // Variant-specific attributes
 }
+
 message CreateProductVariantResponse {
   string variant_id = 1; // ID of the newly created product variant
 }
@@ -78,6 +79,47 @@ message GetProductByIDRequest {
 
 message GetProductByIDResponse {
   Product product = 1; // Product details
+}
+
+message GetProductBySlugRequest {
+  string shop_id = 1; // ID of the shop
+  string slug    = 2; // Slug of the product
+}
+
+message GetProductBySlugResponse {
+  ProductDetails      product  = 1; // Product details
+  repeated AxisDTO    axes     = 2; // Product axes information
+  repeated VariantDTO variants = 3; // Product variant information
+  repeated string     images   = 4; // List of product image URLs
+}
+
+message ProductDetails{
+  string id          = 1; // Product ID
+  string shop_id     = 2; // Shop ID
+  string category_id = 3; // Category ID
+  string name        = 4; // Product name'
+  string slug        = 5; // Product slug
+  string description = 6; // Product description
+  string status      = 7; // Product status (e.g., active, inactive)
+  string created_at  = 8; // Creation timestamp
+}
+
+message AxisDTO{
+  string          key      = 1; // Axis key
+  string          label    = 2; // Axis label
+  string          type     = 3; // Axis type (e.g., string, number)
+  bool            required = 4; // Whether the axis is required
+  repeated string options  = 5; // Options for the axis (if applicable)
+  int32           order    = 6; // Order of the axis
+}
+
+message VariantDTO{
+  string              id          = 1; // Variant ID
+  string              sku         = 2; // Stock Keeping Unit
+  double              price       = 3; // Variant price
+  int32               stock       = 4; // Available stock for the variant
+  map<string, string> attributes  = 5; // Variant-specific attributes
+  string              variant_key = 6; // Variant key
 }
 
 message Product{

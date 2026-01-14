@@ -47,6 +47,7 @@ func (app *Application) Run() {
 
 		seller := v1.Group("/seller").Use(app.sellerMiddleware())
 		{
+			seller.GET("/:shopId/products/:slug", app.getProductDetails)
 			seller.POST("/products", app.createProduct)
 			seller.POST("/products/:id/images", app.uploadProductImages)
 			seller.POST("/products/:id/variant", app.createProductVariant)

@@ -100,3 +100,12 @@ func (s *ProductService) CreateProductVariant(ctx context.Context, payload *type
 
 	return variantID, nil
 }
+
+func (s *ProductService) GetProductBySlug(ctx context.Context, shopID string, slug string) (*types.ProductDetailResponse, error) {
+	productDetail, err := s.repo.GetProductBySlug(ctx, shopID, slug)
+	if err != nil {
+		return nil, err
+	}
+
+	return productDetail, nil
+}

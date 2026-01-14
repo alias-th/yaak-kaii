@@ -151,3 +151,23 @@ func NormValue(s string) string {
 	s = strings.Join(strings.Fields(s), " ") // collapse whitespace
 	return s
 }
+
+func ParseStringArrayOptions(raw datatypes.JSON) ([]string, error) {
+	if len(raw) == 0 {
+		return []string{}, nil
+	}
+	var arr []string
+	if err := json.Unmarshal([]byte(raw), &arr); err != nil {
+		return nil, err
+	}
+	// optional: trim
+	out := make([]string, 0, len(arr))
+	for _, s := range arr {
+		s = strings.TrimSpace(s)
+		if s == "" {
+			continue
+		}
+		out = append(out, s)
+	}
+	return out, nil
+}

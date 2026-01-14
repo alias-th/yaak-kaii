@@ -241,3 +241,66 @@ func (app *Application) createProductVariant(c *gin.Context) {
 	c.JSON(http.StatusCreated, res)
 
 }
+
+func (app *Application) getProductDetails(c *gin.Context) {
+	shopID := c.Param("shopId")
+	if shopID == "" {
+		app.responseWithError(c, http.StatusBadRequest, fmt.Errorf("invalid_shop_id"))
+		return
+	}
+
+	slug := strings.TrimSpace(c.Param("slug"))
+	if slug == "" {
+		app.responseWithError(c, http.StatusBadRequest, fmt.Errorf("invalid_slug"))
+		return
+	}
+
+	appRes, err := app.GrpcClients.Product.Client.GetProductBySlug(c, &product.GetProductBySlugRequest{
+		ShopId: shopID,
+		Slug:   slug,
+	})
+	if err != nil {
+		app.responseWithError(c, http.StatusInternalServerError, err)
+		return
+	}
+
+	var res types.ProductDetailResponse
+	res.Product.ID = uuid.MustParse(appRes.Product.Id)
+	res.Product.ShopID = uuid.MustParse(appRes.Product.ShopId)
+	res.Product.CategoryID = uuid.MustParse(appRes.Product.CategoryId)
+	res.Product.Name = appRes.Product.Name
+	res.Product.Slug = appRes.Product.Slug
+	res.Product.Description = appRes.Product.Description
+	res.Product.Status = appRes.Product.Status
+	res.Axes = make([]types.AxisDTO, 0, len(appRes.Axes))
+	for _, a := range appRes.Axes {
+		res.Axes = append(res.Axes, types.AxisDTO{
+			Key:      a.Key,
+			Label:    a.Label,
+			Type:     a.Type,
+			Required: a.Required,
+			Options:  a.Options,
+			Order:    int(a.Order),
+		})
+	}
+	res.Variants = make([]types.VariantDTO, 0, len(appRes.Variants))
+	for _, v := range appRes.Variants {
+		uuidV, err := uuid.Parse(v.Id)
+		if err != nil {
+			continue
+		}
+		res.Variants = append(res.Variants, types.VariantDTO{
+			ID:         uuidV,
+			SKU:        v.Sku,
+			Price:      v.Price,
+			Stock:      v.Stock,
+			Attributes: v.Attributes,
+			VariantKey: v.VariantKey,
+		})
+	}
+	res.Images = appRes.Images
+
+	c.JSON(http.StatusOK, contracts.APIResponse{
+		Data: res,
+	})
+}

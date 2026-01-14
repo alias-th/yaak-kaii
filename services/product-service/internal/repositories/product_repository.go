@@ -6,6 +6,7 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+	"time"
 	"yaak-kaii/services/product-service/internal/models"
 	"yaak-kaii/services/product-service/internal/utils"
 	"yaak-kaii/services/product-service/pkg/types"
@@ -20,6 +21,7 @@ type ProductRepository interface {
 	CreateProductVariant(ctx context.Context, payload *types.CreateProductVariantPayload) (string, error)
 	ListProducts(ctx context.Context, query types.ListProductsReq) (*types.ListProductsRes, error)
 	GetProductByID(ctx context.Context, productID string) (*models.Product, error)
+	GetProductBySlug(ctx context.Context, shopID string, slug string) (*types.ProductDetailResponse, error)
 	AddProductImages(ctx context.Context, productID string, imageUrls []string) error
 }
 
@@ -296,4 +298,103 @@ func (o *productRepositoryImpl) CreateProductVariant(ctx context.Context, payloa
 	}
 
 	return variantID, nil
+}
+
+func (o *productRepositoryImpl) GetProductBySlug(ctx context.Context, shopID string, slug string) (*types.ProductDetailResponse, error) {
+	shopUUID, err := uuid.Parse(shopID)
+	if err != nil {
+		return nil, err
+	}
+
+	// load product
+	var p models.Product
+	if err := o.db.WithContext(ctx).Where("shop_id = ? AND slug = ?", shopUUID, slug).First(&p).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, errors.New("product not found")
+		}
+		return nil, err
+	}
+
+	// load variant axes
+	var catAttrs []models.CategoryAttribute
+	if err := o.db.WithContext(ctx).
+		Where("category_id = ? AND scope = ?", p.CategoryID, "VARIANT").
+		Order("axis_order ASC").
+		Find(&catAttrs).Error; err != nil {
+		return nil, err
+	}
+	axes := make([]types.AxisDTO, 0, len(catAttrs))
+	for _, a := range catAttrs {
+		opts, err := utils.ParseStringArrayOptions(a.Options)
+		if err != nil {
+			return nil, err
+		}
+		axes = append(axes, types.AxisDTO{
+			Key:      a.Key,
+			Label:    a.Label,
+			Type:     a.Type,
+			Required: a.Required,
+			Options:  opts,
+			Order:    a.AxisOrder,
+		})
+	}
+
+	// load variants
+	var variants []models.ProductVariant
+	if err := o.db.WithContext(ctx).Where("product_id = ?", p.ID).Order("created_at ASC").Find(&variants).Error; err != nil {
+		return nil, err
+	}
+	var variantDTOs []types.VariantDTO
+	for _, v := range variants {
+		attrs, err := v.Attributes.Value()
+		if err != nil {
+			return nil, err
+		}
+		variantDTOs = append(variantDTOs, types.VariantDTO{
+			ID:         v.ID,
+			SKU:        v.Sku,
+			Price:      v.Price,
+			Stock:      int32(v.Stock),
+			Attributes: attrs,
+			VariantKey: v.VariantKey,
+		})
+	}
+
+	// load images
+	var images []models.ProductImage
+	if err := o.db.WithContext(ctx).Where("product_id = ?", p.ID).Order("created_at ASC").Find(&images).Error; err != nil {
+		return nil, err
+	}
+	imageUrls := make([]string, 0, len(images))
+	for _, img := range images {
+		imageUrls = append(imageUrls, img.ImageURL)
+	}
+
+	// build response
+	res := &types.ProductDetailResponse{
+		Product: struct {
+			ID          uuid.UUID
+			ShopID      uuid.UUID
+			CategoryID  uuid.UUID
+			Name        string
+			Slug        string
+			Description string
+			Status      string
+			CreatedAt   time.Time
+		}{
+			ID:          p.ID,
+			ShopID:      p.ShopID,
+			CategoryID:  p.CategoryID,
+			Name:        p.Name,
+			Slug:        p.Slug,
+			Description: p.Description,
+			Status:      p.Status,
+			CreatedAt:   p.CreatedAt,
+		},
+		Axes:     axes,
+		Variants: variantDTOs,
+		Images:   imageUrls,
+	}
+
+	return res, nil
 }

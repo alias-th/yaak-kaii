@@ -24,6 +24,7 @@ const (
 	ProductService_CreateCategory_FullMethodName       = "/product.ProductService/CreateCategory"
 	ProductService_ListProducts_FullMethodName         = "/product.ProductService/ListProducts"
 	ProductService_GetProductByID_FullMethodName       = "/product.ProductService/GetProductByID"
+	ProductService_GetProductBySlug_FullMethodName     = "/product.ProductService/GetProductBySlug"
 	ProductService_UploadProductImages_FullMethodName  = "/product.ProductService/UploadProductImages"
 )
 
@@ -43,6 +44,8 @@ type ProductServiceClient interface {
 	ListProducts(ctx context.Context, in *ListProductsRequest, opts ...grpc.CallOption) (*ListProductsResponse, error)
 	// GetProduct retrieves detailed information about a specific product by its ID.
 	GetProductByID(ctx context.Context, in *GetProductByIDRequest, opts ...grpc.CallOption) (*GetProductByIDResponse, error)
+	// GetProductBySlug retrieves detailed information about a specific product by its slug.
+	GetProductBySlug(ctx context.Context, in *GetProductBySlugRequest, opts ...grpc.CallOption) (*GetProductBySlugResponse, error)
 	// UploadProductImages uploads images for a specific product.
 	UploadProductImages(ctx context.Context, in *UploadProductImagesRequest, opts ...grpc.CallOption) (*UploadProductImagesResponse, error)
 }
@@ -105,6 +108,16 @@ func (c *productServiceClient) GetProductByID(ctx context.Context, in *GetProduc
 	return out, nil
 }
 
+func (c *productServiceClient) GetProductBySlug(ctx context.Context, in *GetProductBySlugRequest, opts ...grpc.CallOption) (*GetProductBySlugResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetProductBySlugResponse)
+	err := c.cc.Invoke(ctx, ProductService_GetProductBySlug_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *productServiceClient) UploadProductImages(ctx context.Context, in *UploadProductImagesRequest, opts ...grpc.CallOption) (*UploadProductImagesResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(UploadProductImagesResponse)
@@ -131,6 +144,8 @@ type ProductServiceServer interface {
 	ListProducts(context.Context, *ListProductsRequest) (*ListProductsResponse, error)
 	// GetProduct retrieves detailed information about a specific product by its ID.
 	GetProductByID(context.Context, *GetProductByIDRequest) (*GetProductByIDResponse, error)
+	// GetProductBySlug retrieves detailed information about a specific product by its slug.
+	GetProductBySlug(context.Context, *GetProductBySlugRequest) (*GetProductBySlugResponse, error)
 	// UploadProductImages uploads images for a specific product.
 	UploadProductImages(context.Context, *UploadProductImagesRequest) (*UploadProductImagesResponse, error)
 	mustEmbedUnimplementedProductServiceServer()
@@ -157,6 +172,9 @@ func (UnimplementedProductServiceServer) ListProducts(context.Context, *ListProd
 }
 func (UnimplementedProductServiceServer) GetProductByID(context.Context, *GetProductByIDRequest) (*GetProductByIDResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method GetProductByID not implemented")
+}
+func (UnimplementedProductServiceServer) GetProductBySlug(context.Context, *GetProductBySlugRequest) (*GetProductBySlugResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method GetProductBySlug not implemented")
 }
 func (UnimplementedProductServiceServer) UploadProductImages(context.Context, *UploadProductImagesRequest) (*UploadProductImagesResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method UploadProductImages not implemented")
@@ -272,6 +290,24 @@ func _ProductService_GetProductByID_Handler(srv interface{}, ctx context.Context
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ProductService_GetProductBySlug_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetProductBySlugRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ProductServiceServer).GetProductBySlug(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ProductService_GetProductBySlug_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ProductServiceServer).GetProductBySlug(ctx, req.(*GetProductBySlugRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _ProductService_UploadProductImages_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(UploadProductImagesRequest)
 	if err := dec(in); err != nil {
@@ -316,6 +352,10 @@ var ProductService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetProductByID",
 			Handler:    _ProductService_GetProductByID_Handler,
+		},
+		{
+			MethodName: "GetProductBySlug",
+			Handler:    _ProductService_GetProductBySlug_Handler,
 		},
 		{
 			MethodName: "UploadProductImages",

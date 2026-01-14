@@ -23,6 +23,9 @@ service ProductService {
   // GetProduct retrieves detailed information about a specific product by its ID.
   rpc GetProductByID(GetProductByIDRequest) returns (GetProductByIDResponse);
 
+  // GetProductBySlug retrieves detailed information about a specific product by its slug.
+  rpc GetProductBySlug(GetProductBySlugRequest) returns (GetProductBySlugResponse);
+
   // UploadProductImages uploads images for a specific product.
   rpc UploadProductImages(UploadProductImagesRequest) returns (UploadProductImagesResponse);
 }

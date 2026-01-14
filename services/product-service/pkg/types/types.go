@@ -3,7 +3,10 @@ package types
 import (
 	"encoding/json"
 	"errors"
+	"time"
 	"yaak-kaii/services/product-service/internal/models"
+
+	"github.com/google/uuid"
 )
 
 type ListProductsReq struct {
@@ -67,4 +70,39 @@ type AxisDef struct {
 	Required bool
 	Options  map[string]struct{} // set
 	Order    int
+}
+
+type ProductDetailResponse struct {
+	Product struct {
+		ID          uuid.UUID
+		ShopID      uuid.UUID
+		CategoryID  uuid.UUID
+		Name        string
+		Slug        string
+		Description string
+		Status      string
+		CreatedAt   time.Time
+	}
+
+	Axes     []AxisDTO
+	Variants []VariantDTO
+	Images   []string
+}
+
+type AxisDTO struct {
+	Key      string
+	Label    string
+	Type     string
+	Required bool
+	Options  []string
+	Order    int
+}
+
+type VariantDTO struct {
+	ID         uuid.UUID
+	SKU        string
+	Price      float64
+	Stock      int32
+	Attributes map[string]string
+	VariantKey string
 }
