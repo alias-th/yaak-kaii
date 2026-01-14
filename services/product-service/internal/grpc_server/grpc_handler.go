@@ -222,6 +222,27 @@ func (s *ProductGRPCServer) UploadProductImages(ctx context.Context, req *pb.Upl
 		Success: true,
 	}, nil
 }
+func (s *ProductGRPCServer) CreateProductVariants(ctx context.Context, req *pb.CreateProductVariantsRequest) (*pb.CreateProductVariantsResponse, error) {
+	variants := req.GetVariants()
+	payload := make([]types.CreateProductVariantPayload, 0, len(variants))
+	for _, v := range variants {
+		payload = append(payload, types.CreateProductVariantPayload{
+			Price:      v.GetPrice(),
+			Stock:      v.GetStock(),
+			Attributes: v.GetAttributes(),
+		})
+	}
+
+	ids, err := s.productService.CreateProductVariants(ctx, req.GetProductId(), payload)
+	if err != nil {
+		return nil, err
+	}
+
+	return &pb.CreateProductVariantsResponse{
+		VariantIds: ids,
+	}, nil
+
+}
 
 func (s *ProductGRPCServer) CreateProductVariant(ctx context.Context, req *pb.CreateProductVariantRequest) (*pb.CreateProductVariantResponse, error) {
 	payload := &types.CreateProductVariantPayload{

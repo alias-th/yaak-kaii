@@ -207,6 +207,44 @@ func (app *Application) uploadProductImages(c *gin.Context) {
 
 }
 
+func (app *Application) createProductVariants(c *gin.Context) {
+	var req types.CreateProductVariantsRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		app.responseWithError(c, http.StatusBadRequest, err)
+		return
+	}
+	productID := c.Param("id")
+	if strings.TrimSpace(productID) == "" {
+		app.responseWithError(c, http.StatusBadRequest, fmt.Errorf("product ID is required"))
+		return
+	}
+
+	payload := make([]*product.CreateProductVariantsPayload, 0, len(req.Variants))
+	for _, v := range req.Variants {
+		payload = append(payload, &product.CreateProductVariantsPayload{
+			Price:      v.Price,
+			Stock:      v.Stock,
+			Attributes: v.Attributes,
+		})
+	}
+
+	appRes, err := app.GrpcClients.Product.Client.CreateProductVariants(c, &product.CreateProductVariantsRequest{
+		ProductId: productID,
+		Variants:  payload,
+	})
+	if err != nil {
+		app.responseWithError(c, http.StatusInternalServerError, err)
+		return
+	}
+
+	res := contracts.APIResponse{
+		Data: types.CreateProductVariantsResponse{
+			VariantIDs: appRes.VariantIds,
+		},
+	}
+	c.JSON(http.StatusCreated, res)
+}
+
 func (app *Application) createProductVariant(c *gin.Context) {
 	var req types.CreateProductVariantRequest
 	if err := c.ShouldBindJSON(&req); err != nil {

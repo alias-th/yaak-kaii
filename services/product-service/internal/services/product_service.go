@@ -98,6 +98,14 @@ func (s *ProductService) UploadProductImages(ctx context.Context, productID stri
 	return nil
 }
 
+func (s *ProductService) CreateProductVariants(ctx context.Context, productID string, variants []types.CreateProductVariantPayload) ([]string, error) {
+	ids, err := s.repo.CreateProductVariants(ctx, productID, variants)
+	if err != nil {
+		return nil, err
+	}
+	return ids, nil
+}
+
 func (s *ProductService) CreateProductVariant(ctx context.Context, payload *types.CreateProductVariantPayload) (string, error) {
 	variantID, err := s.repo.CreateProductVariant(ctx, &types.CreateProductVariantPayload{
 		ProductID:  payload.ProductID,

@@ -22,6 +22,20 @@ message CreateCategoryRequest {
   repeated CategoryAttribute attributes  = 3; // List of category attributes
 }
 
+message CreateProductVariantsRequest {
+  string product_id = 1; // ID of the product to which the variants belong
+  repeated CreateProductVariantsPayload variants = 2; // List of product variants to create
+}
+message CreateProductVariantsResponse {
+  repeated string variant_ids = 1; // List of IDs of the newly created product variants
+}
+message CreateProductVariantsPayload {
+  double              price      = 2; // Price of the variant
+  int32               stock      = 3; // Available stock for the variant
+  map<string, string> attributes = 4; // Variant-specific attributes
+}
+
+
 message CreateProductVariantRequest {
   string              product_id = 1; // ID of the product to which the variant belongs
   double              price      = 2; // Price of the variant

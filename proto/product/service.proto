@@ -14,6 +14,9 @@ service ProductService {
   // CreateProductVariant creates a new product variant for an existing product.
   rpc CreateProductVariant(CreateProductVariantRequest) returns (CreateProductVariantResponse);
 
+  // CreateProductVariants creates multiple product variants for an existing product.
+  rpc CreateProductVariants(CreateProductVariantsRequest) returns (CreateProductVariantsResponse);
+
   // CreateCategory creates a new product category with the provided details.
   rpc CreateCategory(CreateCategoryRequest) returns (CreateCategoryResponse);
 

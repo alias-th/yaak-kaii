@@ -114,6 +114,13 @@ type Pagination struct {
 	HasPrev  bool  `json:"has_prev"`
 }
 
+type CreateProductVariantsRequest struct {
+	Variants []CreateProductVariantRequest `json:"variants" binding:"required,min=1,max=10"`
+}
+type CreateProductVariantsResponse struct {
+	VariantIDs []string `json:"variant_ids"`
+}
+
 type CreateProductVariantRequest struct {
 	Price      float64           `json:"price" binding:"required,gt=0"`
 	Stock      int32             `json:"stock" binding:"required,gte=0"`

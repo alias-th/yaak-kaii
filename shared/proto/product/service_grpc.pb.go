@@ -19,14 +19,15 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	ProductService_CreateProduct_FullMethodName        = "/product.ProductService/CreateProduct"
-	ProductService_CreateProductVariant_FullMethodName = "/product.ProductService/CreateProductVariant"
-	ProductService_CreateCategory_FullMethodName       = "/product.ProductService/CreateCategory"
-	ProductService_ListBuyerProducts_FullMethodName    = "/product.ProductService/ListBuyerProducts"
-	ProductService_ListSellerProducts_FullMethodName   = "/product.ProductService/ListSellerProducts"
-	ProductService_GetProductByID_FullMethodName       = "/product.ProductService/GetProductByID"
-	ProductService_GetProductBySlug_FullMethodName     = "/product.ProductService/GetProductBySlug"
-	ProductService_UploadProductImages_FullMethodName  = "/product.ProductService/UploadProductImages"
+	ProductService_CreateProduct_FullMethodName         = "/product.ProductService/CreateProduct"
+	ProductService_CreateProductVariant_FullMethodName  = "/product.ProductService/CreateProductVariant"
+	ProductService_CreateProductVariants_FullMethodName = "/product.ProductService/CreateProductVariants"
+	ProductService_CreateCategory_FullMethodName        = "/product.ProductService/CreateCategory"
+	ProductService_ListBuyerProducts_FullMethodName     = "/product.ProductService/ListBuyerProducts"
+	ProductService_ListSellerProducts_FullMethodName    = "/product.ProductService/ListSellerProducts"
+	ProductService_GetProductByID_FullMethodName        = "/product.ProductService/GetProductByID"
+	ProductService_GetProductBySlug_FullMethodName      = "/product.ProductService/GetProductBySlug"
+	ProductService_UploadProductImages_FullMethodName   = "/product.ProductService/UploadProductImages"
 )
 
 // ProductServiceClient is the client API for ProductService service.
@@ -39,6 +40,8 @@ type ProductServiceClient interface {
 	CreateProduct(ctx context.Context, in *CreateProductRequest, opts ...grpc.CallOption) (*CreateProductResponse, error)
 	// CreateProductVariant creates a new product variant for an existing product.
 	CreateProductVariant(ctx context.Context, in *CreateProductVariantRequest, opts ...grpc.CallOption) (*CreateProductVariantResponse, error)
+	// CreateProductVariants creates multiple product variants for an existing product.
+	CreateProductVariants(ctx context.Context, in *CreateProductVariantsRequest, opts ...grpc.CallOption) (*CreateProductVariantsResponse, error)
 	// CreateCategory creates a new product category with the provided details.
 	CreateCategory(ctx context.Context, in *CreateCategoryRequest, opts ...grpc.CallOption) (*CreateCategoryResponse, error)
 	// ListProducts retrieves a list of products based on the provided filters.
@@ -75,6 +78,16 @@ func (c *productServiceClient) CreateProductVariant(ctx context.Context, in *Cre
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(CreateProductVariantResponse)
 	err := c.cc.Invoke(ctx, ProductService_CreateProductVariant_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *productServiceClient) CreateProductVariants(ctx context.Context, in *CreateProductVariantsRequest, opts ...grpc.CallOption) (*CreateProductVariantsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CreateProductVariantsResponse)
+	err := c.cc.Invoke(ctx, ProductService_CreateProductVariants_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -151,6 +164,8 @@ type ProductServiceServer interface {
 	CreateProduct(context.Context, *CreateProductRequest) (*CreateProductResponse, error)
 	// CreateProductVariant creates a new product variant for an existing product.
 	CreateProductVariant(context.Context, *CreateProductVariantRequest) (*CreateProductVariantResponse, error)
+	// CreateProductVariants creates multiple product variants for an existing product.
+	CreateProductVariants(context.Context, *CreateProductVariantsRequest) (*CreateProductVariantsResponse, error)
 	// CreateCategory creates a new product category with the provided details.
 	CreateCategory(context.Context, *CreateCategoryRequest) (*CreateCategoryResponse, error)
 	// ListProducts retrieves a list of products based on the provided filters.
@@ -178,6 +193,9 @@ func (UnimplementedProductServiceServer) CreateProduct(context.Context, *CreateP
 }
 func (UnimplementedProductServiceServer) CreateProductVariant(context.Context, *CreateProductVariantRequest) (*CreateProductVariantResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method CreateProductVariant not implemented")
+}
+func (UnimplementedProductServiceServer) CreateProductVariants(context.Context, *CreateProductVariantsRequest) (*CreateProductVariantsResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method CreateProductVariants not implemented")
 }
 func (UnimplementedProductServiceServer) CreateCategory(context.Context, *CreateCategoryRequest) (*CreateCategoryResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method CreateCategory not implemented")
@@ -250,6 +268,24 @@ func _ProductService_CreateProductVariant_Handler(srv interface{}, ctx context.C
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(ProductServiceServer).CreateProductVariant(ctx, req.(*CreateProductVariantRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ProductService_CreateProductVariants_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateProductVariantsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ProductServiceServer).CreateProductVariants(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ProductService_CreateProductVariants_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ProductServiceServer).CreateProductVariants(ctx, req.(*CreateProductVariantsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -376,6 +412,10 @@ var ProductService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CreateProductVariant",
 			Handler:    _ProductService_CreateProductVariant_Handler,
+		},
+		{
+			MethodName: "CreateProductVariants",
+			Handler:    _ProductService_CreateProductVariants_Handler,
 		},
 		{
 			MethodName: "CreateCategory",

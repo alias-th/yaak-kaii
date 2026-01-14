@@ -3,6 +3,7 @@ package repositories
 import (
 	"context"
 	"errors"
+	"fmt"
 	"sort"
 	"strconv"
 	"strings"
@@ -19,6 +20,7 @@ import (
 type ProductRepository interface {
 	CreateProductTx(ctx context.Context, payload *CreateProductPayload) (string, error)
 	CreateProductVariant(ctx context.Context, payload *types.CreateProductVariantPayload) (string, error)
+	CreateProductVariants(ctx context.Context, productID string, payload []types.CreateProductVariantPayload) ([]string, error)
 	ListBuyerProducts(ctx context.Context, query types.ListProductsReq) (*types.ListProductsRes, error)
 	ListSellerProducts(ctx context.Context, q ListSellerProductsReq) (*types.ListProductsRes, error)
 	GetProductByID(ctx context.Context, productID string) (*models.Product, error)
@@ -211,6 +213,117 @@ func (o *productRepositoryImpl) AddProductImages(ctx context.Context, productID 
 		return err
 	}
 	return nil
+}
+
+func (o *productRepositoryImpl) CreateProductVariants(ctx context.Context, productID string, req []types.CreateProductVariantPayload) ([]string, error) {
+	variantIDs := make([]string, 0, len(req))
+	productUUID, err := uuid.Parse(productID)
+	if err != nil {
+		return nil, err
+	}
+
+	err = o.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
+		// load product
+		var p models.Product
+		if err := tx.First(&p, "id = ?", productUUID).Error; err != nil {
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				return errors.New("product not found")
+			}
+			return err
+		}
+
+		// load variant axes
+		var attrs []models.CategoryAttribute
+		if err := tx.Where("category_id = ? AND scope = ?", p.CategoryID, "VARIANT").Order("axis_order ASC").Find(&attrs).Error; err != nil {
+			return err
+		}
+		if len(attrs) == 0 {
+			return errors.New("category has no variant attributes")
+		}
+		axes := make([]types.AxisDef, 0, len(attrs))
+
+		for _, a := range attrs {
+			opts, err := utils.ParseOptionsAsSet(a.Options)
+			if err != nil {
+				return err
+			}
+			axes = append(axes, types.AxisDef{
+				Key:      a.Key,
+				Required: a.Required,
+				Options:  opts,
+				Order:    a.AxisOrder,
+			})
+		}
+		sort.Slice(axes, func(i, j int) bool { return axes[i].Order < axes[j].Order })
+
+		// create sku
+		var c models.Category
+		if err := tx.First(&c, "id = ?", p.CategoryID).Error; err != nil {
+			return err
+		}
+		var nextNo int
+		if err := tx.Raw(`
+		SELECT COALESCE(MAX(pv.variant_no), 0)
+		FROM product_variants pv
+		WHERE pv.product_id = ?;
+		`, p.ID).Scan(&nextNo).Error; err != nil {
+			return err
+		}
+
+		seenKeys := make(map[string]struct{}, len(req))
+		toCreate := make([]models.ProductVariant, 0, len(req))
+		for i, item := range req {
+			// check unknown attributes
+			if err := utils.RejectUnknownKeys(item.Attributes, axes); err != nil {
+				return err
+			}
+
+			// build variant key
+			varKey, err := utils.BuildVariantKeyAndValidate(item.Attributes, axes)
+			if err != nil {
+				return err
+			}
+
+			// check duplicate in variants
+			if _, ok := seenKeys[varKey]; ok {
+				return fmt.Errorf("variants[%d]: %w", i, errors.New("duplicate variant attributes"))
+			}
+			seenKeys[varKey] = struct{}{}
+
+			nextNo += 1
+			sku := utils.GenerateSKU(c.Name, item.Attributes["color"], item.Attributes["size"], nextNo)
+
+			// convert map[string]string to bytes
+			attByte, err := item.Attributes.Value()
+			if err != nil {
+				return err
+			}
+
+			toCreate = append(toCreate, models.ProductVariant{
+				ProductID:  p.ID,
+				Sku:        sku,
+				Price:      item.Price,
+				Stock:      int(item.Stock),
+				Attributes: attByte,
+				VariantNo:  nextNo,
+				VariantKey: varKey,
+			})
+		}
+
+		if err := tx.Create(&toCreate).Error; err != nil {
+			return err
+		}
+		for _, v := range toCreate {
+			variantIDs = append(variantIDs, v.ID.String())
+		}
+
+		return nil
+	})
+
+	if err != nil {
+		return nil, err
+	}
+	return variantIDs, nil
 }
 
 func (o *productRepositoryImpl) CreateProductVariant(ctx context.Context, payload *types.CreateProductVariantPayload) (string, error) {

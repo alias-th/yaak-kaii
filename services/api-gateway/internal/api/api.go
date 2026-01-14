@@ -50,7 +50,7 @@ func (app *Application) Run() {
 			admin.GET("/:shopId/products/:slug", app.getProductDetails)
 			admin.POST("/products", app.createProduct)
 			admin.POST("/products/:id/images", app.uploadProductImages)
-			admin.POST("/products/:id/variant", app.createProductVariant)
+			admin.POST("/products/:id/variants", app.createProductVariants)
 			admin.POST("/categories", app.createCategory)
 		}
 
