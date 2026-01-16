@@ -291,7 +291,7 @@ func (o *productRepositoryImpl) CreateProductVariants(ctx context.Context, produ
 			seenKeys[varKey] = struct{}{}
 
 			nextNo += 1
-			sku := utils.GenerateSKU(c.Name, item.Attributes["color"], item.Attributes["size"], nextNo)
+			sku := utils.GenerateSKU(nextNo)
 
 			// convert map[string]string to bytes
 			attByte, err := item.Attributes.Value()
@@ -385,7 +385,7 @@ func (o *productRepositoryImpl) CreateProductVariant(ctx context.Context, payloa
 		`, p.ID).Scan(&nextNo).Error; err != nil {
 			return err
 		}
-		sku := utils.GenerateSKU(c.Name, payload.Attributes["color"], payload.Attributes["size"], nextNo)
+		sku := utils.GenerateSKU(nextNo)
 
 		// Convert map[string]string to bytes
 		attByte, err := payload.Attributes.Value()

@@ -67,6 +67,22 @@ type CreateProductVariantPayload struct {
 	Attributes Attributes
 }
 
+type CreateCategoryPayload struct {
+	Name        string
+	Description string
+	Attributes  []CategoryAttribute
+}
+
+type CategoryAttribute struct {
+	Key       string
+	Label     string
+	Type      string
+	Required  bool
+	Options   []string
+	Scope     string
+	AxisOrder int64
+}
+
 type AxisDef struct {
 	Key      string
 	Required bool

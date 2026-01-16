@@ -508,11 +508,13 @@ func (x *CreateCategoryResponse) GetCategoryId() string {
 
 type CategoryAttribute struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Key           string                 `protobuf:"bytes,1,opt,name=key,proto3" json:"key,omitempty"`                                                                                   // Attribute key
-	Label         string                 `protobuf:"bytes,2,opt,name=label,proto3" json:"label,omitempty"`                                                                               // Attribute label
-	Type          string                 `protobuf:"bytes,3,opt,name=type,proto3" json:"type,omitempty"`                                                                                 // Attribute type (e.g., string, number, boolean)
-	Required      bool                   `protobuf:"varint,4,opt,name=required,proto3" json:"required,omitempty"`                                                                        // Whether the attribute is required
-	Options       map[string]string      `protobuf:"bytes,5,rep,name=options,proto3" json:"options,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"` // Options for the attribute (if applicable)
+	Key           string                 `protobuf:"bytes,1,opt,name=key,proto3" json:"key,omitempty"`            // Attribute key
+	Label         string                 `protobuf:"bytes,2,opt,name=label,proto3" json:"label,omitempty"`        // Attribute label
+	Type          string                 `protobuf:"bytes,3,opt,name=type,proto3" json:"type,omitempty"`          // Attribute type (e.g., string, number, boolean)
+	Required      bool                   `protobuf:"varint,4,opt,name=required,proto3" json:"required,omitempty"` // Whether the attribute is required
+	Options       []string               `protobuf:"bytes,5,rep,name=options,proto3" json:"options,omitempty"`    // Options for the attribute (if applicable)
+	Scope         string                 `protobuf:"bytes,6,opt,name=scope,proto3" json:"scope,omitempty"`        // Scope of the attribute (e.g., product, variant)
+	Order         int64                  `protobuf:"varint,7,opt,name=order,proto3" json:"order,omitempty"`       // Order of the attribute
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -575,11 +577,25 @@ func (x *CategoryAttribute) GetRequired() bool {
 	return false
 }
 
-func (x *CategoryAttribute) GetOptions() map[string]string {
+func (x *CategoryAttribute) GetOptions() []string {
 	if x != nil {
 		return x.Options
 	}
 	return nil
+}
+
+func (x *CategoryAttribute) GetScope() string {
+	if x != nil {
+		return x.Scope
+	}
+	return ""
+}
+
+func (x *CategoryAttribute) GetOrder() int64 {
+	if x != nil {
+		return x.Order
+	}
+	return 0
 }
 
 type ListBuyerProductsRequest struct {
@@ -1806,16 +1822,15 @@ const file_product_messages_proto_rawDesc = "" +
 	"variant_id\x18\x01 \x01(\tR\tvariantId\"9\n" +
 	"\x16CreateCategoryResponse\x12\x1f\n" +
 	"\vcategory_id\x18\x01 \x01(\tR\n" +
-	"categoryId\"\xea\x01\n" +
+	"categoryId\"\xb1\x01\n" +
 	"\x11CategoryAttribute\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05label\x18\x02 \x01(\tR\x05label\x12\x12\n" +
 	"\x04type\x18\x03 \x01(\tR\x04type\x12\x1a\n" +
-	"\brequired\x18\x04 \x01(\bR\brequired\x12A\n" +
-	"\aoptions\x18\x05 \x03(\v2'.product.CategoryAttribute.OptionsEntryR\aoptions\x1a:\n" +
-	"\fOptionsEntry\x12\x10\n" +
-	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xc3\x01\n" +
+	"\brequired\x18\x04 \x01(\bR\brequired\x12\x18\n" +
+	"\aoptions\x18\x05 \x03(\tR\aoptions\x12\x14\n" +
+	"\x05scope\x18\x06 \x01(\tR\x05scope\x12\x14\n" +
+	"\x05order\x18\a \x01(\x03R\x05order\"\xc3\x01\n" +
 	"\x18ListBuyerProductsRequest\x12\f\n" +
 	"\x01q\x18\x01 \x01(\tR\x01q\x12!\n" +
 	"\fcategory_ids\x18\x02 \x03(\tR\vcategoryIds\x12\x1b\n" +
@@ -1939,7 +1954,7 @@ func file_product_messages_proto_rawDescGZIP() []byte {
 	return file_product_messages_proto_rawDescData
 }
 
-var file_product_messages_proto_msgTypes = make([]protoimpl.MessageInfo, 32)
+var file_product_messages_proto_msgTypes = make([]protoimpl.MessageInfo, 31)
 var file_product_messages_proto_goTypes = []any{
 	(*CreateProductRequest)(nil),          // 0: product.CreateProductRequest
 	(*CreateProductResponse)(nil),         // 1: product.CreateProductResponse
@@ -1970,33 +1985,31 @@ var file_product_messages_proto_goTypes = []any{
 	(*Pagination)(nil),                    // 26: product.Pagination
 	nil,                                   // 27: product.CreateProductVariantsPayload.AttributesEntry
 	nil,                                   // 28: product.CreateProductVariantRequest.AttributesEntry
-	nil,                                   // 29: product.CategoryAttribute.OptionsEntry
-	nil,                                   // 30: product.VariantDTO.AttributesEntry
-	nil,                                   // 31: product.ProductVariant.AttributesEntry
+	nil,                                   // 29: product.VariantDTO.AttributesEntry
+	nil,                                   // 30: product.ProductVariant.AttributesEntry
 }
 var file_product_messages_proto_depIdxs = []int32{
 	9,  // 0: product.CreateCategoryRequest.attributes:type_name -> product.CategoryAttribute
 	5,  // 1: product.CreateProductVariantsRequest.variants:type_name -> product.CreateProductVariantsPayload
 	27, // 2: product.CreateProductVariantsPayload.attributes:type_name -> product.CreateProductVariantsPayload.AttributesEntry
 	28, // 3: product.CreateProductVariantRequest.attributes:type_name -> product.CreateProductVariantRequest.AttributesEntry
-	29, // 4: product.CategoryAttribute.options:type_name -> product.CategoryAttribute.OptionsEntry
-	23, // 5: product.ListBuyerProductsResponse.products:type_name -> product.Product
-	26, // 6: product.ListBuyerProductsResponse.pagination:type_name -> product.Pagination
-	23, // 7: product.ListSellerProductsResponse.products:type_name -> product.Product
-	26, // 8: product.ListSellerProductsResponse.pagination:type_name -> product.Pagination
-	23, // 9: product.GetProductByIDResponse.product:type_name -> product.Product
-	20, // 10: product.GetProductBySlugResponse.product:type_name -> product.ProductDetails
-	21, // 11: product.GetProductBySlugResponse.axes:type_name -> product.AxisDTO
-	22, // 12: product.GetProductBySlugResponse.variants:type_name -> product.VariantDTO
-	30, // 13: product.VariantDTO.attributes:type_name -> product.VariantDTO.AttributesEntry
-	25, // 14: product.Product.variants:type_name -> product.ProductVariant
-	24, // 15: product.Product.category:type_name -> product.ProductCategory
-	31, // 16: product.ProductVariant.attributes:type_name -> product.ProductVariant.AttributesEntry
-	17, // [17:17] is the sub-list for method output_type
-	17, // [17:17] is the sub-list for method input_type
-	17, // [17:17] is the sub-list for extension type_name
-	17, // [17:17] is the sub-list for extension extendee
-	0,  // [0:17] is the sub-list for field type_name
+	23, // 4: product.ListBuyerProductsResponse.products:type_name -> product.Product
+	26, // 5: product.ListBuyerProductsResponse.pagination:type_name -> product.Pagination
+	23, // 6: product.ListSellerProductsResponse.products:type_name -> product.Product
+	26, // 7: product.ListSellerProductsResponse.pagination:type_name -> product.Pagination
+	23, // 8: product.GetProductByIDResponse.product:type_name -> product.Product
+	20, // 9: product.GetProductBySlugResponse.product:type_name -> product.ProductDetails
+	21, // 10: product.GetProductBySlugResponse.axes:type_name -> product.AxisDTO
+	22, // 11: product.GetProductBySlugResponse.variants:type_name -> product.VariantDTO
+	29, // 12: product.VariantDTO.attributes:type_name -> product.VariantDTO.AttributesEntry
+	25, // 13: product.Product.variants:type_name -> product.ProductVariant
+	24, // 14: product.Product.category:type_name -> product.ProductCategory
+	30, // 15: product.ProductVariant.attributes:type_name -> product.ProductVariant.AttributesEntry
+	16, // [16:16] is the sub-list for method output_type
+	16, // [16:16] is the sub-list for method input_type
+	16, // [16:16] is the sub-list for extension type_name
+	16, // [16:16] is the sub-list for extension extendee
+	0,  // [0:16] is the sub-list for field type_name
 }
 
 func init() { file_product_messages_proto_init() }
@@ -2010,7 +2023,7 @@ func file_product_messages_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_product_messages_proto_rawDesc), len(file_product_messages_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   32,
+			NumMessages:   31,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

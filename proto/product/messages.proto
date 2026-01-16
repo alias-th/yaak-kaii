@@ -23,18 +23,19 @@ message CreateCategoryRequest {
 }
 
 message CreateProductVariantsRequest {
-  string product_id = 1; // ID of the product to which the variants belong
-  repeated CreateProductVariantsPayload variants = 2; // List of product variants to create
+  string                                product_id = 1; // ID of the product to which the variants belong
+  repeated CreateProductVariantsPayload variants   = 2; // List of product variants to create
 }
+
 message CreateProductVariantsResponse {
   repeated string variant_ids = 1; // List of IDs of the newly created product variants
 }
+
 message CreateProductVariantsPayload {
   double              price      = 2; // Price of the variant
   int32               stock      = 3; // Available stock for the variant
   map<string, string> attributes = 4; // Variant-specific attributes
 }
-
 
 message CreateProductVariantRequest {
   string              product_id = 1; // ID of the product to which the variant belongs
@@ -53,11 +54,13 @@ message CreateCategoryResponse {
 }
 
 message CategoryAttribute {
-  string              key      = 1; // Attribute key
-  string              label    = 2; // Attribute label
-  string              type     = 3; // Attribute type (e.g., string, number, boolean)
-  bool                required = 4; // Whether the attribute is required
-  map<string, string> options  = 5; // Options for the attribute (if applicable)
+  string          key      = 1; // Attribute key
+  string          label    = 2; // Attribute label
+  string          type     = 3; // Attribute type (e.g., string, number, boolean)
+  bool            required = 4; // Whether the attribute is required
+  repeated string options  = 5; // Options for the attribute (if applicable)
+  string          scope    = 6; // Scope of the attribute (e.g., product, variant)
+  int64           order    = 7; // Order of the attribute
 }
 
 message ListBuyerProductsRequest {

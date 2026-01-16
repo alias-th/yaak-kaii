@@ -5,6 +5,7 @@ import (
 	"log"
 	"time"
 	"yaak-kaii/services/product-service/internal/services"
+	"yaak-kaii/services/product-service/internal/utils"
 	"yaak-kaii/services/product-service/pkg/types"
 	pb "yaak-kaii/shared/proto/product"
 )
@@ -226,10 +227,12 @@ func (s *ProductGRPCServer) CreateProductVariants(ctx context.Context, req *pb.C
 	variants := req.GetVariants()
 	payload := make([]types.CreateProductVariantPayload, 0, len(variants))
 	for _, v := range variants {
+		attr := v.Attributes
+		attr = utils.NormalizeMapValuesBasic(attr)
 		payload = append(payload, types.CreateProductVariantPayload{
 			Price:      v.GetPrice(),
 			Stock:      v.GetStock(),
-			Attributes: v.GetAttributes(),
+			Attributes: attr,
 		})
 	}
 
@@ -245,11 +248,14 @@ func (s *ProductGRPCServer) CreateProductVariants(ctx context.Context, req *pb.C
 }
 
 func (s *ProductGRPCServer) CreateProductVariant(ctx context.Context, req *pb.CreateProductVariantRequest) (*pb.CreateProductVariantResponse, error) {
+	attr := req.Attributes
+	attr = utils.NormalizeMapValuesBasic(attr)
+
 	payload := &types.CreateProductVariantPayload{
 		ProductID:  req.GetProductId(),
 		Price:      req.GetPrice(),
 		Stock:      req.GetStock(),
-		Attributes: req.GetAttributes(),
+		Attributes: attr,
 	}
 
 	variantID, err := s.productService.CreateProductVariant(ctx, payload)
@@ -309,4 +315,40 @@ func (s *ProductGRPCServer) GetProductBySlug(ctx context.Context, req *pb.GetPro
 	}
 
 	return res, nil
+}
+
+func (s *ProductGRPCServer) CreateCategory(ctx context.Context, req *pb.CreateCategoryRequest) (*pb.CreateCategoryResponse, error) {
+	attributes := make([]types.CategoryAttribute, 0, len(req.Attributes))
+
+	for _, attr := range req.Attributes {
+		normOptions := make([]string, 0, len(attr.Options))
+		for _, ot := range attr.Options {
+			normOptions = append(normOptions, utils.NormValue(ot))
+		}
+
+		attributes = append(attributes, types.CategoryAttribute{
+			Key:       attr.Key,
+			Label:     attr.Label,
+			Type:      attr.Type,
+			Required:  attr.Required,
+			Options:   normOptions,
+			Scope:     attr.Scope,
+			AxisOrder: attr.Order,
+		})
+	}
+
+	payload := &types.CreateCategoryPayload{
+		Name:        req.Name,
+		Description: req.Description,
+		Attributes:  attributes,
+	}
+
+	id, err := s.categoryService.CreateCategory(ctx, payload)
+	if err != nil {
+		return nil, err
+	}
+
+	return &pb.CreateCategoryResponse{
+		CategoryId: id,
+	}, nil
 }

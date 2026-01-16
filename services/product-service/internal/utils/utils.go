@@ -10,12 +10,8 @@ import (
 	"gorm.io/datatypes"
 )
 
-func GenerateSKU(category, color, size string, variantNo int) string {
-	c := strings.ToUpper(category[:3])
-	cl := strings.ToUpper(color[:2])
-	sz := strings.ToUpper(size)
-
-	return fmt.Sprintf("%s-%s-%s-%02d", c, cl, sz, variantNo)
+func GenerateSKU(nextNo int) string {
+	return fmt.Sprintf("SKU-%06d", nextNo)
 }
 
 func NewPagination(page, pageSize int, total int64) *types.Pagination {
@@ -150,6 +146,17 @@ func NormValue(s string) string {
 	s = strings.ToLower(s)
 	s = strings.Join(strings.Fields(s), " ") // collapse whitespace
 	return s
+}
+
+func NormalizeMapValuesBasic(m map[string]string) map[string]string {
+	if m == nil {
+		return nil
+	}
+	out := make(map[string]string, len(m))
+	for k, v := range m {
+		out[k] = NormValue(v)
+	}
+	return out
 }
 
 func ParseStringArrayOptions(raw datatypes.JSON) ([]string, error) {
