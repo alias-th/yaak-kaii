@@ -183,3 +183,28 @@ message Pagination{
   bool  has_next  = 7; // Flag for next page availability
   bool  has_prev  = 8; // Flag for previous page availability
 }
+
+message GetAllCategoriesRequest {
+  int32 limit = 1; // Number of products to return
+  int32 page  = 2; // Offset for pagination
+}
+
+message GetAllCategoriesResponse {
+  repeated Category categories = 1; // List of product categories
+  Pagination        pagination = 2; // Pagination details
+}
+
+message Category {
+  string                     category_id = 1; // Category ID
+  string                     name        = 2; // Category name
+  string                     description = 3; // Category description
+  repeated CategoryAttribute attributes  = 4; // List of category attributes
+}
+
+message GetCategoryRequest {
+  string category_id = 1; // ID of the category to retrieve
+}
+
+message GetCategoryResponse {
+  Category category = 1; // Category details
+}

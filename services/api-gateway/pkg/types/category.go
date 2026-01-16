@@ -5,6 +5,7 @@ type CreateCategoryRequest struct {
 	Description string              `json:"description" binding:"required,min=2,max=255"`
 	Attributes  []CategoryAttribute `json:"attributes" binding:"omitempty,dive"`
 }
+
 type CreateCategoryResponse struct {
 	CategoryID string `json:"category_id"`
 }
@@ -18,4 +19,21 @@ type CategoryAttribute struct {
 	Options   []string `json:"options" binding:"omitempty,min=1,dive,required,min=1,max=100"`
 	Scope     string   `json:"scope" binding:"required,min=2,max=50,oneof=PRODUCT VARIANT"`
 	AxisOrder int64    `json:"axis_order" binding:"required"`
+}
+
+type GetAllCategoriesRequest struct {
+	Page  int32  `form:"page,default=1"`
+	Limit int32  `form:"limit,default=20"`
+	Sort  string `form:"sort,default=newest"`
+}
+type GetAllCategoriesResponse struct {
+	Categories []Category `json:"categories"`
+	Pagination Pagination `json:"pagination"`
+}
+
+type Category struct {
+	ID          string              `json:"id"`
+	Name        string              `json:"name"`
+	Description string              `json:"description"`
+	Attributes  []CategoryAttribute `json:"attributes"`
 }

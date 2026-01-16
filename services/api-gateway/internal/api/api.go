@@ -51,7 +51,10 @@ func (app *Application) Run() {
 			admin.POST("/products", app.createProduct)
 			admin.POST("/products/:id/images", app.uploadProductImages)
 			admin.POST("/products/:id/variants", app.createProductVariants)
-			admin.POST("/categories", app.createCategory)
+
+			admin.GET("/categories", app.getCategories)
+			admin.GET("/categories/:id", app.getCategory)
+			admin.POST("/categories", app.createCategories)
 		}
 
 		buyer := v1.Group("/buyer")

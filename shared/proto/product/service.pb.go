@@ -24,7 +24,7 @@ var File_product_service_proto protoreflect.FileDescriptor
 
 const file_product_service_proto_rawDesc = "" +
 	"\n" +
-	"\x15product/service.proto\x12\aproduct\x1a\x16product/messages.proto2\xc9\x06\n" +
+	"\x15product/service.proto\x12\aproduct\x1a\x16product/messages.proto2\xec\a\n" +
 	"\x0eProductService\x12N\n" +
 	"\rCreateProduct\x12\x1d.product.CreateProductRequest\x1a\x1e.product.CreateProductResponse\x12c\n" +
 	"\x14CreateProductVariant\x12$.product.CreateProductVariantRequest\x1a%.product.CreateProductVariantResponse\x12f\n" +
@@ -34,7 +34,9 @@ const file_product_service_proto_rawDesc = "" +
 	"\x12ListSellerProducts\x12\".product.ListSellerProductsRequest\x1a#.product.ListSellerProductsResponse\x12Q\n" +
 	"\x0eGetProductByID\x12\x1e.product.GetProductByIDRequest\x1a\x1f.product.GetProductByIDResponse\x12W\n" +
 	"\x10GetProductBySlug\x12 .product.GetProductBySlugRequest\x1a!.product.GetProductBySlugResponse\x12`\n" +
-	"\x13UploadProductImages\x12#.product.UploadProductImagesRequest\x1a$.product.UploadProductImagesResponseB\x1eZ\x1cshared/proto/product;productb\x06proto3"
+	"\x13UploadProductImages\x12#.product.UploadProductImagesRequest\x1a$.product.UploadProductImagesResponse\x12W\n" +
+	"\x10GetAllCategories\x12 .product.GetAllCategoriesRequest\x1a!.product.GetAllCategoriesResponse\x12H\n" +
+	"\vGetCategory\x12\x1b.product.GetCategoryRequest\x1a\x1c.product.GetCategoryResponseB\x1eZ\x1cshared/proto/product;productb\x06proto3"
 
 var file_product_service_proto_goTypes = []any{
 	(*CreateProductRequest)(nil),          // 0: product.CreateProductRequest
@@ -46,15 +48,19 @@ var file_product_service_proto_goTypes = []any{
 	(*GetProductByIDRequest)(nil),         // 6: product.GetProductByIDRequest
 	(*GetProductBySlugRequest)(nil),       // 7: product.GetProductBySlugRequest
 	(*UploadProductImagesRequest)(nil),    // 8: product.UploadProductImagesRequest
-	(*CreateProductResponse)(nil),         // 9: product.CreateProductResponse
-	(*CreateProductVariantResponse)(nil),  // 10: product.CreateProductVariantResponse
-	(*CreateProductVariantsResponse)(nil), // 11: product.CreateProductVariantsResponse
-	(*CreateCategoryResponse)(nil),        // 12: product.CreateCategoryResponse
-	(*ListBuyerProductsResponse)(nil),     // 13: product.ListBuyerProductsResponse
-	(*ListSellerProductsResponse)(nil),    // 14: product.ListSellerProductsResponse
-	(*GetProductByIDResponse)(nil),        // 15: product.GetProductByIDResponse
-	(*GetProductBySlugResponse)(nil),      // 16: product.GetProductBySlugResponse
-	(*UploadProductImagesResponse)(nil),   // 17: product.UploadProductImagesResponse
+	(*GetAllCategoriesRequest)(nil),       // 9: product.GetAllCategoriesRequest
+	(*GetCategoryRequest)(nil),            // 10: product.GetCategoryRequest
+	(*CreateProductResponse)(nil),         // 11: product.CreateProductResponse
+	(*CreateProductVariantResponse)(nil),  // 12: product.CreateProductVariantResponse
+	(*CreateProductVariantsResponse)(nil), // 13: product.CreateProductVariantsResponse
+	(*CreateCategoryResponse)(nil),        // 14: product.CreateCategoryResponse
+	(*ListBuyerProductsResponse)(nil),     // 15: product.ListBuyerProductsResponse
+	(*ListSellerProductsResponse)(nil),    // 16: product.ListSellerProductsResponse
+	(*GetProductByIDResponse)(nil),        // 17: product.GetProductByIDResponse
+	(*GetProductBySlugResponse)(nil),      // 18: product.GetProductBySlugResponse
+	(*UploadProductImagesResponse)(nil),   // 19: product.UploadProductImagesResponse
+	(*GetAllCategoriesResponse)(nil),      // 20: product.GetAllCategoriesResponse
+	(*GetCategoryResponse)(nil),           // 21: product.GetCategoryResponse
 }
 var file_product_service_proto_depIdxs = []int32{
 	0,  // 0: product.ProductService.CreateProduct:input_type -> product.CreateProductRequest
@@ -66,17 +72,21 @@ var file_product_service_proto_depIdxs = []int32{
 	6,  // 6: product.ProductService.GetProductByID:input_type -> product.GetProductByIDRequest
 	7,  // 7: product.ProductService.GetProductBySlug:input_type -> product.GetProductBySlugRequest
 	8,  // 8: product.ProductService.UploadProductImages:input_type -> product.UploadProductImagesRequest
-	9,  // 9: product.ProductService.CreateProduct:output_type -> product.CreateProductResponse
-	10, // 10: product.ProductService.CreateProductVariant:output_type -> product.CreateProductVariantResponse
-	11, // 11: product.ProductService.CreateProductVariants:output_type -> product.CreateProductVariantsResponse
-	12, // 12: product.ProductService.CreateCategory:output_type -> product.CreateCategoryResponse
-	13, // 13: product.ProductService.ListBuyerProducts:output_type -> product.ListBuyerProductsResponse
-	14, // 14: product.ProductService.ListSellerProducts:output_type -> product.ListSellerProductsResponse
-	15, // 15: product.ProductService.GetProductByID:output_type -> product.GetProductByIDResponse
-	16, // 16: product.ProductService.GetProductBySlug:output_type -> product.GetProductBySlugResponse
-	17, // 17: product.ProductService.UploadProductImages:output_type -> product.UploadProductImagesResponse
-	9,  // [9:18] is the sub-list for method output_type
-	0,  // [0:9] is the sub-list for method input_type
+	9,  // 9: product.ProductService.GetAllCategories:input_type -> product.GetAllCategoriesRequest
+	10, // 10: product.ProductService.GetCategory:input_type -> product.GetCategoryRequest
+	11, // 11: product.ProductService.CreateProduct:output_type -> product.CreateProductResponse
+	12, // 12: product.ProductService.CreateProductVariant:output_type -> product.CreateProductVariantResponse
+	13, // 13: product.ProductService.CreateProductVariants:output_type -> product.CreateProductVariantsResponse
+	14, // 14: product.ProductService.CreateCategory:output_type -> product.CreateCategoryResponse
+	15, // 15: product.ProductService.ListBuyerProducts:output_type -> product.ListBuyerProductsResponse
+	16, // 16: product.ProductService.ListSellerProducts:output_type -> product.ListSellerProductsResponse
+	17, // 17: product.ProductService.GetProductByID:output_type -> product.GetProductByIDResponse
+	18, // 18: product.ProductService.GetProductBySlug:output_type -> product.GetProductBySlugResponse
+	19, // 19: product.ProductService.UploadProductImages:output_type -> product.UploadProductImagesResponse
+	20, // 20: product.ProductService.GetAllCategories:output_type -> product.GetAllCategoriesResponse
+	21, // 21: product.ProductService.GetCategory:output_type -> product.GetCategoryResponse
+	11, // [11:22] is the sub-list for method output_type
+	0,  // [0:11] is the sub-list for method input_type
 	0,  // [0:0] is the sub-list for extension type_name
 	0,  // [0:0] is the sub-list for extension extendee
 	0,  // [0:0] is the sub-list for field type_name

@@ -1770,6 +1770,266 @@ func (x *Pagination) GetHasPrev() bool {
 	return false
 }
 
+type GetAllCategoriesRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Limit         int32                  `protobuf:"varint,1,opt,name=limit,proto3" json:"limit,omitempty"` // Number of products to return
+	Page          int32                  `protobuf:"varint,2,opt,name=page,proto3" json:"page,omitempty"`   // Offset for pagination
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetAllCategoriesRequest) Reset() {
+	*x = GetAllCategoriesRequest{}
+	mi := &file_product_messages_proto_msgTypes[27]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetAllCategoriesRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetAllCategoriesRequest) ProtoMessage() {}
+
+func (x *GetAllCategoriesRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_product_messages_proto_msgTypes[27]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetAllCategoriesRequest.ProtoReflect.Descriptor instead.
+func (*GetAllCategoriesRequest) Descriptor() ([]byte, []int) {
+	return file_product_messages_proto_rawDescGZIP(), []int{27}
+}
+
+func (x *GetAllCategoriesRequest) GetLimit() int32 {
+	if x != nil {
+		return x.Limit
+	}
+	return 0
+}
+
+func (x *GetAllCategoriesRequest) GetPage() int32 {
+	if x != nil {
+		return x.Page
+	}
+	return 0
+}
+
+type GetAllCategoriesResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Categories    []*Category            `protobuf:"bytes,1,rep,name=categories,proto3" json:"categories,omitempty"` // List of product categories
+	Pagination    *Pagination            `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"` // Pagination details
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetAllCategoriesResponse) Reset() {
+	*x = GetAllCategoriesResponse{}
+	mi := &file_product_messages_proto_msgTypes[28]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetAllCategoriesResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetAllCategoriesResponse) ProtoMessage() {}
+
+func (x *GetAllCategoriesResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_product_messages_proto_msgTypes[28]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetAllCategoriesResponse.ProtoReflect.Descriptor instead.
+func (*GetAllCategoriesResponse) Descriptor() ([]byte, []int) {
+	return file_product_messages_proto_rawDescGZIP(), []int{28}
+}
+
+func (x *GetAllCategoriesResponse) GetCategories() []*Category {
+	if x != nil {
+		return x.Categories
+	}
+	return nil
+}
+
+func (x *GetAllCategoriesResponse) GetPagination() *Pagination {
+	if x != nil {
+		return x.Pagination
+	}
+	return nil
+}
+
+type Category struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	CategoryId    string                 `protobuf:"bytes,1,opt,name=category_id,json=categoryId,proto3" json:"category_id,omitempty"` // Category ID
+	Name          string                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`                               // Category name
+	Description   string                 `protobuf:"bytes,3,opt,name=description,proto3" json:"description,omitempty"`                 // Category description
+	Attributes    []*CategoryAttribute   `protobuf:"bytes,4,rep,name=attributes,proto3" json:"attributes,omitempty"`                   // List of category attributes
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *Category) Reset() {
+	*x = Category{}
+	mi := &file_product_messages_proto_msgTypes[29]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Category) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Category) ProtoMessage() {}
+
+func (x *Category) ProtoReflect() protoreflect.Message {
+	mi := &file_product_messages_proto_msgTypes[29]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Category.ProtoReflect.Descriptor instead.
+func (*Category) Descriptor() ([]byte, []int) {
+	return file_product_messages_proto_rawDescGZIP(), []int{29}
+}
+
+func (x *Category) GetCategoryId() string {
+	if x != nil {
+		return x.CategoryId
+	}
+	return ""
+}
+
+func (x *Category) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *Category) GetDescription() string {
+	if x != nil {
+		return x.Description
+	}
+	return ""
+}
+
+func (x *Category) GetAttributes() []*CategoryAttribute {
+	if x != nil {
+		return x.Attributes
+	}
+	return nil
+}
+
+type GetCategoryRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	CategoryId    string                 `protobuf:"bytes,1,opt,name=category_id,json=categoryId,proto3" json:"category_id,omitempty"` // ID of the category to retrieve
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetCategoryRequest) Reset() {
+	*x = GetCategoryRequest{}
+	mi := &file_product_messages_proto_msgTypes[30]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetCategoryRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetCategoryRequest) ProtoMessage() {}
+
+func (x *GetCategoryRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_product_messages_proto_msgTypes[30]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetCategoryRequest.ProtoReflect.Descriptor instead.
+func (*GetCategoryRequest) Descriptor() ([]byte, []int) {
+	return file_product_messages_proto_rawDescGZIP(), []int{30}
+}
+
+func (x *GetCategoryRequest) GetCategoryId() string {
+	if x != nil {
+		return x.CategoryId
+	}
+	return ""
+}
+
+type GetCategoryResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Category      *Category              `protobuf:"bytes,1,opt,name=category,proto3" json:"category,omitempty"` // Category details
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetCategoryResponse) Reset() {
+	*x = GetCategoryResponse{}
+	mi := &file_product_messages_proto_msgTypes[31]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetCategoryResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetCategoryResponse) ProtoMessage() {}
+
+func (x *GetCategoryResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_product_messages_proto_msgTypes[31]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetCategoryResponse.ProtoReflect.Descriptor instead.
+func (*GetCategoryResponse) Descriptor() ([]byte, []int) {
+	return file_product_messages_proto_rawDescGZIP(), []int{31}
+}
+
+func (x *GetCategoryResponse) GetCategory() *Category {
+	if x != nil {
+		return x.Category
+	}
+	return nil
+}
+
 var File_product_messages_proto protoreflect.FileDescriptor
 
 const file_product_messages_proto_rawDesc = "" +
@@ -1940,7 +2200,30 @@ const file_product_messages_proto_rawDesc = "" +
 	"\tnext_page\x18\x05 \x01(\x05R\bnextPage\x12\x1b\n" +
 	"\tprev_page\x18\x06 \x01(\x05R\bprevPage\x12\x19\n" +
 	"\bhas_next\x18\a \x01(\bR\ahasNext\x12\x19\n" +
-	"\bhas_prev\x18\b \x01(\bR\ahasPrevB\x1eZ\x1cshared/proto/product;productb\x06proto3"
+	"\bhas_prev\x18\b \x01(\bR\ahasPrev\"C\n" +
+	"\x17GetAllCategoriesRequest\x12\x14\n" +
+	"\x05limit\x18\x01 \x01(\x05R\x05limit\x12\x12\n" +
+	"\x04page\x18\x02 \x01(\x05R\x04page\"\x82\x01\n" +
+	"\x18GetAllCategoriesResponse\x121\n" +
+	"\n" +
+	"categories\x18\x01 \x03(\v2\x11.product.CategoryR\n" +
+	"categories\x123\n" +
+	"\n" +
+	"pagination\x18\x02 \x01(\v2\x13.product.PaginationR\n" +
+	"pagination\"\x9d\x01\n" +
+	"\bCategory\x12\x1f\n" +
+	"\vcategory_id\x18\x01 \x01(\tR\n" +
+	"categoryId\x12\x12\n" +
+	"\x04name\x18\x02 \x01(\tR\x04name\x12 \n" +
+	"\vdescription\x18\x03 \x01(\tR\vdescription\x12:\n" +
+	"\n" +
+	"attributes\x18\x04 \x03(\v2\x1a.product.CategoryAttributeR\n" +
+	"attributes\"5\n" +
+	"\x12GetCategoryRequest\x12\x1f\n" +
+	"\vcategory_id\x18\x01 \x01(\tR\n" +
+	"categoryId\"D\n" +
+	"\x13GetCategoryResponse\x12-\n" +
+	"\bcategory\x18\x01 \x01(\v2\x11.product.CategoryR\bcategoryB\x1eZ\x1cshared/proto/product;productb\x06proto3"
 
 var (
 	file_product_messages_proto_rawDescOnce sync.Once
@@ -1954,7 +2237,7 @@ func file_product_messages_proto_rawDescGZIP() []byte {
 	return file_product_messages_proto_rawDescData
 }
 
-var file_product_messages_proto_msgTypes = make([]protoimpl.MessageInfo, 31)
+var file_product_messages_proto_msgTypes = make([]protoimpl.MessageInfo, 36)
 var file_product_messages_proto_goTypes = []any{
 	(*CreateProductRequest)(nil),          // 0: product.CreateProductRequest
 	(*CreateProductResponse)(nil),         // 1: product.CreateProductResponse
@@ -1983,16 +2266,21 @@ var file_product_messages_proto_goTypes = []any{
 	(*ProductCategory)(nil),               // 24: product.ProductCategory
 	(*ProductVariant)(nil),                // 25: product.ProductVariant
 	(*Pagination)(nil),                    // 26: product.Pagination
-	nil,                                   // 27: product.CreateProductVariantsPayload.AttributesEntry
-	nil,                                   // 28: product.CreateProductVariantRequest.AttributesEntry
-	nil,                                   // 29: product.VariantDTO.AttributesEntry
-	nil,                                   // 30: product.ProductVariant.AttributesEntry
+	(*GetAllCategoriesRequest)(nil),       // 27: product.GetAllCategoriesRequest
+	(*GetAllCategoriesResponse)(nil),      // 28: product.GetAllCategoriesResponse
+	(*Category)(nil),                      // 29: product.Category
+	(*GetCategoryRequest)(nil),            // 30: product.GetCategoryRequest
+	(*GetCategoryResponse)(nil),           // 31: product.GetCategoryResponse
+	nil,                                   // 32: product.CreateProductVariantsPayload.AttributesEntry
+	nil,                                   // 33: product.CreateProductVariantRequest.AttributesEntry
+	nil,                                   // 34: product.VariantDTO.AttributesEntry
+	nil,                                   // 35: product.ProductVariant.AttributesEntry
 }
 var file_product_messages_proto_depIdxs = []int32{
 	9,  // 0: product.CreateCategoryRequest.attributes:type_name -> product.CategoryAttribute
 	5,  // 1: product.CreateProductVariantsRequest.variants:type_name -> product.CreateProductVariantsPayload
-	27, // 2: product.CreateProductVariantsPayload.attributes:type_name -> product.CreateProductVariantsPayload.AttributesEntry
-	28, // 3: product.CreateProductVariantRequest.attributes:type_name -> product.CreateProductVariantRequest.AttributesEntry
+	32, // 2: product.CreateProductVariantsPayload.attributes:type_name -> product.CreateProductVariantsPayload.AttributesEntry
+	33, // 3: product.CreateProductVariantRequest.attributes:type_name -> product.CreateProductVariantRequest.AttributesEntry
 	23, // 4: product.ListBuyerProductsResponse.products:type_name -> product.Product
 	26, // 5: product.ListBuyerProductsResponse.pagination:type_name -> product.Pagination
 	23, // 6: product.ListSellerProductsResponse.products:type_name -> product.Product
@@ -2001,15 +2289,19 @@ var file_product_messages_proto_depIdxs = []int32{
 	20, // 9: product.GetProductBySlugResponse.product:type_name -> product.ProductDetails
 	21, // 10: product.GetProductBySlugResponse.axes:type_name -> product.AxisDTO
 	22, // 11: product.GetProductBySlugResponse.variants:type_name -> product.VariantDTO
-	29, // 12: product.VariantDTO.attributes:type_name -> product.VariantDTO.AttributesEntry
+	34, // 12: product.VariantDTO.attributes:type_name -> product.VariantDTO.AttributesEntry
 	25, // 13: product.Product.variants:type_name -> product.ProductVariant
 	24, // 14: product.Product.category:type_name -> product.ProductCategory
-	30, // 15: product.ProductVariant.attributes:type_name -> product.ProductVariant.AttributesEntry
-	16, // [16:16] is the sub-list for method output_type
-	16, // [16:16] is the sub-list for method input_type
-	16, // [16:16] is the sub-list for extension type_name
-	16, // [16:16] is the sub-list for extension extendee
-	0,  // [0:16] is the sub-list for field type_name
+	35, // 15: product.ProductVariant.attributes:type_name -> product.ProductVariant.AttributesEntry
+	29, // 16: product.GetAllCategoriesResponse.categories:type_name -> product.Category
+	26, // 17: product.GetAllCategoriesResponse.pagination:type_name -> product.Pagination
+	9,  // 18: product.Category.attributes:type_name -> product.CategoryAttribute
+	29, // 19: product.GetCategoryResponse.category:type_name -> product.Category
+	20, // [20:20] is the sub-list for method output_type
+	20, // [20:20] is the sub-list for method input_type
+	20, // [20:20] is the sub-list for extension type_name
+	20, // [20:20] is the sub-list for extension extendee
+	0,  // [0:20] is the sub-list for field type_name
 }
 
 func init() { file_product_messages_proto_init() }
@@ -2023,7 +2315,7 @@ func file_product_messages_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_product_messages_proto_rawDesc), len(file_product_messages_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   31,
+			NumMessages:   36,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

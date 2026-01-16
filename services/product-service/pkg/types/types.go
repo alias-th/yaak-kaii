@@ -15,6 +15,17 @@ type ListSellerProductsReq struct {
 	Page   int32
 	Sort   string
 }
+
+type ListCategoriesReq struct {
+	Limit int32
+	Page  int32
+}
+
+type ListCategoriesRes struct {
+	Categories []models.Category
+	Pagination Pagination
+}
+
 type ListProductsReq struct {
 	Q           string
 	CategoryIds []string

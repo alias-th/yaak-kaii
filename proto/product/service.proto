@@ -34,4 +34,10 @@ service ProductService {
 
   // UploadProductImages uploads images for a specific product.
   rpc UploadProductImages(UploadProductImagesRequest) returns (UploadProductImagesResponse);
+
+  // GetAllCategories retrieves all product categories.
+  rpc GetAllCategories(GetAllCategoriesRequest) returns (GetAllCategoriesResponse);
+
+  // GetCategory retrieves detailed information about a specific category by its ID.
+  rpc GetCategory(GetCategoryRequest) returns (GetCategoryResponse);
 }

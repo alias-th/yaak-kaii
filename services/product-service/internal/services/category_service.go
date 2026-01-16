@@ -28,3 +28,20 @@ func (s *CategoryService) CreateCategory(ctx context.Context, payload *types.Cre
 func (s *CategoryService) GetCategoryByID(ctx context.Context, id string) (*models.Category, error) {
 	return s.repo.GetCategoryByID(ctx, id)
 }
+
+func (s *CategoryService) ListCategories(ctx context.Context, q *types.ListCategoriesReq) (*types.ListCategoriesRes, error) {
+	categories, err := s.repo.GetAllCategories(ctx, q)
+	if err != nil {
+		return nil, err
+	}
+
+	return categories, nil
+}
+
+func (s *CategoryService) GetCategoryID(ctx context.Context, categoryID string) (*models.Category, error) {
+	category, err := s.repo.GetCategoryID(ctx, categoryID)
+	if err != nil {
+		return nil, err
+	}
+	return category, nil
+}

@@ -28,6 +28,8 @@ const (
 	ProductService_GetProductByID_FullMethodName        = "/product.ProductService/GetProductByID"
 	ProductService_GetProductBySlug_FullMethodName      = "/product.ProductService/GetProductBySlug"
 	ProductService_UploadProductImages_FullMethodName   = "/product.ProductService/UploadProductImages"
+	ProductService_GetAllCategories_FullMethodName      = "/product.ProductService/GetAllCategories"
+	ProductService_GetCategory_FullMethodName           = "/product.ProductService/GetCategory"
 )
 
 // ProductServiceClient is the client API for ProductService service.
@@ -54,6 +56,10 @@ type ProductServiceClient interface {
 	GetProductBySlug(ctx context.Context, in *GetProductBySlugRequest, opts ...grpc.CallOption) (*GetProductBySlugResponse, error)
 	// UploadProductImages uploads images for a specific product.
 	UploadProductImages(ctx context.Context, in *UploadProductImagesRequest, opts ...grpc.CallOption) (*UploadProductImagesResponse, error)
+	// GetAllCategories retrieves all product categories.
+	GetAllCategories(ctx context.Context, in *GetAllCategoriesRequest, opts ...grpc.CallOption) (*GetAllCategoriesResponse, error)
+	// GetCategory retrieves detailed information about a specific category by its ID.
+	GetCategory(ctx context.Context, in *GetCategoryRequest, opts ...grpc.CallOption) (*GetCategoryResponse, error)
 }
 
 type productServiceClient struct {
@@ -154,6 +160,26 @@ func (c *productServiceClient) UploadProductImages(ctx context.Context, in *Uplo
 	return out, nil
 }
 
+func (c *productServiceClient) GetAllCategories(ctx context.Context, in *GetAllCategoriesRequest, opts ...grpc.CallOption) (*GetAllCategoriesResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetAllCategoriesResponse)
+	err := c.cc.Invoke(ctx, ProductService_GetAllCategories_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *productServiceClient) GetCategory(ctx context.Context, in *GetCategoryRequest, opts ...grpc.CallOption) (*GetCategoryResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetCategoryResponse)
+	err := c.cc.Invoke(ctx, ProductService_GetCategory_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ProductServiceServer is the server API for ProductService service.
 // All implementations must embed UnimplementedProductServiceServer
 // for forward compatibility.
@@ -178,6 +204,10 @@ type ProductServiceServer interface {
 	GetProductBySlug(context.Context, *GetProductBySlugRequest) (*GetProductBySlugResponse, error)
 	// UploadProductImages uploads images for a specific product.
 	UploadProductImages(context.Context, *UploadProductImagesRequest) (*UploadProductImagesResponse, error)
+	// GetAllCategories retrieves all product categories.
+	GetAllCategories(context.Context, *GetAllCategoriesRequest) (*GetAllCategoriesResponse, error)
+	// GetCategory retrieves detailed information about a specific category by its ID.
+	GetCategory(context.Context, *GetCategoryRequest) (*GetCategoryResponse, error)
 	mustEmbedUnimplementedProductServiceServer()
 }
 
@@ -214,6 +244,12 @@ func (UnimplementedProductServiceServer) GetProductBySlug(context.Context, *GetP
 }
 func (UnimplementedProductServiceServer) UploadProductImages(context.Context, *UploadProductImagesRequest) (*UploadProductImagesResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method UploadProductImages not implemented")
+}
+func (UnimplementedProductServiceServer) GetAllCategories(context.Context, *GetAllCategoriesRequest) (*GetAllCategoriesResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method GetAllCategories not implemented")
+}
+func (UnimplementedProductServiceServer) GetCategory(context.Context, *GetCategoryRequest) (*GetCategoryResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method GetCategory not implemented")
 }
 func (UnimplementedProductServiceServer) mustEmbedUnimplementedProductServiceServer() {}
 func (UnimplementedProductServiceServer) testEmbeddedByValue()                        {}
@@ -398,6 +434,42 @@ func _ProductService_UploadProductImages_Handler(srv interface{}, ctx context.Co
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ProductService_GetAllCategories_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetAllCategoriesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ProductServiceServer).GetAllCategories(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ProductService_GetAllCategories_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ProductServiceServer).GetAllCategories(ctx, req.(*GetAllCategoriesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ProductService_GetCategory_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetCategoryRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ProductServiceServer).GetCategory(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ProductService_GetCategory_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ProductServiceServer).GetCategory(ctx, req.(*GetCategoryRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // ProductService_ServiceDesc is the grpc.ServiceDesc for ProductService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -440,6 +512,14 @@ var ProductService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "UploadProductImages",
 			Handler:    _ProductService_UploadProductImages_Handler,
+		},
+		{
+			MethodName: "GetAllCategories",
+			Handler:    _ProductService_GetAllCategories_Handler,
+		},
+		{
+			MethodName: "GetCategory",
+			Handler:    _ProductService_GetCategory_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

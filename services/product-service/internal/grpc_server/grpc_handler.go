@@ -2,6 +2,7 @@ package grpcserver
 
 import (
 	"context"
+	"encoding/json"
 	"log"
 	"time"
 	"yaak-kaii/services/product-service/internal/services"
@@ -350,5 +351,104 @@ func (s *ProductGRPCServer) CreateCategory(ctx context.Context, req *pb.CreateCa
 
 	return &pb.CreateCategoryResponse{
 		CategoryId: id,
+	}, nil
+}
+
+func (s *ProductGRPCServer) GetAllCategories(ctx context.Context, req *pb.GetAllCategoriesRequest) (*pb.GetAllCategoriesResponse, error) {
+	query := &types.ListCategoriesReq{
+		Limit: req.GetLimit(),
+		Page:  req.GetPage(),
+	}
+
+	categoriesRes, err := s.categoryService.ListCategories(ctx, query)
+	if err != nil {
+		return nil, err
+	}
+
+	categories := make([]*pb.Category, 0, len(categoriesRes.Categories))
+	for _, cat := range categoriesRes.Categories {
+		attrs := make([]*pb.CategoryAttribute, 0, len(cat.Attributes))
+		for _, attr := range cat.Attributes {
+			var options []string
+			err := json.Unmarshal(attr.Options, &options)
+			if err != nil {
+				return nil, err
+			}
+
+			attrs = append(attrs, &pb.CategoryAttribute{
+				Key:      attr.Key,
+				Label:    attr.Label,
+				Type:     attr.Type,
+				Required: attr.Required,
+				Options:  options,
+				Scope:    attr.Scope,
+				Order:    int64(attr.AxisOrder),
+			})
+		}
+
+		categories = append(categories, &pb.Category{
+			CategoryId:  cat.ID.String(),
+			Name:        cat.Name,
+			Description: cat.Description,
+			Attributes:  attrs,
+		})
+	}
+
+	nextPage := int32(0)
+	prevPage := int32(0)
+	if categoriesRes.Pagination.NextPage != nil {
+		nextPage = int32(*categoriesRes.Pagination.NextPage)
+	}
+	if categoriesRes.Pagination.PrevPage != nil {
+		prevPage = int32(*categoriesRes.Pagination.PrevPage)
+	}
+
+	return &pb.GetAllCategoriesResponse{
+		Categories: categories,
+		Pagination: &pb.Pagination{
+			Limit:    int32(categoriesRes.Pagination.PageSize),
+			Page:     int32(categoriesRes.Pagination.Page),
+			Total:    int32(categoriesRes.Pagination.Total),
+			LastPage: int32(categoriesRes.Pagination.LastPage),
+			NextPage: nextPage,
+			PrevPage: prevPage,
+			HasNext:  categoriesRes.Pagination.HasNext,
+			HasPrev:  categoriesRes.Pagination.HasPrev,
+		},
+	}, nil
+}
+
+func (s *ProductGRPCServer) GetCategory(ctx context.Context, req *pb.GetCategoryRequest) (*pb.GetCategoryResponse, error) {
+	category, err := s.categoryService.GetCategoryID(ctx, req.GetCategoryId())
+	if err != nil {
+		return nil, err
+	}
+
+	attrs := make([]*pb.CategoryAttribute, 0, len(category.Attributes))
+	for _, attr := range category.Attributes {
+		var options []string
+		err := json.Unmarshal(attr.Options, &options)
+		if err != nil {
+			return nil, err
+		}
+
+		attrs = append(attrs, &pb.CategoryAttribute{
+			Key:      attr.Key,
+			Label:    attr.Label,
+			Type:     attr.Type,
+			Required: attr.Required,
+			Options:  options,
+			Scope:    attr.Scope,
+			Order:    int64(attr.AxisOrder),
+		})
+	}
+
+	return &pb.GetCategoryResponse{
+		Category: &pb.Category{
+			CategoryId:  category.ID.String(),
+			Name:        category.Name,
+			Description: category.Description,
+			Attributes:  attrs,
+		},
 	}, nil
 }
