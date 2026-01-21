@@ -8,6 +8,7 @@ import (
 	"yaak-kaii/shared/contracts"
 
 	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator/v10"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -34,6 +35,23 @@ func (app *Application) responseWithError(ctx *gin.Context, code int, err error)
 			Message: err.Error(),
 		},
 	})
+}
+
+func (app *Application) responseWithValidationError(ctx *gin.Context, err error) bool {
+	var validationErrs validator.ValidationErrors
+	if !errors.As(err, &validationErrs) {
+		return false
+	}
+
+	log.Printf("Validation errors: %v", validationErrs)
+
+	ctx.JSON(http.StatusBadRequest, contracts.APIResponse{
+		Error: &contracts.APIError{
+			Code:    "VALIDATION_ERROR",
+			Message: "invalid_request",
+		},
+	})
+	return true
 }
 
 func mapGrpcCodeToHTTP(code codes.Code) int {

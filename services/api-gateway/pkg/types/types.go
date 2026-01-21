@@ -20,7 +20,7 @@ type CreateUserRequest struct {
 	FirstName   string `json:"first_name" binding:"required,min=2,max=50"`
 	LastName    string `json:"last_name" binding:"required,min=2,max=50"`
 	PhoneNumber string `json:"phone_number" binding:"required,numeric,len=10"`
-	Password    string `json:"password" binding:"required"`
+	Password    string `json:"password" binding:"required,min=8"`
 }
 
 type CreateUserResponse struct {
@@ -38,7 +38,7 @@ type CreateGuestResponse struct {
 
 type LoginRequest struct {
 	Email    string `json:"email" binding:"required,email"`
-	Password string `json:"password" binding:"required"`
+	Password string `json:"password" binding:"required,min=8"`
 }
 
 type RotateTokenRequest struct {

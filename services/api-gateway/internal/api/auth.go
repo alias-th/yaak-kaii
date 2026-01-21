@@ -13,6 +13,9 @@ import (
 func (app *Application) createUser(ctx *gin.Context) {
 	var reqBody types.CreateUserRequest
 	if err := ctx.ShouldBindJSON(&reqBody); err != nil {
+		if app.responseWithValidationError(ctx, err) {
+			return
+		}
 		app.responseWithError(ctx, http.StatusBadRequest, err)
 		return
 	}
@@ -74,6 +77,9 @@ func (app *Application) login(ctx *gin.Context) {
 	// bind json
 	var reqBody types.LoginRequest
 	if err := ctx.ShouldBindJSON(&reqBody); err != nil {
+		if app.responseWithValidationError(ctx, err) {
+			return
+		}
 		app.responseWithError(ctx, http.StatusBadRequest, err)
 		return
 	}
@@ -94,6 +100,10 @@ func (app *Application) login(ctx *gin.Context) {
 		app.responseWithError(ctx, http.StatusInternalServerError, err)
 		return
 	}
+	ctx.SetSameSite(http.SameSiteLaxMode)
+	secureCookie := ctx.Request.TLS != nil
+	ctx.SetCookie("access_token", loginRes.Token, int(expiresIn), "/", "", secureCookie, true)
+	ctx.SetCookie("refresh_token", loginRes.RefreshToken, 3600*24*30, "/", "", secureCookie, true)
 	res := contracts.APIResponse{
 		Data: types.TokenResponse{
 			UserId:       loginRes.UserId,
@@ -110,6 +120,9 @@ func (app *Application) rotateToken(ctx *gin.Context) {
 	// 1. Validate json
 	var reqBody types.RotateTokenRequest
 	if err := ctx.ShouldBindJSON(&reqBody); err != nil {
+		if app.responseWithValidationError(ctx, err) {
+			return
+		}
 		app.responseWithError(ctx, http.StatusBadRequest, err)
 		return
 	}

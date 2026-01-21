@@ -196,11 +196,13 @@ func ToGRPCError(err error) error {
 
 	// Map CustomError codes to gRPC codes
 	var grpcCode GRPCErrorCode
+	var errorMessage string = customErr.Message
 	switch customErr.Code {
 	case ErrCodeUserNotFound, ErrCodeTokenNotFound, ErrCodeRoleNotFound:
 		grpcCode = NotFound
 	case ErrCodeUserExists:
 		grpcCode = AlreadyExists
+		errorMessage = "email_already_exists"
 	case ErrCodeTokenExpired, ErrCodeTokenRevoked, ErrCodeInvalidToken:
 		grpcCode = Unauthenticated
 	case ErrCodeInvalidPassword, ErrCodeInvalidCredentials:
@@ -211,5 +213,5 @@ func ToGRPCError(err error) error {
 		grpcCode = Internal
 	}
 
-	return NewGRPCError(grpcCode, customErr.Message)
+	return NewGRPCError(grpcCode, errorMessage)
 }
