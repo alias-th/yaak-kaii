@@ -200,15 +200,19 @@ func ToGRPCError(err error) error {
 	switch customErr.Code {
 	case ErrCodeUserNotFound, ErrCodeTokenNotFound, ErrCodeRoleNotFound:
 		grpcCode = NotFound
+		errorMessage = "resource_not_found"
 	case ErrCodeUserExists:
 		grpcCode = AlreadyExists
 		errorMessage = "email_already_exists"
 	case ErrCodeTokenExpired, ErrCodeTokenRevoked, ErrCodeInvalidToken:
 		grpcCode = Unauthenticated
+		errorMessage = "invalid_or_expired_token"
 	case ErrCodeInvalidPassword, ErrCodeInvalidCredentials:
 		grpcCode = Unauthenticated
+		errorMessage = "invalid_credentials"
 	case ErrCodeUserInactive:
 		grpcCode = PermissionDenied
+		errorMessage = "user_inactive"
 	default:
 		grpcCode = Internal
 	}
